@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "tests/runtests.py",
+  "--verbosity",
+  "2",
+  "--parallel",
+  "1",
+  "--settings=test_sqlite",
+  "receipts_xf"
+ ],
+ "exit_code": 0,
+ "seconds": 0.7,
+ "stdout": "Testing against Django installed in '/testbed/django'\nImporting application receipts_xf\nSkipping setup of unused database(s): default, other.\nSystem check identified no issues (0 silenced).\n",
+ "stderr": "test_a_fails_as_expected (receipts_xf.tests.ExpectedFailures) ... expected failure\ntest_b_with_a_docstring (receipts_xf.tests.ExpectedFailures)\nA docstring's first line shows in the verbose output. ... expected failure\ntest_c_writes_then_fails_as_expected (receipts_xf.tests.ExpectedFailures) ... xexpected failure\ntest_d_passes_unexpectedly (receipts_xf.tests.ExpectedFailures) ... unexpected success\ntest_e_skipped (receipts_xf.tests.ExpectedFailures) ... skipped 'not here'\ntest_f_ok (receipts_xf.tests.ExpectedFailures) ... ok\ntest_g_fails_as_expected (receipts_xf.tests.WholeClassExpected) ... expected failure\n\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nFAILED (skipped=1, expected failures=4, unexpected successes=1)\n"
+}

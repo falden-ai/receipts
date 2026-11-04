@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13757",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:27:51Z",
+  "wall_seconds": 1741.0931987059994,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Multiplying an expression by a Poly does not evaluate when the expression is on the left side of the multiplication\nTested in Python 3.4 64-bit and 3.6 64-bit\r\nVersion: 1.1.2.dev0\r\n```\r\n>>> Poly(x)*x\r\nPoly(x**2, x, domain='ZZ')\r\n\r\n>>> x*Poly(x)\r\nx*Poly(x, x, domain='ZZ')\r\n\r\n>>> -2*Poly(x)\r\nPoly(-2*x, x, domain='ZZ')\r\n\r\n>>> S(-2)*Poly(x)\r\n-2*Poly(x, x, domain='ZZ')\r\n\r\n>>> Poly(x)*S(-2)\r\nPoly(-2*x, x, domain='ZZ')\r\n```\n",
+        "start": 0,
+        "end": 421
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13757",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling x**2 * Poly(x, x) still returns the unevaluated x**2*Poly(x, x, domain='ZZ') instead of Poly(x**3, x, domain='ZZ'), because Pow's operator priority remains above Poly's new priority.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling x + Poly(x, x) or x - Poly(x, x), which previously produced an Add containing the Poly, now returns a Poly because the priority change affects addition and subtraction as well as multiplication.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling (2*x) * Poly(x, x) still returns an unevaluated Mul instead of Poly(2*x**2, x, domain='ZZ'), because Mul's operator priority remains above Poly's new priority.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling x ** Poly(x, x) or x / Poly(x, x), which previously produced an unevaluated Pow or Mul, now defers to Poly's reflected operation and changes the result type or raises an error.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling (x + 1) * Poly(x, x) still returns an unevaluated product instead of Poly(x**2 + x, x, domain='ZZ'), because Add does not defer to Poly at the new priority.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling Symbol('a', commutative=False) * Poly(x, x), which previously produced a noncommutative Mul, now raises PolynomialError or coerces the symbol into a commutative Poly instead of preserving the previous product.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 607,
+      "cached_tokens": 244,
+      "output_tokens": 9163,
+      "reasoning_tokens": 8760,
+      "micro_usd": 184761,
+      "seconds": 71.02115288100322
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 2,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13757/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13757/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13757/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 971.3420436570013
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 5,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 698.3435541370018
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2f9535e079b079ec6416e98f41f2fc8c92bbb5ea515476907f19481aef2ac596"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2f9535e079b079ec6416e98f41f2fc8c92bbb5ea515476907f19481aef2ac596"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

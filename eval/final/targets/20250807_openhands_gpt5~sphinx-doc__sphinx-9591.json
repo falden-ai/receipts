@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9591",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:16:33Z",
+  "wall_seconds": 1428.503559081999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Cross-references don't work in property's type annotations\n### Describe the bug\r\n\r\nA documented type in property's type annotation does not get cross-referenced:\r\n```py\r\nfrom typing import Optional\r\n\r\n\r\nclass Point:\r\n    \"\"\"\r\n    A class representing a point.\r\n\r\n    Attributes:\r\n        x: Position X.\r\n        y: Position Y.\r\n    \"\"\"\r\n    x: int\r\n    y: int\r\n\r\n\r\nclass Square:\r\n    \"\"\"A class representing a square figure.\"\"\"\r\n    #: Square's start position (top-left corner).\r\n    start: Point\r\n    #: Square width.\r\n    width: int\r\n    #: Square height.\r\n    height: int\r\n\r\n    @property\r\n    def end(self) -> Point:\r\n        \"\"\"Square's end position (bottom-right corner).\"\"\"\r\n        return Point(self.start.x + self.width, self.start.y + self.height)\r\n\r\n\r\nclass Rectangle:\r\n    \"\"\"\r\n    A class representing a square figure.\r\n\r\n    Attributes:\r\n        start: Rectangle's start position (top-left corner).\r\n        width: Rectangle width.\r\n        height: Rectangle width.\r\n    \"\"\"\r\n    start: Point\r\n    width: int\r\n    height: int\r\n\r\n    @property\r\n    def end(self) -> Point:\r\n        \"\"\"Rectangle's end position (bottom-right corner).\"\"\"\r\n        return Point(self.start.x + self.width, self.start.y + self.height)\r\n```\r\n\r\n### How to Reproduce\r\n\r\n```\r\n$ git clone https://github.com/jack1142/sphinx-issue-9585\r\n$ cd sphinx-issue-9585\r\n$ pip install sphinx\r\n$ cd docs\r\n$ make html\r\n$ # open _build/html/index.html and see the issue\r\n```\r\n\r\n\r\n### Expected behavior\r\n\r\nI expected the documented type in property's type annotation to be cross-referenced.\r\n\r\n### Your project\r\n\r\nhttps://github.com/jack1142/sphinx-issue-9585\r\n\r\n### Screenshots\r\n\r\nHere's a link to the generated docs:\r\nhttps://sphinx-issue-9585.readthedocs.io/en/latest/\r\n\r\n### OS\r\n\r\nWindows 10, Ubuntu 18.04\r\n\r\n### Python version\r\n\r\n3.7, 3.8, 3.9\r\n\r\n### Sphinx version\r\n\r\n4.1.2\r\n\r\n### Sphinx extensions\r\n\r\nsphinx.ext.autodoc\r\n\r\n### Extra tools\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 1977
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9591",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A manually written '.. py:property:: end' directive with ':type: Point' referencing a documented Point class still renders Point as plain text with no pending_xref, because 'autodoc:module' is absent from temp_data and the new parsing branch is skipped.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A manual '.. py:property::' with ':type:' placed after any autodoc directive in the same document unexpectedly gains parsed cross-references, because 'autodoc:module' set during autodoc generation persists in env.temp_data for the rest of the document parse.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "An autodoc-documented property annotated '-> Optional[Point]' (or 'list[Point]') fails to cross-reference the nested Point, either producing only a reference for typing.Optional or leaving Point unlinked, even though a bare '-> Point' works.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An autodoc property returning an undocumented or builtin type such as '-> int' or '-> SomeUndocumentedClass' previously rendered as inert text but now emits pending_xrefs, causing new 'py:class reference target not found' warnings and failures in nitpicky (-n) builds.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "An inherited autodoc property whose return type Point is defined in the base class's module, documented under a subclass in a different module, does not resolve: the diff only checks that 'autodoc:module' exists but never passes its value to _parse_annotation, so the xref is built against the wrong py:module/py:class context.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An autodoc property whose type string is not a plain Python expression, e.g. ':type: int or None' supplied via a docstring, is now fed to _parse_annotation and gets mangled into parsed/literal nodes or altered text instead of being rendered verbatim as ': int or None' as before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 990,
+      "cached_tokens": 244,
+      "output_tokens": 7720,
+      "reasoning_tokens": 7257,
+      "micro_usd": 157433,
+      "seconds": 62.32852699000068
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 4,
+        "refuted": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 822.8004086279998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 4,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 542.979848373001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:cc9ecac312f7b3f137d10db558f4d367a8c37130d6a1473c6af201771e124acd"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:cc9ecac312f7b3f137d10db558f4d367a8c37130d6a1473c6af201771e124acd"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

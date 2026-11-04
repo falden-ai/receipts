@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9711",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:02:06Z",
+  "wall_seconds": 1139.771909420001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "needs_extensions checks versions using strings\n### Describe the bug\r\n\r\nThe `needs_extensions` check is handy for verifying minimum extension versions, but it only checks versions in a 'string-like' manner. This means any version >9 is not allowed for any check of something >1. That is, treated as string '0.6' > '0.10', but treated as versions '0.6' < '0.10'. Since Sphinx does the former, some extension versions may not be allowed when they should be.\r\n\r\n### How to Reproduce\r\n\r\n```\r\n$ git clone https://github.com/anntzer/mplcursors\r\n$ cd mplcursors\r\n$ pip install -r .doc-requirements.txt\r\n$ pip install -e .\r\n$ make -C doc html\r\n```\r\nThis passes just fine, because the requirements pin sphinx-gallery to 0.9. But if you then update to the current 0.10 release:\r\n\r\n```\r\n$ pip install sphinx-gallery==0.10\r\n$ make -C doc html\r\n```\r\nresults in a failure due to a \"not new enough\" version:\r\n```\r\nRunning Sphinx v4.1.2\r\nloading translations [en]... done\r\nmaking output directory... done\r\n\r\nSphinx version error:\r\nThis project needs the extension sphinx_gallery.gen_gallery at least in version 0.6.0 and therefore cannot be built with the loaded version (0.10.0).\r\n```\r\n\r\n### Expected behavior\r\n\r\nsphinx-gallery 0.10.0 should be accepted if 0.6 is the minimum specified.\r\n\r\n### Your project\r\n\r\nhttps://github.com/anntzer/mplcursors\r\n\r\n### Screenshots\r\n\r\n_No response_\r\n\r\n### OS\r\n\r\nFedora\r\n\r\n### Python version\r\n\r\n3.9.6\r\n\r\n### Sphinx version\r\n\r\n4.1.2\r\n\r\n### Sphinx extensions\r\n\r\n_No response_\r\n\r\n### Extra tools\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 1571
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9711",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call verify_needs_extensions with needs_extensions={'ext': '0.6'} and a loaded extension whose version is the non-PEP440 git-describe string '0.10.0-3-gabc123'; it raises packaging.version.InvalidVersion instead of accepting the 0.10 build, so the reported failure still occurs.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With needs_extensions={'ext': '0.1'} and a loaded extension version of 'dev', string comparison previously allowed the build, but Version('dev') now raises an uncaught InvalidVersion and crashes it.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call verify_needs_extensions with needs_extensions={'ext': '0.10'} and loaded extension version '0.10.0rc1'; Version('0.10') > Version('0.10.0rc1') raises VersionRequirementError even though the loaded extension is the 0.10 series the issue expects to be accepted.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With needs_extensions={'ext': '2.0'} and loaded extension version '2.0.0rc1', the build previously passed because '2.0' < '2.0.0rc1' as strings, but it now raises VersionRequirementError under PEP440 ordering.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call verify_needs_extensions with a non-PEP440 requirement such as needs_extensions={'ext': '0.6.*'} and loaded version '0.10.0'; Version('0.6.*') raises InvalidVersion rather than cleanly accepting the newer extension or raising VersionRequirementError.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With needs_extensions={'ext': '1.0.0'} and loaded extension version '1.0', the old string check raised VersionRequirementError because '1.0.0' > '1.0', but the new check silently passes because the two Versions compare equal.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 939,
+      "cached_tokens": 244,
+      "output_tokens": 8322,
+      "reasoning_tokens": 7840,
+      "micro_usd": 169269,
+      "seconds": 64.86290934600038
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "possibly_toxic": 2,
+        "unchecked": 2,
+        "suspected": 5,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9711/fixed_x/correctness-3.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9711/fixed_x/correctness-3.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9711/fixed_x/correctness-3.3"
+      ],
+      "wall_seconds": 684.7819120499998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 2,
+        "unchecked": 2,
+        "suspected": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 388.93645191499945
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

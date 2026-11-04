@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:36:49Z",
+  "wall_seconds": 1800.4594761239969,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Autodoc extension's mock file throws TypeError for generic-typed classes.\n**Describe the bug**\r\nWhen building the docs for a generically-typed class, a TypeError is thrown as Autodoc's `mock._make_subclass` attempts to concatenate a `str` to a `TypeVar`. See the attached log: [sphinx-err-325ndteh.log](https://github.com/sphinx-doc/sphinx/files/4842672/sphinx-err-325ndteh.log)\r\n\r\n\r\n**To Reproduce**\r\n```\r\n$ git https://github.com/perrygoy/screenpy.git\r\n$ cd screenpy/docs\r\n$ python -m venv env\r\n$ source env/bin/activate\r\n$ pip install sphinx pyhamcrest selenium typing_extensions\r\n$ make html\r\n```\r\nObserve the docs command fails with a TypeError.\r\n\r\n**Expected behavior**\r\nDocs can still be built when generics are involved.\r\n\r\n**Your project**\r\nhttps://github.com/perrygoy/screenpy.git\r\n\r\n**Environment info**\r\n- OS: Mac 10.15.5 (19F101)\r\n- Python version: 3.7.7\r\n- Sphinx version: 3.1.1\r\n- Sphinx extensions:  sphinx.ext.autodoc, sphinx.ext.intersphinx, sphinx.ext.coverage, sphinx.ext.ifconfig, sphinx.ext.napoleon\r\n\r\n**Additional context**\r\nThis might just be me not knowing how to make Sphinx-friendly generic typing, if that's the case please let me know!\n",
+        "start": 0,
+        "end": 1166
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With mock(['unknown']), defining `class Foo(unknown.Base[T])` for a TypeVar T still raises TypeError because subscripting the mock class (a type) does not reach the instance __getitem__/_make_subclass path that was patched.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Passing a str subclass whose __str__ returns a different value than its underlying string to _make_subclass changes __name__ and __display_name__ from the original string used before the change to the __str__ result.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling the mock subscript/_make_subclass with TypeVar('T') on Python 3.7 creates a class named '~T' with __display_name__ 'unknown.~T' instead of 'T'/'unknown.T', so autodoc name lookup/rendering for the generic class still fails or is wrong.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling _make_subclass(123, 'mod'), _make_subclass(None, 'mod'), or subscripting a mock with an int/None previously raised TypeError but now silently creates classes named '123'/'None', expanding accepted inputs beyond the TypeVar fix.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Defining a generic documented class via a multi-parameter or nested subscript such as unknown.Base[T, U] or unknown.Base[List[T]] produces a type named '(~T, ~U)'/'typing.List[~T]' and loses the TypeVars, so class creation or subsequent Foo[int] generic use still raises TypeError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Passing an object whose __str__ returns different values on successive calls makes __display_name__ use the first result and type() use the second, so the created class's __name__ and __display_name__ diverge instead of failing as before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 834,
+      "cached_tokens": 244,
+      "output_tokens": 10170,
+      "reasoning_tokens": 9729,
+      "micro_usd": 205809,
+      "seconds": 83.29906672400102
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 1,
+        "possibly_toxic": 5,
+        "suspected": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1131.8194709389973
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 5,
+        "suspected": 4,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 584.4837188140045
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

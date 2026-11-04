@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8056",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:47:48Z",
+  "wall_seconds": 1536.489281099999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Render error when combining multiple input parameters in docstring\n**Describe the bug & Reproduce**\r\n\r\nMy team is writing a function in Python, which contains 3 inputs that are similar, so we want to put them in the same line in the docstring. \r\n\r\nAs described in 4. Parameters in [numpydoc docstring guide](https://numpydoc.readthedocs.io/en/latest/format.html#sections), this is possible if you write something like this:\r\n\r\n```\r\nx1, x2 : array_like\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\nHowever, this produces:\r\n\r\n<img width=\"406\" alt=\"图片\" src=\"https://user-images.githubusercontent.com/20618587/83668496-566d3680-a5d0-11ea-8a15-5596f77b6c20.png\">\r\n\r\nEven worse, when added \"optional\", the rendered HTML stays the same as the screenshot above, so there is no way to tell whether it is optional:\r\n\r\n```\r\nx1, x2 : array_like, optional\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\n**Expected behavior**\r\nSomething like \r\n\r\n- x1, x2 (_array_like, optional_)  -  Input arrays, description of x1, x2.\r\n\r\n**Environment info**\r\n- OS: macOS 10.15.5 (19F101)\r\n- Python version: 3.7.7\r\n- Sphinx version: 3.0.3.\r\n- Extra tools: browser: Firefox 79.0a1 or Safari 13.1.1\r\n- Sphinx extensions:  \r\n\r\n```\r\nextensions = [\r\n    \"sphinx.ext.autodoc\",\r\n    \"sphinx.ext.todo\",\r\n    \"sphinx.ext.coverage\",\r\n    \"sphinx.ext.extlinks\",\r\n    \"sphinx.ext.intersphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinx.ext.viewcode\",\r\n    \"sphinx.ext.napoleon\",\r\n    \"nbsphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinxcontrib.bibtex\",\r\n    \"sphinx.ext.doctest\",\r\n]\r\n```\r\n\r\n\n",
+        "start": 0,
+        "end": 1565
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8056",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting a NumpyDocstring with 'x1,x2 : array_like, optional' and a description still emits one combined ':param x1,x2:' field because the split only matches ', ', so the original rendering problem remains.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A Google Raises section containing 'ValueError, TypeError: Bad input.' previously produced one combined raises field, but the shared _format_fields split now produces two duplicated raises entries, changing non-parameter documentation.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting a NumpyDocstring with 'x1 , x2 : array_like' produces a first name with a trailing space and malformed ':param x1 :' output instead of clean separate x1 and x2 fields.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Documenting one tuple argument as 'x, y : tuple' for a function such as f(point) previously produced one combined parameter entry, but now invents separate ':param x:' and ':param y:' entries for parameters that do not exist in the signature.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting a GoogleDocstring with 'Args: x1, x2 (array_like, optional): Input arrays.' leaves the second name polluted by the parenthesised type or omits a separate ':type x2:' field, so combined Google-style parameters are not fixed.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A combined parameter whose description defines a named hyperlink target or footnote previously built cleanly once, but duplicating that description for each split name now creates duplicate target definitions and docutils warnings.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1144,
+      "cached_tokens": 116,
+      "output_tokens": 9884,
+      "reasoning_tokens": 9497,
+      "micro_usd": 201816,
+      "seconds": 76.33142977199896
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 2,
+        "suspected": 5,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1015.64733634
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "s_sat_inconclusive": 1,
+        "unchecked": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 443.13850005899985
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

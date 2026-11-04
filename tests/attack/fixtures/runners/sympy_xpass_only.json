@@ -1,0 +1,13 @@
+{
+ "argv": [
+  "python",
+  "bin/test",
+  "-C",
+  "--verbose",
+  "sympy/utilities/tests/test_receipts_xpass.py"
+ ],
+ "exit_code": 0,
+ "seconds": 0.5,
+ "stdout": "============================= test process starts ==============================\nexecutable:         /opt/miniconda3/envs/testbed/bin/python  (3.9.20-final-0) [CPython]\narchitecture:       64-bit\ncache:              no\nground types:       python \nnumpy:              None\nrandom seed:        92523017\nhash randomization: off\n\nsympy/utilities/tests/test_receipts_xpass.py[1] \ntest_passes_unexpectedly X                                                  [OK]\n\n\n________________________________ xpassed tests _________________________________\nsympy/utilities/tests/test_receipts_xpass.py: test_passes_unexpectedly\n\n=== tests finished: 0 passed, 1 expected to fail but passed, in 0.01 seconds ===\n",
+ "stderr": "/testbed/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Mapping, defaultdict\n/testbed/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  class OrderedSet(collections.MutableSet):\n/testbed/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Callable\n"
+}

@@ -1,0 +1,162 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~psf__requests-1142",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:28:39Z",
+  "wall_seconds": 854.0289565670028,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "requests.get is ALWAYS sending content length\nHi,\n\nIt seems like that request.get always adds 'content-length' header to the request.\nI think that the right behavior is not to add this header automatically in GET requests or add the possibility to not send it.\n\nFor example http://amazon.com returns 503 for every get request that contains 'content-length' header.\n\nThanks,\n\nOren\n\n",
+        "start": 0,
+        "end": 381
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~psf__requests-1142",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] A GET prepared with an empty seekable body, e.g. requests.Request('GET', url, data=io.BytesIO(b'')).prepare(), still gets Content-Length: 0 from the seek/tell branch, so a server rejecting any GET with Content-Length still fails.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A POST, PUT, or PATCH with no body, e.g. requests.Request('POST', url).prepare(), previously had Content-Length: 0 but now has no Content-Length, breaking servers and existing tests that expect an explicit zero length for body-expecting methods.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] A GET with any supplied body, e.g. requests.get(url, data='x=1') or data={'x': '1'}, still sends Content-Length, so an endpoint that rejects GET requests containing that header at all still returns an error.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Re-preparing the same PreparedRequest first with a non-empty body and then with body=None or an empty body leaves the stale earlier Content-Length in place instead of resetting it to 0, causing a length/body mismatch on the second request.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] An end-to-end requests.get(url) against a local raw HTTP server still arrives with a Content-Length header added by the transport layer even though PreparedRequest.headers omits it, so checking only prepared headers would miss the reported wire behavior.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A request with an unknown-length body such as a generator passed to requests.post(url, data=gen) previously fell back to Content-Length: 0 but now gets neither Content-Length nor a PreparedRequest-level chunked fallback, changing how the body is framed or sent.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 517,
+      "cached_tokens": 116,
+      "output_tokens": 4782,
+      "reasoning_tokens": 4345,
+      "micro_usd": 97268,
+      "seconds": 38.73730115900253
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "possibly_toxic": 3,
+        "unchecked": 1,
+        "refuted": 4,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 534.3142661920065
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 6,
+        "possibly_toxic": 1,
+        "not_reproduced": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 280.6201805919991
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

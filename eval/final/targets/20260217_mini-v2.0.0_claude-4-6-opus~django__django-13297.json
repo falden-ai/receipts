@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13297",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 2187.8405205619997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "TemplateView.get_context_data()'s kwargs returns SimpleLazyObjects that causes a crash when filtering.\nDescription\n\t\nExample Code that works in 3.0, but not in 3.1:\nclass OfferView(TemplateView):\n\ttemplate_name = \"offers/offer.html\"\n\tdef get_context_data(self, **kwargs):\n\t\toffer_slug = kwargs.get(\"offer_slug\", \"\")\n\t\toffer = get_object_or_404(Account, slug=offer_slug)\n\t\treturn {\"offer\": offer, \"offer_slug\": offer_slug}\nIn order to make this work in 3.1, you have to explicitly convert the result of kwargs.get() to a string to get the SimpleLazyObject to resolve:\nclass OfferView(TemplateView):\n\ttemplate_name = \"offers/offer.html\"\n\tdef get_context_data(self, **kwargs):\n\t\toffer_slug = kwargs.get(\"offer_slug\", \"\")\n\t\toffer = get_object_or_404(Account, slug=str(offer_slug))\n\t\treturn {\"offer\": offer, \"offer_slug\": offer_slug}\nThe error generated if you don't is:\nError binding parameter 0 - probably unsupported type\nfrom django/db/backends/sqlite3/operations.py, line 144, in _quote_params_for_last_executed_query\nIn both cases, the urls.py looks like:\npath(\n\t\t\"/offers/<slug:offer_slug>/\",\n\t\tOfferView.as_view(),\n\t\tname=\"offer_view\",\n\t),\nWhen debugging, I found that offer_slug (coming in from kwargs.get) was of type 'SimpleLazyObject' in Django 3.1, and when I explicitly converted it to a string, get_object_or_404 behaved as expected.\nThis is using Python 3.7.8 with SQLite.\n",
+        "start": 0,
+        "end": 1384
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13297",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Using the issue's OfferView, do a GET request and then pass response.context['offer_slug'] to Account.objects.get(slug=...) or get_object_or_404(); it is re-wrapped in a SimpleLazyObject after get_context_data() returns and still raises the SQLite 'Error binding parameter 0 - probably unsupported type' crash.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A view whose get_context_data() or extra_context explicitly overwrites a URL-kwarg key with a new value, such as an uppercased slug, None, or a model instance, now gets that unrelated value wrapped in a SimpleLazyObject and spuriously emits RemovedInDjango40Warning on access, breaking isinstance/is-None/DB checks that worked with the plain overwritten value before.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Using the issue's OfferView with an overridden render_to_response() that re-queries or validates using context['offer_slug'] before rendering fails with the same unsupported-type DB error, because TemplateView.get() wraps the context value before calling render_to_response().",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A view that copies a URL kwarg to a differently-named or nested context entry, e.g. context['slug_copy'] = kwargs['offer_slug'] or context['filters'] = {'slug': kwargs['offer_slug']}, and a template that uses that copy no longer triggers the deprecation warning that accessing the wrapped kwarg triggered before, silently losing the deprecation notice.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] A view that returns offer_slug in the context for a custom template tag that filters Account by that tag argument during rendering still passes a SimpleLazyObject into the query during template rendering and crashes with the same SQLite binding error, so the end-to-end request is not fixed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A view whose get_context_data() returns self.kwargs or another reused dict as the context has that dict mutated in place by the wrapping loop, so later access through view.kwargs.slug, which the deprecation guidance says should be raw and warning-free, becomes a SimpleLazyObject that warns and can crash DB filtering.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1139,
+      "cached_tokens": 0,
+      "output_tokens": 9150,
+      "reasoning_tokens": 8627,
+      "micro_usd": 187556,
+      "seconds": 73.73190312700001
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "possibly_toxic": 3,
+        "not_reproduced": 2,
+        "suspected": 2,
+        "unchecked": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13297/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1536.569310936
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "possibly_toxic": 2,
+        "unchecked": 3,
+        "not_reproduced": 1,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 572.9945503639997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b3d58737f2834aefa2e8e09a4767bea8e15d67300a33f2fb720b2c2028cec5bf"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b3d58737f2834aefa2e8e09a4767bea8e15d67300a33f2fb720b2c2028cec5bf"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b3d58737f2834aefa2e8e09a4767bea8e15d67300a33f2fb720b2c2028cec5bf"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

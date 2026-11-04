@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12406",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:15:30Z",
+  "wall_seconds": 1790.0671532550004,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "ModelForm RadioSelect widget for foreign keys should not present a blank option if blank=False on the model\nDescription\n\t\nUnlike the select widget, where a blank option is idiomatic even for required fields, radioselect has an inherent unfilled state that makes the \"-------\" option look suspiciously like a valid choice.\nclass TestRun(models.Model):\n\tdata_file = models.ForeignKey(BatchData, on_delete=models.SET_NULL, null=True, blank=False)\nclass TestRunForm(ModelForm):\n\tclass Meta:\n\t\tmodel = TestRun\n\t\tfields = ['data_file']\n\t\twidgets = {'data_file': RadioSelect()}\nrenders {{test_run_form.data_file}} as\n<ul id=\"id_data_file\">\n <li><label for=\"id_data_file_0\">\n\t<input checked=\"checked\" id=\"id_data_file_0\" name=\"data_file\" type=\"radio\" value=\"\"> ---------\n </label></li>\n <li><label for=\"id_data_file_1\">\n\t<input id=\"id_data_file_1\" name=\"data_file\" type=\"radio\" value=\"1\"> First Data File\n </label></li>\n</ul>\nInstead, there should be no checked option for RadioSelect's <input> tags when rendering a new form from a model if blank is not a valid selection.\n",
+        "start": 0,
+        "end": 1066
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12406",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "In a ModelForm, declare data_file as a ModelChoiceField without a widget and specify RadioSelect only in Meta.widgets, or assign self.fields['data_file'].widget = RadioSelect() in Form.__init__; rendering the unbound form may still show the checked '---------' radio because empty_label was set before the widget became RadioSelect.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create ModelChoiceField(queryset, required=True, widget=RadioSelect(), empty_label='Choose one') with no initial; before the change the explicit empty label was kept, after the change empty_label becomes None and the user's explicitly requested option silently disappears.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Render the field with a widget supplied only at render time, e.g. form['data_file'].as_widget(RadioSelect()) on a required ModelChoiceField created with the default Select widget; the blank radio option may still be rendered because field.empty_label remains '---------'.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a model formset with extra=1 and a RadioSelect FK widget; the extra empty form's fields are made non-required via empty_permitted after construction, but empty_label was already forced to None, so the form that is allowed to be submitted empty loses its blank radio option.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a required ModelChoiceField whose radio rendering comes from a widget that is not a RadioSelect instance or subclass at field construction, such as RelatedFieldWidgetWrapper wrapping RadioSelect() or a custom ChoiceWidget with input_type='radio'; the blank '---------' radio may still appear and be checked for an empty value.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a standalone non-ModelForm Form with ModelChoiceField(required=True, widget=RadioSelect()) unrelated to any model field with blank=False; its choices lose the blank option even though the issue is scoped to ModelForm foreign keys derived from blank=False.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 866,
+      "cached_tokens": 116,
+      "output_tokens": 12664,
+      "reasoning_tokens": 12204,
+      "micro_usd": 256304,
+      "seconds": 93.70584992599834
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 3,
+        "s_sat_inconclusive": 2,
+        "blocker": 2,
+        "suspected": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12406/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12406/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 1331.0499028980012
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "unchecked": 3,
+        "not_reproduced": 1,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 363.93043074100206
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:feb13836a99eb60b6cb162986d66522c7b01edce0214827f5028acfe0bd5c291"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:feb13836a99eb60b6cb162986d66522c7b01edce0214827f5028acfe0bd5c291"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

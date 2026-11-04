@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-15875",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:43:28Z",
+  "wall_seconds": 3437.4148642849996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "is_zero is incorrect on complex integer\n`is_zero` should return `None` if it cannot decide, but should never give the wrong answer. However:\r\n\r\n```\r\n>>> e = -2*I + (1 + I)**2\r\n>>> e.is_zero\r\nFalse\r\n>>> simplify(e).is_zero\r\nTrue\r\n```\r\n\r\nThis is causing errors in determining the rank of a matrix. See issue #15872 \nFixing is_zero for complex numbers while Add\nReferences to other Issues or PRs\r\n#15873 \r\n\r\nOther comments:\r\n\r\n<!-- BEGIN RELEASE NOTES -->\r\n\r\n- core\r\n  - Fix `is_zero` becoming `False` on some expressions with `Add`.\r\n\r\n<!-- END RELEASE NOTES -->\r\n\n",
+        "start": 0,
+        "end": 563
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-15875",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] ((2+2*I)**2 + (3+3*I)**2 - 26*I).is_zero should be True because the value is 0, but the new check on I*(imaginary terms) does not expand those powers and returns None or False instead.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] (I + (1 + I)**2).is_zero was correctly False before because the value is 3*I, but the new transformed Add cannot decide that I*(1 + I)**2 is -2 and now returns None, losing a definite answer.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] (1 - 2*I + (1 + I)**2).is_zero should be False because the value is 1, but returning only the is_zero check of the multiplied imaginary terms ignores the nonzero real term and can return True.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With x = Symbol('x', real=True, positive=True), (x - 2*I + (1 + I)**2).is_zero should remain False and is_real should remain True, but checking only the imaginary terms can incorrectly report the whole expression as zero.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] With x real, (-2*I + (1 + I)**2 + I*(sin(x)**2 + cos(x)**2 - 1)).is_zero should be True because the added term is 0, but that term takes the imaginary-or-zero path so the new cancellation check is bypassed and the result remains False or None.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Querying is_zero or is_real on a large Add of many imaginary power terms, such as Add(*[(k + k*I)**2 for k in range(1, 200)]) + I, now constructs and re-evaluates a second Add on every query and can time out or hit recursion limits where the old code returned False immediately.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 740,
+      "cached_tokens": 244,
+      "output_tokens": 17994,
+      "reasoning_tokens": 17511,
+      "micro_usd": 361913,
+      "seconds": 109.32912405299976
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "refuted": 1,
+        "s_sat_inconclusive": 1
+      },
+      "blockers": [],
+      "wall_seconds": 2617.7418007490014
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 5,
+        "s_sat_inconclusive": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 709.956451516
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

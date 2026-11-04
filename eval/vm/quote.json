@@ -1,0 +1,449 @@
+{
+  "assumptions": [
+    "on-demand Linux is billed per second with a 60 second minimum, from launch until stop (EC2 page)",
+    "the VMs are stopped between runs, so compute and the public IPv4 addresses bill only while they run",
+    "the gp3 volumes bill for every hour they exist, stopped or not",
+    "2 vCPU per sandbox (16 on 32 vCPU, 32 on 64), 75% busy on average; the runs take their worker count from the VM's vCPUs the same way",
+    "data transfer in is $0.00 per GB and the first 100 GB out each month are free (EC2 page)",
+    "sandbox-minutes per target are a model; the pilot measures the real number",
+    "the final run's baselines (B0, B1, B2 through the SK1 gates) add 33 sandbox-minutes per target",
+    "one SWE-bench eval script takes 4 sandbox-minutes on average (a model)",
+    "R24 --diagnose is counted at its most: 3 harness runs for each of 62 drops, the most R24 reports before it stops at 25%",
+    "R24 and the label runs on m7i.16xlarge, then a resize to m7i.8xlarge for the pilot (REG-568); the resize happens while the VM is stopped, so it bills nothing",
+    "the pilot is `receipts run --jobs 16`, the pilot VM's sandbox count: 20 targets in 2 waves, each a job on a sandbox of its own that runs spark then glimmer in turn, its sandbox 75% busy, so one target run of m sandbox-minutes takes m * 100 / 75 minutes",
+    "the GPU VM is up from its boot (60 min) through the whole pilot, since every job calls Glimmer after its Spark arm; in the rehearsal it is up for the 40 paired targets' block plus 20 min from stopped",
+    "the rehearsal and the final keep the sandbox-minutes model until the pilot measures a target's time"
+  ],
+  "cases": [
+    {
+      "case": "low",
+      "lines": [
+        {
+          "item": "m7i.16xlarge on-demand, R24 and labels (2026-10-28)",
+          "micro_usd": 20213760,
+          "quantity": "376 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, pilot (2026-10-28)",
+          "micro_usd": 4569600,
+          "quantity": "170 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, dress rehearsal (2026-10-29)",
+          "micro_usd": 10214400,
+          "quantity": "380 min"
+        },
+        {
+          "item": "m7i.16xlarge on-demand, final run (2026-11-01)",
+          "micro_usd": 54566400,
+          "quantity": "1015 min"
+        },
+        {
+          "item": "gp3 500 GiB, 6000 IOPS, 250 MiB/s",
+          "micro_usd": 10684932,
+          "quantity": "130 h"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the Glimmer arm on pilot day",
+          "micro_usd": 12331440,
+          "quantity": "220 min"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the 40 paired targets in the rehearsal (only if the move rule is met)",
+          "micro_usd": 6726240,
+          "quantity": "120 min"
+        },
+        {
+          "item": "gp3 200 GiB for the GPU VM",
+          "micro_usd": 1052055,
+          "quantity": "48 h"
+        },
+        {
+          "item": "public IPv4 addresses while running (eval VM and GPU VM)",
+          "micro_usd": 190084,
+          "quantity": "2281 min"
+        },
+        {
+          "item": "data in (image and weight pulls) and data out under 100 GB",
+          "micro_usd": 0,
+          "quantity": "0"
+        }
+      ],
+      "pilot_day": {
+        "blocks": [
+          {
+            "instance_type": "m7i.16xlarge",
+            "micro_usd": 20213760,
+            "minutes": 376,
+            "what": "R24 and labels"
+          },
+          {
+            "instance_type": "m7i.8xlarge",
+            "micro_usd": 4569600,
+            "minutes": 170,
+            "what": "pilot"
+          },
+          {
+            "instance_type": "g7e.2xlarge",
+            "micro_usd": 12331440,
+            "minutes": 220,
+            "what": "the Glimmer arm's GPU VM"
+          }
+        ],
+        "compute_micro_usd": 37114800,
+        "date": "2026-10-28",
+        "eval_vm_hours": "9.1",
+        "eval_vm_minutes": 546
+      },
+      "run_minutes": {
+        "R24 and labels": 376,
+        "dress rehearsal": 380,
+        "final run": 1015,
+        "pilot": 170
+      },
+      "sandbox_minutes_per_target": 30,
+      "total_micro_usd": 120548911
+    },
+    {
+      "case": "expected",
+      "lines": [
+        {
+          "item": "m7i.16xlarge on-demand, R24 and labels (2026-10-28)",
+          "micro_usd": 20213760,
+          "quantity": "376 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, pilot (2026-10-28)",
+          "micro_usd": 7472640,
+          "quantity": "278 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, dress rehearsal (2026-10-29)",
+          "micro_usd": 16504320,
+          "quantity": "614 min"
+        },
+        {
+          "item": "m7i.16xlarge on-demand, final run (2026-11-01)",
+          "micro_usd": 71339520,
+          "quantity": "1327 min"
+        },
+        {
+          "item": "gp3 500 GiB, 6000 IOPS, 250 MiB/s",
+          "micro_usd": 10684932,
+          "quantity": "130 h"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the Glimmer arm on pilot day",
+          "micro_usd": 18385056,
+          "quantity": "328 min"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the 40 paired targets in the rehearsal (only if the move rule is met)",
+          "micro_usd": 10481724,
+          "quantity": "187 min"
+        },
+        {
+          "item": "gp3 200 GiB for the GPU VM",
+          "micro_usd": 1052055,
+          "quantity": "48 h"
+        },
+        {
+          "item": "public IPv4 addresses while running (eval VM and GPU VM)",
+          "micro_usd": 259167,
+          "quantity": "3110 min"
+        },
+        {
+          "item": "data in (image and weight pulls) and data out under 100 GB",
+          "micro_usd": 0,
+          "quantity": "0"
+        }
+      ],
+      "pilot_day": {
+        "blocks": [
+          {
+            "instance_type": "m7i.16xlarge",
+            "micro_usd": 20213760,
+            "minutes": 376,
+            "what": "R24 and labels"
+          },
+          {
+            "instance_type": "m7i.8xlarge",
+            "micro_usd": 7472640,
+            "minutes": 278,
+            "what": "pilot"
+          },
+          {
+            "instance_type": "g7e.2xlarge",
+            "micro_usd": 18385056,
+            "minutes": 328,
+            "what": "the Glimmer arm's GPU VM"
+          }
+        ],
+        "compute_micro_usd": 46071456,
+        "date": "2026-10-28",
+        "eval_vm_hours": "10.9",
+        "eval_vm_minutes": 654
+      },
+      "run_minutes": {
+        "R24 and labels": 376,
+        "dress rehearsal": 614,
+        "final run": 1327,
+        "pilot": 278
+      },
+      "sandbox_minutes_per_target": 50,
+      "total_micro_usd": 156393174
+    },
+    {
+      "case": "high",
+      "lines": [
+        {
+          "item": "m7i.16xlarge on-demand, R24 and labels (2026-10-28)",
+          "micro_usd": 20213760,
+          "quantity": "376 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, pilot (2026-10-28)",
+          "micro_usd": 13171200,
+          "quantity": "490 min"
+        },
+        {
+          "item": "m7i.8xlarge on-demand, dress rehearsal (2026-10-29)",
+          "micro_usd": 29030400,
+          "quantity": "1080 min"
+        },
+        {
+          "item": "m7i.16xlarge on-demand, final run (2026-11-01)",
+          "micro_usd": 104939520,
+          "quantity": "1952 min"
+        },
+        {
+          "item": "gp3 500 GiB, 6000 IOPS, 250 MiB/s",
+          "micro_usd": 10684932,
+          "quantity": "130 h"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the Glimmer arm on pilot day",
+          "micro_usd": 30268080,
+          "quantity": "540 min"
+        },
+        {
+          "item": "g7e.2xlarge on-demand, the 40 paired targets in the rehearsal (only if the move rule is met)",
+          "micro_usd": 17936640,
+          "quantity": "320 min"
+        },
+        {
+          "item": "gp3 200 GiB for the GPU VM",
+          "micro_usd": 1052055,
+          "quantity": "48 h"
+        },
+        {
+          "item": "public IPv4 addresses while running (eval VM and GPU VM)",
+          "micro_usd": 396500,
+          "quantity": "4758 min"
+        },
+        {
+          "item": "data in (image and weight pulls) and data out under 100 GB",
+          "micro_usd": 0,
+          "quantity": "0"
+        }
+      ],
+      "pilot_day": {
+        "blocks": [
+          {
+            "instance_type": "m7i.16xlarge",
+            "micro_usd": 20213760,
+            "minutes": 376,
+            "what": "R24 and labels"
+          },
+          {
+            "instance_type": "m7i.8xlarge",
+            "micro_usd": 13171200,
+            "minutes": 490,
+            "what": "pilot"
+          },
+          {
+            "instance_type": "g7e.2xlarge",
+            "micro_usd": 30268080,
+            "minutes": 540,
+            "what": "the Glimmer arm's GPU VM"
+          }
+        ],
+        "compute_micro_usd": 63653040,
+        "date": "2026-10-28",
+        "eval_vm_hours": "14.4",
+        "eval_vm_minutes": 866
+      },
+      "run_minutes": {
+        "R24 and labels": 376,
+        "dress rehearsal": 1080,
+        "final run": 1952,
+        "pilot": 490
+      },
+      "sandbox_minutes_per_target": 90,
+      "total_micro_usd": 227693087
+    }
+  ],
+  "cheaper_alternative": "m6a.8xlarge",
+  "final_instance_type": "m7i.16xlarge",
+  "final_on_32_vcpu": {
+    "final_run_minutes_32_vcpu": "2624",
+    "final_run_minutes_64_vcpu": "1327",
+    "instance_type": "m7i.8xlarge"
+  },
+  "final_usd_per_hour": "$3.2256",
+  "gpu": {
+    "boot_minutes": "60",
+    "instance_type": "g7e.2xlarge",
+    "plan": "eval/vm/gpu-plan.json",
+    "usd_per_hour": "$3.3631"
+  },
+  "instance_type": "m7i.8xlarge",
+  "label_instance_type": "m7i.16xlarge",
+  "label_runs": {
+    "block_minutes": "376",
+    "block_usd": "$20.22",
+    "block_vm_hours": "6.3",
+    "breakdown": "R24: gold in the run phase, one run per pool instance: 251; R24 --diagnose: up to 3 harness runs per drop, at most 62 drops before R24 stops at 25%: 186; labels: SWE-ABS tests on gold: 251; labels: SWE-ABS tests on resolved records: 1015; labels: FAIL_TO_PASS runs without a published report: 1",
+    "instance_type": "m7i.16xlarge",
+    "label_runner_minutes": "213",
+    "label_runner_vm_hours": "3.5",
+    "runs": "1704",
+    "sandboxes": "32"
+  },
+  "label_usd_per_hour": "$3.2256",
+  "launch": [
+    "`mkdir -m 700 <a private folder outside the repository>` for the key, then `AWS_PROFILE=<integrator profile> RECEIPTS_KEY_DIR=<that folder> bash eval/vm/launch.sh launch`: it reads the founder's current public IP from two services and prints it, then prints the size it launches and the vCPUs that size needs, before anything changes; checks the account, the Standard vCPU quota (64 or more for m7i.16xlarge), the pinned AMI (eval/vm/ami.json: owner, name, state, architecture, root device) and that no receipts-eval instance exists; creates the security group (inbound 22/tcp from that IP's /32 only, egress TCP 443 and 80) and checks it; creates a new ed25519 key pair and writes its private key into the folder with mode 600; launches m7i.16xlarge (REG-568: R24 and the label runs) from eval/vm/run-instances.json (500 GiB encrypted gp3 at 6000 IOPS and 250 MiB/s, IMDSv2 only, hop limit 1, no instance profile, termination protection, tags from eval/vm/tags.json) with eval/vm/cloud-init.yaml.gz as user data; checks the running instance; pins its SSH host keys from its console",
+    "`bash eval/vm/launch.sh ssh-config`, then `ssh -F runs/vm/ssh_config receipts-eval`: SSH is the only way in (REG-562: no instance role, no Systems Manager; the boot script removes the SSM agent)",
+    "after R24 and the label runs (REG-568): copy their results off, `launch.sh stop`, `launch.sh resize m7i.8xlarge` (it prints the 32 vCPUs it needs), then `launch.sh start` for the pilot",
+    "the Glimmer arm, once the G and VT quota is granted: pin the AMI with one `aws ec2 describe-images` call, then `RECEIPTS_GPU_AMI=<ami id> bash eval/vm/gpu.sh launch` (g7e.2xlarge, reachable from the eval VM's security group only; without a pin it takes the newest image by name, and either way it refuses an image whose name is not the expected one and prints the id, name and date), wait for /opt/receipts/READY on it, `gpu.sh seal` (no egress from then on), and `gpu.sh url` for RECEIPTS_GLIMMER_URL on the eval VM; `gpu.sh stop` after the pilot; if the quota is late, eval/vm/gpu-plan.json says how to run the arm on Modal",
+    "between runs: copy the run's results off the VM, then `launch.sh stop` (compute and the public IPv4 address stop billing; the volume does not); before the next run `launch.sh start`, which moves the SSH rule to the founder's current /32 if it changed, then runs /opt/receipts/vm-check.sh over SSH (boot finished, no role, IMDSv1 off, no SSM agent, runsc is gVisor and runc is not, every image on disk)",
+    "before the 11/1 final, with the VM stopped: `launch.sh resize m7i.16xlarge` (REG-563; it checks the Standard vCPU quota is 64 or more), then `launch.sh start`",
+    "after the final run: `gpu.sh terminate --yes <id>` if it still exists, then `launch.sh terminate --yes <instance-id>` (deletes the volume, the security group and the key pair in AWS; the private key file stays)"
+  ],
+  "pilot": {
+    "arms": [
+      "spark",
+      "glimmer"
+    ],
+    "cases": {
+      "expected": {
+        "eval_vm_minutes": 278,
+        "eval_vm_usd": "$7.48",
+        "gpu_vm_minutes": 328,
+        "gpu_vm_usd": "$18.39",
+        "run_minutes": 268,
+        "target_run_minutes": 67
+      },
+      "high": {
+        "eval_vm_minutes": 490,
+        "eval_vm_usd": "$13.18",
+        "gpu_vm_minutes": 540,
+        "gpu_vm_usd": "$30.27",
+        "run_minutes": 480,
+        "target_run_minutes": 120
+      },
+      "low": {
+        "eval_vm_minutes": 170,
+        "eval_vm_usd": "$4.57",
+        "gpu_vm_minutes": 220,
+        "gpu_vm_usd": "$12.34",
+        "run_minutes": 160,
+        "target_run_minutes": 40
+      }
+    },
+    "command": "uv run --frozen --offline receipts run --targets eval/pilot-run.jsonl --arms eval/pilot-arms.json --ledger-dir runs/pilot --jobs 16",
+    "instance_type": "m7i.8xlarge",
+    "jobs": 16,
+    "targets": 20,
+    "waves": 2
+  },
+  "region": "us-east-1",
+  "runbook": [
+    {
+      "command": "ssh -F runs/vm/ssh_config receipts-eval cat /opt/receipts/BOOT_OK",
+      "note": "The first boot finished. If it did not, read /opt/receipts/BOOT_FAILED and /opt/receipts/bootstrap.log.",
+      "where": "mac"
+    },
+    {
+      "command": "rsync -a --delete --exclude=.git/ --exclude=.venv/ --exclude=runs/ --exclude=.receipts/ --exclude=__pycache__/ -e 'ssh -F runs/vm/ssh_config' ./ receipts-eval:/home/ubuntu/falden-receipts/",
+      "note": "Main's tree and eval/data/ to the VM. eval/data/ is not in git, and main's checkout has none: copy it from the eval lane's worktree, or rebuild it with `uv run --frozen python -m receipts.eval fetch`, `uv run --frozen --extra eval python -m receipts.eval rows` and `uv run --frozen python -m receipts.eval patches` (eval/manifest.json pins every file in it by sha256). runs/ (the VM's results, and the Mac's SSH state in runs/vm), .receipts/ (each machine's spend file) and .venv/ never move.",
+      "where": "mac"
+    },
+    {
+      "command": "uv sync --frozen --extra eval",
+      "note": "The project and its eval extra from uv.lock, each file checked against its sha256, nothing resolved: pyarrow, and swebench 4.1.0 (the bytes of the wheel eval/manifest.json pins) with every package it needs.",
+      "where": "vm"
+    },
+    {
+      "command": "uv run --frozen --offline --extra eval receipts eval r24 --instances eval/pools/swe_abs_251.txt --out runs/r24 --run-id d1 --diagnose",
+      "note": "R24 on the run phase's real path: the attack lane's sandbox under runsc and its runners (cli.py wires them), after the VM preflight, one worker per 2 vCPU (32 on the m7i.16xlarge). --diagnose grades each drop with swebench from the eval extra. Exit 0 done; 3 more than 25% dropped; 2 not ready, or unchecked instances: rerun the ones a rerun can settle, with --instances <a file of their ids> --out runs/r24-rerun1 --run-id d1r1, and pass --gold-rerun runs/r24-rerun1 at the freeze. sphinx-doc__sphinx-8265 and 8621 stay unchecked whatever a run does (REG-571 drops them). Run it inside tmux or screen, so a dropped SSH connection does not stop it.",
+      "where": "vm"
+    },
+    {
+      "command": "uv run --frozen --offline --extra eval python -m receipts.eval labels --out runs/labels --run-id d1",
+      "note": "REG-564's label runs, graded by swebench 4.1.0 from the eval extra. It skips every job with a final result, so running it again resumes; exit 2 while INFRA jobs remain. swebench's make_test_spec fetches some repositories' requirement files from raw.githubusercontent.com, which the VM's 443 egress allows, and so does --diagnose. Run it inside tmux or screen, so a dropped SSH connection does not stop it.",
+      "where": "vm"
+    },
+    {
+      "command": "rsync -a -e 'ssh -F runs/vm/ssh_config' receipts-eval:/home/ubuntu/falden-receipts/runs/ runs/",
+      "note": "R24's and the label runs' results to the Mac: runs/r24, runs/labels and any rerun.",
+      "where": "mac"
+    },
+    {
+      "command": "uv run --frozen python -m receipts.eval manifest --gold-runsc runs/r24 --gold-drop eval/gold-drops.tsv --labels runs/labels --freeze",
+      "note": "The freeze. eval/gold-drops.tsv holds the founder's two pre-approved drops, sphinx-doc__sphinx-8265 and 8621 (REG-571: no FAIL_TO_PASS id of either names a case). Add --gold-rerun runs/<rerun> for each R24 rerun; any other instance still unchecked needs a founder line in eval/gold-drops.tsv, by name with a reason. --label-drop <instance>=<reason> is the founder's too, never pre-approved: only for an instance R24 kept whose unfinished label jobs were INFRA on every run, and it needs --labels and --gold-runsc. Exit 2 while anything blocks the freeze.",
+      "where": "mac"
+    },
+    {
+      "command": "uv run --frozen python -m receipts.eval sample --plan spec",
+      "note": "The seeded 150+150+75 draw and its 40/60 split from the frozen manifest; exit 3 when the candidates cannot fill it: then --plan core (100+100+50).",
+      "where": "mac"
+    },
+    {
+      "command": "uv run --frozen python -m receipts.eval pilot",
+      "note": "eval/pilot.json, eval/pilot-run.jsonl and eval/pilot-arms.json from the frozen sample. The integrator commits them with eval/manifest.json and eval/sample.json, then `launch.sh stop`, `launch.sh resize m7i.8xlarge` and `launch.sh start` (REG-568), and starts the GPU VM (`gpu.sh launch`, `seal`, `url`).",
+      "where": "mac"
+    },
+    {
+      "command": "rsync -a --delete --exclude=.git/ --exclude=.venv/ --exclude=runs/ --exclude=.receipts/ --exclude=__pycache__/ -e 'ssh -F runs/vm/ssh_config' ./ receipts-eval:/home/ubuntu/falden-receipts/",
+      "note": "The frozen manifest, sample and pilot files to the VM.",
+      "where": "mac"
+    },
+    {
+      "command": "uv sync --frozen",
+      "note": "An exact sync to the project's own dependencies: it removes the eval extra, so the process that holds the Meta key runs without the harness's packages.",
+      "where": "vm"
+    },
+    {
+      "command": "uv run --frozen --offline receipts spend arm --credit-confirmed",
+      "note": "The founder, once the Meta credit is confirmed as applied: arms this VM's .receipts/spend.jsonl at the $150 cap. Every model call is refused until then.",
+      "where": "vm"
+    },
+    {
+      "command": "uv run --frozen --offline receipts run --targets eval/pilot-run.jsonl --arms eval/pilot-arms.json --ledger-dir runs/pilot --jobs 16",
+      "note": "The pilot. In the same shell first: `read -rs FALDEN_META_API_KEY && export FALDEN_META_API_KEY` (the founder pastes the key; it is never written to the VM's disk or shell history, and never reaches a sandbox) and `export RECEIPTS_GLIMMER_URL=<what gpu.sh url printed>`. --jobs is the VM's sandbox count: one target per job, on a sandbox of its own, running spark and then glimmer (the core lane's per-job run phase). After a stop, run it again with --resume. Run it inside tmux or screen, so a dropped SSH connection does not stop it.",
+      "where": "vm"
+    },
+    {
+      "command": "uv run --frozen --offline receipts eval score --ledgers runs/pilot --out runs/score",
+      "note": "Every blocker's repro replayed on gold in the run phase, then REG-561's rule. Exit 2 while a replay is unscored infra: run it again with the same --out (settled replays are cached). A replay still infra after that may be dropped only by the founder, by name: --replay-drop <finding id>=<reason>, which counts that finding on neither side.",
+      "where": "vm"
+    },
+    {
+      "command": "rsync -a -e 'ssh -F runs/vm/ssh_config' receipts-eval:/home/ubuntu/falden-receipts/runs/ runs/",
+      "note": "The pilot's ledgers, summaries, traces and score to the Mac; then `gpu.sh stop` and `launch.sh stop`.",
+      "where": "mac"
+    }
+  ],
+  "sources": {
+    "ebs_data": "https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/ec2/USD/current/ebs.json",
+    "ebs_page": "https://aws.amazon.com/ebs/pricing/",
+    "ebs_published": "2026-10-23T22:13:55Z",
+    "ec2_data": "https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/ec2/USD/current/ec2-ondemand-without-sec-sel/US%20East%20%28N.%20Virginia%29/Linux/index.json",
+    "ec2_page": "https://aws.amazon.com/ec2/pricing/on-demand/",
+    "ec2_published": "2026-10-23T22:13:55Z",
+    "ipv4_page": "https://aws.amazon.com/vpc/pricing/"
+  },
+  "usd_per_hour": "$1.6128",
+  "why": "m7i.8xlarge is the newest mainstream Intel type at the spec's exact shape (32 vCPU, 128 GiB) and the account's home region is us-east-1; m6a.8xlarge is 14% cheaper per hour on older AMD cores, and m7i-flex is ruled out because flex instances do not sustain full CPU, which a 16-sandbox test load needs"
+}

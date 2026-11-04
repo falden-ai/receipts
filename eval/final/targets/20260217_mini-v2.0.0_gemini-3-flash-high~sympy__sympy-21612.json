@@ -1,0 +1,142 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-21612",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:55:02Z",
+  "wall_seconds": 1215.8877718250005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Latex parsing of fractions yields wrong expression due to missing brackets\nProblematic latex expression: `\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\"`\r\n\r\nis parsed to: `((a**3 + b)/c)/1/(c**2)`.\r\n\r\nExpected is: `((a**3 + b)/c)/(1/(c**2))`. \r\n\r\nThe missing brackets in the denominator result in a wrong expression.\r\n\r\n## Tested on\r\n\r\n- 1.8\r\n- 1.6.2\r\n\r\n## Reproduce:\r\n\r\n```\r\nroot@d31ef1c26093:/# python3\r\nPython 3.6.9 (default, Jan 26 2021, 15:33:00)\r\n[GCC 8.4.0] on linux\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from sympy.parsing.latex import parse_latex\r\n>>> parse_latex(\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\")\r\n((a**3 + b)/c)/1/(c**2)\r\n\r\n\n",
+        "start": 0,
+        "end": 681
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-21612",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: parse_latex(r\"\\frac{\\frac{a^3+b}{c}}{\\frac{2}{c^2}}\") should equal ((a**3+b)/c)/(2/c**2), but the inner denominator becomes Mul(2, (c**2)**-1, evaluate=False) rather than a bare Pow, so the new unwrap misses it and c^2 is still applied in the wrong direction.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: parse_latex(r\"\\frac{x}{y^{-1}}\") previously returned the unevaluated x*(y**-1)**-1 form, but now returns x*y even though no nested fraction is involved, breaking existing structural or srepr expectations.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: parse_latex(r\"x / \\frac{2}{c^2}\") should equal x*c**2/2, but convert_mp receives the divisor as a Mul rather than a bare Pow with exponent -1, so its new unwrap also misses and the result remains incorrectly divided by c^2.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: parse_latex(r\"\\frac{1}{(a+b)^{-1}}\") previously returned ((a+b)**-1)**-1, but the numerator-one shortcut now returns a+b directly, changing single-fraction parsing beyond the reported nested-fraction case.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: parse_latex(r\"\\frac{a}{(\\frac{1}{c})^2}\") should equal a*c**2, but the denominator is Pow(Pow(c, -1), 2) whose exponent is 2 rather than -1, so the nested reciprocal Pow is not unwrapped and the mis-bracketed nested-Pow form remains.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: parse_latex(r\"a / b^{-1}\") previously represented division by an inverse power as a*(b**-1)**-1, but convert_mp now returns a*b, altering ordinary division parsing outside fractions entirely.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 887,
+      "cached_tokens": 500,
+      "output_tokens": 10030,
+      "reasoning_tokens": 9532,
+      "micro_usd": 202248,
+      "seconds": 69.63693766899814
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 4
+      },
+      "blockers": [],
+      "wall_seconds": 855.8576073369986
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 290.39158949600096
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

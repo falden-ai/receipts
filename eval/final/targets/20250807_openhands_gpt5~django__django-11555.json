@@ -1,0 +1,142 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-11555",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:52:38Z",
+  "wall_seconds": 1125.4185165280032,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "order_by() a parent model crash when Meta.ordering contains expressions.\nDescription\n\t \n\t\t(last modified by Jonny Fuller)\n\t \nHi friends,\nDuring testing I discovered a strange bug when using a query expression for ordering during multi-table inheritance. You can find the full write up as well as reproducible test repository ​https://github.com/JonnyWaffles/djangoordermetabug. The bug occurs because the field is an OrderBy object, not a string, during get_order_dir. The linked stacktrace should make the issue obvious, but what I don't understand is why it only fails during test db setup, not during repl or script use. I wish I could help more and come up with a real solution. Hopefully, this is enough for someone wiser to find the culprit.\n",
+        "start": 0,
+        "end": 748
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-11555",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: With Author.Meta.ordering=[OrderBy(Lower('publisher__name'))] and Book.objects.order_by('author'), the returned expression is not resolved using the author join alias already set up, so it raises FieldError or creates a wrong join and orders by the wrong publisher column.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Run Book.objects.order_by('-author') followed by Book.objects.order_by('author') in one process where Author.Meta.ordering=[F('name').desc()]; the second query incorrectly comes out ascending if the shared Meta OrderBy instance returned by the first query is mutated downstream.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: With a multi-table-inheritance Parent whose Meta.ordering=[F('category').desc()] where category is a ForeignKey, Child.objects.order_by('parent_ptr') orders by the raw category_id instead of recursively expanding to Category's Meta.ordering as the string 'category' path does.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Book.objects.order_by('author').distinct() where Author.Meta.ordering contains an expression such as Lower('name') now generates ORDER BY on an expression not added to the SELECT list, causing a distinct-query database error that string-based related ordering avoided by adding the ordering column.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: With Parent.Meta.ordering=[OrderBy(Value('x'))] or a Value without an explicit output_field, Child.objects.order_by('parent_ptr') still fails during resolution because the Cast special-case only applies to a bare Value, not one wrapped in OrderBy.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: An annotated grouped query such as Book.objects.annotate(n=Count('id')).order_by('author') with an expression in Author.Meta.ordering is misclassified with is_summary=False, producing invalid GROUP BY SQL or wrong grouping compared with the previously working string Meta.ordering equivalent.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 713,
+      "cached_tokens": 244,
+      "output_tokens": 11813,
+      "reasoning_tokens": 11350,
+      "micro_usd": 238185,
+      "seconds": 97.5252119120014
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 730.1119580710001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 6
+      },
+      "blockers": [],
+      "wall_seconds": 297.77919539699724
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

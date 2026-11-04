@@ -1,0 +1,168 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~astropy__astropy-14995",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:10:22Z",
+  "wall_seconds": 1313.8100940240001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "In v5.3, NDDataRef mask propagation fails when one of the operand does not have a mask\n### Description\n\nThis applies to v5.3. \r\n\r\nIt looks like when one of the operand does not have a mask, the mask propagation when doing arithmetic, in particular with `handle_mask=np.bitwise_or` fails.  This is not a problem in v5.2.\r\n\r\nI don't know enough about how all that works, but it seems from the error that the operand without a mask is set as a mask of None's and then the bitwise_or tries to operate on an integer and a None and fails.\n\n### Expected behavior\n\nWhen one of the operand does not have mask, the mask that exists should just be copied over to the output.  Or whatever was done in that situation in v5.2 where there's no problem.\n\n### How to Reproduce\n\nThis is with v5.3.   With v5.2, there are no errors.\r\n\r\n```\r\n>>> import numpy as np\r\n>>> from astropy.nddata import NDDataRef\r\n\r\n>>> array = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])\r\n>>> mask = np.array([[0, 1, 64], [8, 0, 1], [2, 1, 0]])\r\n\r\n>>> nref_nomask = NDDataRef(array)\r\n>>> nref_mask = NDDataRef(array, mask=mask)\r\n\r\n# multiply no mask by constant (no mask * no mask)\r\n>>> nref_nomask.multiply(1., handle_mask=np.bitwise_or).mask   # returns nothing, no mask,  OK\r\n\r\n# multiply no mask by itself (no mask * no mask)\r\n>>> nref_nomask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask # return nothing, no mask, OK\r\n\r\n# multiply mask by constant (mask * no mask)\r\n>>> nref_mask.multiply(1., handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n\r\n# multiply mask by itself (mask * mask)\r\n>>> nref_mask.multiply(nref_mask, handle_mask=np.bitwise_or).mask\r\narray([[ 0,  1, 64],\r\n       [ 8,  0,  1],\r\n       [ 2,  1,  0]])\r\n\r\n# multiply mask by no mask (mask * no mask)\r\n>>> nref_mask.multiply(nref_nomask, handle_mask=np.bitwise_or).mask\r\n...\r\nTypeError: unsupported operand type(s) for |: 'int' and 'NoneType'\r\n```\r\n\n\n### Versions\n\n>>> import sys; print(\"Python\", sys.version)\r\nPython 3.10.11 | packaged by conda-forge | (main, May 10 2023, 19:07:22) [Clang 14.0.6 ]\r\n>>> import astropy; print(\"astropy\", astropy.__version__)\r\nastropy 5.3\r\n>>> import numpy; print(\"Numpy\", numpy.__version__)\r\nNumpy 1.24.3\r\n>>> import erfa; print(\"pyerfa\", erfa.__version__)\r\npyerfa 2.0.0.3\r\n>>> import scipy; print(\"Scipy\", scipy.__version__)\r\nScipy 1.10.1\r\n>>> import matplotlib; print(\"Matplotlib\", matplotlib.__version__)\r\nMatplotlib 3.7.1\r\n\n",
+        "start": 0,
+        "end": 2455
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~astropy__astropy-14995",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling NDDataRef(array, mask=mask).multiply(np.array(array), handle_mask=np.bitwise_or) with a plain ndarray operand still raises AttributeError or TypeError, because the converted operand does not expose mask as None in the same way as an NDDataRef operand.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Passing a custom handle_mask that explicitly handles a None second mask, for example returning np.zeros_like(self_mask) or using an extra handle_mask kwarg to transform the mask, with a masked self and unmasked operand now returns deepcopy(self.mask) instead of the custom result that passed before the change.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling NDDataRef(array, mask=mask).add(1., handle_mask=np.bitwise_or) or using nref_mask * nref_nomask via the binary operator still raises TypeError for the scalar or unmasked operand, because those entry points represent the operand differently from NDDataRef.multiply with an NDDataRef operand.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Multiplying two differently masked NDDataRefs with handle_mask=np.bitwise_or now returns only a copy of self.mask instead of the bitwise OR of both masks, breaking the previously working both-masked behavior.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling the same masked-by-unmasked operation on a subclass or ufunc path, such as CCDData arithmetic or np.multiply(nref_mask, nref_nomask), still fails to propagate the existing mask because that path bypasses or overrides NDArithmeticMixin._arithmetic_mask.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Arithmetic with neither operand masked or with only the operand masked now incorrectly gains, loses, or aliases a mask, for example nref_nomask.multiply(nref_mask, handle_mask=np.bitwise_or) no longer returns an independent copy of the operand mask or mutating the result mask mutates the original.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1075,
+      "cached_tokens": 116,
+      "output_tokens": 11196,
+      "reasoning_tokens": 10747,
+      "micro_usd": 227780,
+      "seconds": 83.30016737700134
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "possibly_toxic": 3
+      },
+      "blockers": [],
+      "wall_seconds": 778.9045608380002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 450.55709851699794
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

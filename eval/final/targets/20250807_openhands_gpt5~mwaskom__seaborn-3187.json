@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~mwaskom__seaborn-3187",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:10:51Z",
+  "wall_seconds": 2092.776780527998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Wrong legend values of large ranges\nAs of 0.12.1, legends describing large numbers that were created using `ScalarFormatter` with an offset are formatted without their multiplicative offset value. An example:\r\n```python\r\nimport seaborn as sns\r\nimport seaborn.objects as so\r\n\r\npenguins = sns.load_dataset(\"Penguins\")\r\npenguins[\"body_mass_mg\"] = penguins[\"body_mass_g\"]*1000\r\n(\r\n    so.Plot(\r\n        penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\r\n        color=\"species\", pointsize=\"body_mass_mg\",\r\n    )\r\n    .add(so.Dot())\r\n)\r\n```\r\nThe code creates the following plot:\r\n![image](https://user-images.githubusercontent.com/13831112/205512305-778966db-f8d8-43f3-a2c0-5e5ce95bae39.png)\r\nwhich is wrong because `body_mass_mg` is in the order of 1E6. The issue also reproduces if you create the mentioned plot using `scatterplot`.\r\n \r\nI believe the issue stems from not using the offset value of the `ScalarFormatter` used to generate the tick labels:\r\nhttps://github.com/mwaskom/seaborn/blob/ba786bc14eb255f6b4fb7619c8210c5a8016a26f/seaborn/_core/scales.py#L377-L382\r\nExamining the code of `ScalarFormatter` suggests the issue also depends on the following rcParam settings:\r\n`mpl.rcParams['axes.formatter.useoffset']`\r\n`mpl.rcParams['axes.formatter.offset_threshold']`\r\nHowever, I did not test it. \r\n\r\nThe offset value can be safely retrieved from all formatters and based on that it can be used to create the legend title and/or labels.\n",
+        "start": 0,
+        "end": 1438
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~mwaskom__seaborn-3187",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] With seaborn.objects, use pointsize values clustered around a large base, e.g. 1000000, 1000002, 1000004, 1000006, so ScalarFormatter uses an additive offset rather than only 1e6 scaling. The legend will show residual labels with the offset appended, such as '0 +1e6', instead of the actual values 1000000, 1000002, etc.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Plot a continuous color scale for 3e6-6.3e6 values in seaborn.objects and inspect the colorbar. Labels that previously were the tick values with matplotlib's separate offset handling will now also carry the appended offset in each label, duplicating or changing colorbar text beyond the legend fix.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Reproduce the issue through the classic interface's hue legend, e.g. sns.scatterplot with hue set to a 3e6-6.3e6 variable rather than size. That legend path will still show '3', '4', '5', '6' without the 1e6 factor because it does not use the two patched label paths in the same way.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call locator_to_legend_entries or a scatterplot size legend for moderate full-number levels such as 10000 to 50000 that previously rendered as complete numbers. The new offset appending will change them to scaled forms such as '1 1e4', breaking existing legend-label expectations for cases that were already readable.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Reproduce the reported 3e6-6.3e6 pointsize example with mpl.rcParams['axes.formatter.use_mathtext']=True. get_offset() will return a TeX-wrapped string such as '$\\\\mathdefault{1e6}$', so legend labels become TeX-laden concatenations instead of plain correct labels for the large values.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Use a single-level or very narrow large-number legend, e.g. locator_to_legend_entries with limits around 4.9e6-5.1e6 returning one level near 5e6. A label that previously was the full single value will gain an unnecessary offset suffix or be rescaled, showing a double-counted/incorrect entry where no multi-tick offset was needed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1051,
+      "cached_tokens": 116,
+      "output_tokens": 13568,
+      "reasoning_tokens": 12991,
+      "micro_usd": 275124,
+      "seconds": 101.71157477499946
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "blocker": 1,
+        "unchecked": 1,
+        "not_reproduced": 1,
+        "refuted": 4,
+        "possibly_toxic": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~mwaskom__seaborn-3187/fixed_x/correctness-1.1"
+      ],
+      "wall_seconds": 1286.8847366949994
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 15,
+      "statuses": {
+        "refuted": 4,
+        "unchecked": 9,
+        "possibly_toxic": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 703.8153509559997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

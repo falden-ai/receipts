@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~pydata__xarray-3677",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:38:14Z",
+  "wall_seconds": 1287.4462260250002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Merging dataArray into dataset using dataset method fails\nWhile it's possible to merge a dataset and a dataarray object using the top-level `merge()` function, if you try the same thing with the `ds.merge()` method it fails.\r\n\r\n```python\r\nimport xarray as xr\r\n\r\nds = xr.Dataset({'a': 0})\r\nda = xr.DataArray(1, name='b')\r\n\r\nexpected = xr.merge([ds, da])  # works fine\r\nprint(expected)\r\n\r\nds.merge(da)  # fails\r\n```\r\n\r\nOutput:\r\n```\r\n<xarray.Dataset>\r\nDimensions:  ()\r\nData variables:\r\n    a        int64 0\r\n    b        int64 1\r\n\r\nTraceback (most recent call last):\r\n  File \"mwe.py\", line 6, in <module>\r\n    actual = ds.merge(da)\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/dataset.py\", line 3591, in merge\r\n    fill_value=fill_value,\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 835, in dataset_merge_method\r\n    objs, compat, join, priority_arg=priority_arg, fill_value=fill_value\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 548, in merge_core\r\n    coerced = coerce_pandas_values(objects)\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 394, in coerce_pandas_values\r\n    for k, v in obj.items():\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/common.py\", line 233, in __getattr__\r\n    \"{!r} object has no attribute {!r}\".format(type(self).__name__, name)\r\nAttributeError: 'DataArray' object has no attribute 'items'\r\n```\r\n\r\n\n",
+        "start": 0,
+        "end": 1456
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~pydata__xarray-3677",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] ds.merge([xr.DataArray(1, name='b'), xr.DataArray(2, name='c')]) or ds.merge([another_dataset, da]) still raises AttributeError: 'DataArray' object has no attribute 'items', because only a bare DataArray is converted, unlike xr.merge([ds, da]).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Previously passing merges such as ds.merge(other_dataset) and ds.merge({'c': 1}) now fail in a fresh interpreter because dataset_merge_method unconditionally imports DataArray at call time, introducing a circular-import/runtime import failure on a path that did not need it.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] With ds containing an existing conflicting variable 'b', ds.merge(xr.DataArray(1, name='b'), overwrite_vars='b') fails to overwrite or raises a merge/conflict error instead of returning 'b' from the DataArray.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] ds.merge(xr.DataArray(1)) for an unnamed DataArray previously raised AttributeError from merge handling, but now raises ValueError from to_dataset(), breaking existing callers/tests that expect the old error type for invalid merge inputs.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] ds.merge(da) where da has dimension and non-dimension coordinates, e.g. DataArray([1, 2], dims='x', coords={'x': [1, 2], 'label': ('x', ['u', 'v'])}, name='b'), with join='left' or fill_value set, loses/misaligns coordinates or raises instead of matching xr.merge([ds, da], join='left').",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A DataArray subclass that defines dict-like items() behavior or overrides to_dataset() was previously treated through the generic merge path, but is now forcibly converted via to_dataset(), dropping custom mapping entries or adding unexpected variables/coordinates to the merged result.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 864,
+      "cached_tokens": 116,
+      "output_tokens": 9515,
+      "reasoning_tokens": 9031,
+      "micro_usd": 193316,
+      "seconds": 71.05413337000209
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 3,
+        "suspected": 2,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 839.7998795060012
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 4
+      },
+      "blockers": [],
+      "wall_seconds": 376.30095241600065
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0242dd1e1185d1d23743b81effbbc59f459af3ddef52aade71b13b8e90bff913"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0242dd1e1185d1d23743b81effbbc59f459af3ddef52aade71b13b8e90bff913"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

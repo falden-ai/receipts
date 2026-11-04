@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-10673",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:09:38Z",
+  "wall_seconds": 1374.2299466680015,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "toctree contains reference to nonexisting document 'genindex', 'modindex', 'search'\n**Is your feature request related to a problem? Please describe.**\r\nA lot of users try to add the following links to the toctree:\r\n```\r\n* :ref:`genindex`\r\n* :ref:`modindex`\r\n* :ref:`search`\r\n```\r\nlike this:\r\n```\r\n.. toctree::\r\n   :maxdepth: 1\r\n   :caption: Indices and tables\r\n\r\n   genindex \r\n   modindex\r\n   search\r\n```\r\n\r\nSee:\r\n* https://stackoverflow.com/questions/36235578/how-can-i-include-the-genindex-in-a-sphinx-toc\r\n* https://stackoverflow.com/questions/25243482/how-to-add-sphinx-generated-index-to-the-sidebar-when-using-read-the-docs-theme\r\n* https://stackoverflow.com/questions/40556423/how-can-i-link-the-generated-index-page-in-readthedocs-navigation-bar\r\n\r\nAnd probably more.\r\n\r\nHowever when doing this we get:\r\n```\r\n$ make html\r\n...\r\n.../index.rst:30: WARNING: toctree contains reference to nonexisting document 'genindex'\r\n.../index.rst:30: WARNING: toctree contains reference to nonexisting document 'modindex'\r\n.../index.rst:30: WARNING: toctree contains reference to nonexisting document 'search'\r\n...\r\n```\r\n\r\n**Describe the solution you'd like**\r\nThe following directive should be possible and do not rise errors:\r\n```\r\n.. toctree::\r\n   :maxdepth: 1\r\n   :caption: Indices and tables\r\n\r\n   genindex \r\n   modindex\r\n   search\r\n``\n",
+        "start": 0,
+        "end": 1333
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-10673",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build an HTML project whose toctree is in a subdirectory document (e.g. sub/index.rst) listing genindex, modindex, and search. Because the directive checks the joined name sub/genindex etc., the nonexisting-document warnings remain and the entries are dropped.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a real root search.rst (or genindex.rst) with its own title and children and put search in the toctree. The special-name branch hijacks the entry before the found-docs check, so the real document's title and subtree are replaced by the default generated-page link.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build a minimal HTML project with no documented Python modules whose root toctree lists modindex. The warning disappears but the TOC links to py-modindex.html, which the builder does not generate for an empty module index, so the claimed entry is a dead link.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build HTML with html_use_index=False or html_search_enabled=False and genindex/search in the toctree. Previously this warned about the nonexisting documents; now it silently emits TOC links to genindex.html/search.html files that are never written.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build a multi-document HTML project with the root toctree ordered chapter1, genindex, chapter2 and inspect chapter2 and the sidebar TOC. Traversal/prev-next handling that expects every toctree ref to be a real document fails or points chapter2's previous link at the nonexistent genindex document instead of chapter1.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build the same source with a non-HTML builder such as text or latex, where no genindex/search documents are generated. Previously the entries were warned about and skipped; now an internal reference to a nonexistent document is inserted, producing broken output or a resolution failure.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1145,
+      "cached_tokens": 244,
+      "output_tokens": 11171,
+      "reasoning_tokens": 10730,
+      "micro_usd": 227073,
+      "seconds": 83.05735927700152
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 1,
+        "unchecked": 2,
+        "suspected": 3,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-10673/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 845.2191791149999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 1,
+        "refuted": 2,
+        "s_sat_inconclusive": 1
+      },
+      "blockers": [],
+      "wall_seconds": 445.5420951119995
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:46405978ae14403b619aefb01a350110e109cab157dbcdbcc60249e1f74f414a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:46405978ae14403b619aefb01a350110e109cab157dbcdbcc60249e1f74f414a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

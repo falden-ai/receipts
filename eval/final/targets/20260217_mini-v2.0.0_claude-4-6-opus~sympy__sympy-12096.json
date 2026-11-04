@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:38:04Z",
+  "wall_seconds": 1655.073093559,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "evalf does not call _imp_ recursively\nExample from https://stackoverflow.com/questions/41818842/why-cant-i-evaluate-a-composition-of-implemented-functions-in-sympy-at-a-point:\r\n\r\n```\r\n>>> from sympy.utilities.lambdify import implemented_function\r\n>>> f = implemented_function('f', lambda x: x ** 2)\r\n>>> g = implemented_function('g', lambda x: 2 * x)\r\n>>> print(f(  2 ).evalf())\r\n4.00000000000000\r\n>>> print(  g(2) .evalf())\r\n4.00000000000000\r\n>>> print(f(g(2)).evalf())\r\nf(g(2))\r\n```\r\n\r\nThe code for this is in `Function._eval_evalf`. It isn't calling evalf recursively on the return of `_imp_`. \n",
+        "start": 0,
+        "end": 598
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling f(g(2)).evalf() with f=lambda x: x**2 and g=lambda x: 2*x returns a Float with about 53 decimal digits instead of 4.00000000000000, because the bit-precision passed to _eval_evalf is reused as the decimal-digit argument to evalf.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A previously working simple call such as implemented_function('f', lambda x: 42)(2).evalf() now stays as f(2) instead of returning 42.0000000000000, because the Python int returned by _imp_ has no evalf method whereas Float(int, prec) previously succeeded.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With f=implemented_function('f', lambda x: float(x)**2) and g=implemented_function('g', lambda x: 2*x), f(g(2)).evalf() stays unevaluated because the Python float returned by _imp_ has no evalf method and the resulting AttributeError is swallowed.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For f=implemented_function('f', lambda x: 2*x) and a symbol x, f(x).evalf() now returns 2.00000000000000*x instead of leaving f(x) unevaluated, because a symbolic result from _imp_ can be evalf'd even though Float(symbolic result) previously failed.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With f=implemented_function('f', lambda x: [10, 20, 30][x]) and g=implemented_function('g', lambda x: 2*x), f(g(1)).evalf() stays unevaluated because pre-evaluating the argument turns Integer 2 into Float 2.0, which cannot be used as a list index.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A previously correct simple call f(2).evalf() or f(2).evalf(5) changes its output precision, returning far more digits than requested because the internal bit-precision is passed to evalf as decimal digits.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 653,
+      "cached_tokens": 244,
+      "output_tokens": 5935,
+      "reasoning_tokens": 5436,
+      "micro_usd": 120385,
+      "seconds": 41.67373382799997
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "s_sat_inconclusive": 4,
+        "blocker": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1288.5721614989998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 1,
+        "blocker": 1,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12096/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 324.54905942500045
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

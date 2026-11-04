@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:18:29Z",
+  "wall_seconds": 1478.417549564998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Wrong legend values of large ranges\nAs of 0.12.1, legends describing large numbers that were created using `ScalarFormatter` with an offset are formatted without their multiplicative offset value. An example:\r\n```python\r\nimport seaborn as sns\r\nimport seaborn.objects as so\r\n\r\npenguins = sns.load_dataset(\"Penguins\")\r\npenguins[\"body_mass_mg\"] = penguins[\"body_mass_g\"]*1000\r\n(\r\n    so.Plot(\r\n        penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\r\n        color=\"species\", pointsize=\"body_mass_mg\",\r\n    )\r\n    .add(so.Dot())\r\n)\r\n```\r\nThe code creates the following plot:\r\n![image](https://user-images.githubusercontent.com/13831112/205512305-778966db-f8d8-43f3-a2c0-5e5ce95bae39.png)\r\nwhich is wrong because `body_mass_mg` is in the order of 1E6. The issue also reproduces if you create the mentioned plot using `scatterplot`.\r\n \r\nI believe the issue stems from not using the offset value of the `ScalarFormatter` used to generate the tick labels:\r\nhttps://github.com/mwaskom/seaborn/blob/ba786bc14eb255f6b4fb7619c8210c5a8016a26f/seaborn/_core/scales.py#L377-L382\r\nExamining the code of `ScalarFormatter` suggests the issue also depends on the following rcParam settings:\r\n`mpl.rcParams['axes.formatter.useoffset']`\r\n`mpl.rcParams['axes.formatter.offset_threshold']`\r\nHowever, I did not test it. \r\n\r\nThe offset value can be safely retrieved from all formatters and based on that it can be used to create the legend title and/or labels.\n",
+        "start": 0,
+        "end": 1438
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Run the issue's classic-interface reproduction with sns.scatterplot(data=df, x='bill_length_mm', y='bill_depth_mm', size='body_mass_mg') where body_mass_mg spans 3e6-6e6. The size legend still fails to show unambiguous true values, e.g. labels remain plain 3/4/5/6 or become garbled '3 1e6'-style text rather than 3x10^6/3000000.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Call sns.scatterplot or sns.lineplot with a numeric size/hue variable in a moderate scientific range, e.g. 2000-5000 or 0.0002-0.0005, which previously produced brief plain legend labels. locator_to_legend_entries now appends the ScalarFormatter offset to every label, changing legends and breaking existing label expectations for plots not exhibiting the large-range bug.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Use so.Plot with pointsize for a narrow large-offset variable, e.g. values from 1000002 to 1000010, with axes.formatter.useoffset enabled. ScalarFormatter then uses an additive offset, so putting that offset in the legend title as '(offset)' while labels stay 0/2/4/6/8/10 misrepresents the values as multiplicative instead of reconstructing 1000002, 1000004, etc.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Build an objects plot with a continuous color scale for a large variable and an explicit user label, e.g. so.Plot(df, color='mass_mg').label(color='Body mass'). The legend/colorbar title is rewritten to 'Body mass (x10^6)' even though the user supplied the label verbatim and colorbar ticks already convey scale, altering label behavior beyond fixing discrete legend entries.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Map the same large variable to two semantics in one objects plot, e.g. so.Plot(df, x='x', y='y', color='mass_mg', pointsize='mass_mg').add(so.Dot()). Because the second variable is merged into an existing legend schema entry via the break path, its offset is discarded and the combined legend can lack the offset in its title while labels remain scaled down.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Exercise existing consumers of ContinuousBase._legend that expect the historical two-item (values, labels) pair, such as scale tests or downstream code doing values, labels = scale._legend after setup on large data. The new three-item _legend raises ValueError or changes asserted legend contents for continuous scales even when no offset display is needed.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1297,
+      "cached_tokens": 116,
+      "output_tokens": 10979,
+      "reasoning_tokens": 10344,
+      "micro_usd": 224328,
+      "seconds": 86.09254847299599
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "blocker": 4,
+        "unchecked": 3,
+        "possibly_toxic": 2,
+        "suspected": 1,
+        "refuted": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187/fixed_x/correctness-1.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3187/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 1006.1846192489975
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 5,
+        "refuted": 2,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 385.77687629800494
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

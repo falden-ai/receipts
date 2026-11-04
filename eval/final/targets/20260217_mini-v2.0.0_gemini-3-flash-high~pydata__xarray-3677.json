@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:42:04Z",
+  "wall_seconds": 1339.9489840269998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Merging dataArray into dataset using dataset method fails\nWhile it's possible to merge a dataset and a dataarray object using the top-level `merge()` function, if you try the same thing with the `ds.merge()` method it fails.\r\n\r\n```python\r\nimport xarray as xr\r\n\r\nds = xr.Dataset({'a': 0})\r\nda = xr.DataArray(1, name='b')\r\n\r\nexpected = xr.merge([ds, da])  # works fine\r\nprint(expected)\r\n\r\nds.merge(da)  # fails\r\n```\r\n\r\nOutput:\r\n```\r\n<xarray.Dataset>\r\nDimensions:  ()\r\nData variables:\r\n    a        int64 0\r\n    b        int64 1\r\n\r\nTraceback (most recent call last):\r\n  File \"mwe.py\", line 6, in <module>\r\n    actual = ds.merge(da)\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/dataset.py\", line 3591, in merge\r\n    fill_value=fill_value,\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 835, in dataset_merge_method\r\n    objs, compat, join, priority_arg=priority_arg, fill_value=fill_value\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 548, in merge_core\r\n    coerced = coerce_pandas_values(objects)\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/merge.py\", line 394, in coerce_pandas_values\r\n    for k, v in obj.items():\r\n  File \"/home/tegn500/Documents/Work/Code/xarray/xarray/core/common.py\", line 233, in __getattr__\r\n    \"{!r} object has no attribute {!r}\".format(type(self).__name__, name)\r\nAttributeError: 'DataArray' object has no attribute 'items'\r\n```\r\n\r\n\n",
+        "start": 0,
+        "end": 1456
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "ds.merge([xr.DataArray(1, name='b'), xr.DataArray(2, name='c')]) fails with NameError or AttributeError because only a bare DataArray is converted in dataset_merge_method, while listed DataArrays reach coerce_pandas_values where DataArray may not be defined at runtime.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Previously working mapping merges such as ds.merge({'b': 1}) or xr.merge([{'a': 1}, {'b': 2}]) now raise NameError when coerce_pandas_values evaluates the new DataArray branch for a non-Dataset object.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling ds.merge(da, overwrite_vars='b') where da is a DataArray named 'b' that conflicts with an existing variable fails or does not apply the overwrite, because the converted Dataset interacts incorrectly with the overwrite/priority handling.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Previously working xr.merge([ds, da]) for a named DataArray changes or fails because coerce_pandas_values now converts the DataArray via to_dataset() on a path where the top-level merge previously handled it, altering coordinate or attribute handling.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "ds.merge(xr.DataArray([1, 2], dims='x', coords={'x': [10, 20]}, name='b')) fails or loses/misaligns the x index coordinate, unlike the scalar example in the issue.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "ds.update(xr.DataArray(1, name='b')) now silently succeeds and overwrites/creates variables instead of raising the previous AttributeError for a non-mapping input, changing Dataset.update behavior beyond the Dataset.merge fix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1025,
+      "cached_tokens": 628,
+      "output_tokens": 8222,
+      "reasoning_tokens": 7801,
+      "micro_usd": 166154,
+      "seconds": 63.481104506998236
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 4,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 949.6520964420015
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 2,
+        "refuted": 1,
+        "unchecked": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 326.4717293299982
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0242dd1e1185d1d23743b81effbbc59f459af3ddef52aade71b13b8e90bff913"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0242dd1e1185d1d23743b81effbbc59f459af3ddef52aade71b13b8e90bff913"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

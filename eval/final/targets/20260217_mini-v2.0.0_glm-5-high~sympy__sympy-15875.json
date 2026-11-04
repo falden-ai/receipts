@@ -1,0 +1,172 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15875",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:54:16Z",
+  "wall_seconds": 3197.8438822649996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "is_zero is incorrect on complex integer\n`is_zero` should return `None` if it cannot decide, but should never give the wrong answer. However:\r\n\r\n```\r\n>>> e = -2*I + (1 + I)**2\r\n>>> e.is_zero\r\nFalse\r\n>>> simplify(e).is_zero\r\nTrue\r\n```\r\n\r\nThis is causing errors in determining the rank of a matrix. See issue #15872 \nFixing is_zero for complex numbers while Add\nReferences to other Issues or PRs\r\n#15873 \r\n\r\nOther comments:\r\n\r\n<!-- BEGIN RELEASE NOTES -->\r\n\r\n- core\r\n  - Fix `is_zero` becoming `False` on some expressions with `Add`.\r\n\r\n<!-- END RELEASE NOTES -->\r\n\n",
+        "start": 0,
+        "end": 563
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15875",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "The expression `e = 2 - 2*I + (1+I)**3` is mathematically zero but `e.is_zero` does not return `True` because the mixed Pow term is ignored when summing imaginary parts.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "The non-zero expression `e = -2*I + (1+I)**2 + (2+I)**2` was not `True` before the change but now `e.is_zero` returns `True` because the collected imaginary sum is zero and the mixed term is ignored.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "The expression `e = 4 + (1+I)**3 + (1-I)**3` equals zero but `e.is_zero` returns `None` instead of `True` because no top-level argument is purely imaginary so nothing is collected.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "The non-zero expression `e = 2*I + (1-I)**2 + (1+I)**3` was not `True` before the change but now `e.is_zero` returns `True`, turning correct non-True behavior into a wrong answer.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "The expression `e = -2*I + (1+I)**2 + (1+I)**3` equals `-2+2*I` and is non-zero but `e.is_zero` returns `True` because the collected sum `-2+2` is zero while the mixed term is ignored.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "The non-zero expression `e = -2*I + (1+I)**2 + 4 + (1+I)**4 + (1+I)**3` was not `True` before the change but now `e.is_zero` returns `True` because only the first two imaginary coefficients are summed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": [
+      {
+        "what": "plan:muse-wonder-1.0",
+        "reason": "unparsed",
+        "detail": "muse-wonder-1.0's plan was truncated (finish_reason length, or empty), so one muse-spark-1.3 call made the plan (REG-570)"
+      }
+    ]
+  },
+  "planner_model": "muse-spark-1.3",
+  "planner_fallback": true,
+  "planner_fallback_reason": "muse-wonder-1.0's plan was truncated (finish_reason length, or empty), so one muse-spark-1.3 call made the plan (REG-570)",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 700,
+      "cached_tokens": 244,
+      "output_tokens": 32000,
+      "reasoning_tokens": 31998,
+      "micro_usd": 641873,
+      "seconds": 52.457005995000145
+    },
+    {
+      "stage": "plan",
+      "model": "muse-spark-1.3",
+      "input_tokens": 904,
+      "cached_tokens": 0,
+      "output_tokens": 23635,
+      "reasoning_tokens": 23194,
+      "micro_usd": 101579,
+      "seconds": 91.59321991300021
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 4,
+        "s_sat_inconclusive": 2
+      },
+      "blockers": [],
+      "wall_seconds": 2341.2691289819995
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 1,
+        "refuted": 7,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 711.8747055469994
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:33:59Z",
+  "wall_seconds": 953.0323268230022,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "vector add 0 error\n```python\r\nfrom sympy.physics.vector import ReferenceFrame, Vector\r\nfrom sympy import symbols\r\nsum([N.x, (0 * N.x)])\r\n```\r\ngives\r\n```\r\n---------------------------------------------------------------------------\r\nTypeError                                 Traceback (most recent call last)\r\n<ipython-input-1-0b9155eecc0e> in <module>()\r\n      2 from sympy import symbols\r\n      3 N = ReferenceFrame('N')\r\n----> 4 sum([N.x, (0 * N.x)])\r\n\r\n/usr/local/lib/python3.6/site-packages/sympy/physics/vector/vector.py in __add__(self, other)\r\n     59         \"\"\"The add operator for Vector. \"\"\"\r\n     60         #if other == 0: return self\r\n---> 61         other = _check_vector(other)\r\n     62         return Vector(self.args + other.args)\r\n     63 \r\n\r\n/usr/local/lib/python3.6/site-packages/sympy/physics/vector/vector.py in _check_vector(other)\r\n    708 def _check_vector(other):\r\n    709     if not isinstance(other, Vector):\r\n--> 710         raise TypeError('A Vector must be supplied')\r\n    711     return other\r\n\r\nTypeError: A Vector must be supplied\r\n```\n",
+        "start": 0,
+        "end": 1070
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Run the exact issue example sum([N.x, (0 * N.x)]) with N = ReferenceFrame('N'); it still raises TypeError on the initial 0 + N.x step because only __add__ was patched, not the reflected addition path.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call N.x + numpy.zeros(3) (or numpy.array([1, 2])); previously _check_vector raised TypeError, but now `other == 0` returns an array and `if` raises ValueError about ambiguous truth value.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call N.x + 0 and assert it equals N.x with the same components; constructing Vector(0) and concatenating its args (0,) may raise TypeError or produce a corrupted/zero vector instead of N.x.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call N.x + False, N.x + 0.0, or N.x + Decimal(0); previously these non-Vector scalars raised TypeError, but now `other == 0` is true and they silently return N.x, broadening the API beyond the int 0 needed by sum().",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call (2*N.x + 3*N.y) + 0 and Vector(0) + 0 and assert they equal the original vectors; the Vector(0).args concatenation may fail or lose components for composite or zero vectors even if a single base vector works.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call N.x + obj where obj is a non-Vector whose __eq__(0) returns True or raises a custom exception; previously _check_vector raised TypeError, but now the equality check bypasses validation and either silently returns N.x or propagates the wrong exception.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 735,
+      "cached_tokens": 244,
+      "output_tokens": 14582,
+      "reasoning_tokens": 14134,
+      "micro_usd": 293653,
+      "seconds": 102.50216850400102
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 1,
+        "blocker": 4,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 429.99976977700135
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "blocker": 2,
+        "suspected": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-14711/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 420.0756343489993
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0537c2ceb11735efc535da347b05f73b805d36995d75f40309bc3734b2c73370"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0537c2ceb11735efc535da347b05f73b805d36995d75f40309bc3734b2c73370"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

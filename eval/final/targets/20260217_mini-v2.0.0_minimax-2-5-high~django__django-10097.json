@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-10097",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:46:23Z",
+  "wall_seconds": 1644.7858616270005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Make URLValidator reject invalid characters in the username and password\nDescription\n\t \n\t\t(last modified by Tim Bell)\n\t \nSince #20003, core.validators.URLValidator accepts URLs with usernames and passwords. RFC 1738 section 3.1 requires \"Within the user and password field, any \":\", \"@\", or \"/\" must be encoded\"; however, those characters are currently accepted without being %-encoded. That allows certain invalid URLs to pass validation incorrectly. (The issue originates in Diego Perini's ​gist, from which the implementation in #20003 was derived.)\nAn example URL that should be invalid is http://foo/bar@example.com; furthermore, many of the test cases in tests/validators/invalid_urls.txt would be rendered valid under the current implementation by appending a query string of the form ?m=foo@example.com to them.\nI note Tim Graham's concern about adding complexity to the validation regex. However, I take the opposite position to Danilo Bargen about invalid URL edge cases: it's not fine if invalid URLs (even so-called \"edge cases\") are accepted when the regex could be fixed simply to reject them correctly. I also note that a URL of the form above was encountered in a production setting, so that this is a genuine use case, not merely an academic exercise.\nPull request: ​https://github.com/django/django/pull/10097\nMake URLValidator reject invalid characters in the username and password\nDescription\n\t \n\t\t(last modified by Tim Bell)\n\t \nSince #20003, core.validators.URLValidator accepts URLs with usernames and passwords. RFC 1738 section 3.1 requires \"Within the user and password field, any \":\", \"@\", or \"/\" must be encoded\"; however, those characters are currently accepted without being %-encoded. That allows certain invalid URLs to pass validation incorrectly. (The issue originates in Diego Perini's ​gist, from which the implementation in #20003 was derived.)\nAn example URL that should be invalid is http://foo/bar@example.com; furthermore, many of the test cases in tests/validators/invalid_urls.txt would be rendered valid under the current implementation by appending a query string of the form ?m=foo@example.com to them.\nI note Tim Graham's concern about adding complexity to the validation regex. However, I take the opposite position to Danilo Bargen about invalid URL edge cases: it's not fine if invalid URLs (even so-called \"edge cases\") are accepted when the regex could be fixed simply to reject them correctly. I also note that a URL of the form above was encountered in a production setting, so that this is a genuine use case, not merely an academic exercise.\nPull request: ​https://github.com/django/django/pull/10097\n",
+        "start": 0,
+        "end": 2656
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-10097",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "URLValidator()('http://@example.com') should raise ValidationError for an empty username before '@', but the '*' user pattern matches empty userinfo and the URL is accepted.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "URLValidator()('http://müller:passwort@example.com') passed before the change as an internationalized userinfo, but the new ASCII-only userinfo pattern now raises ValidationError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "URLValidator()('http://user:pa:ss@example.com') should raise ValidationError because a ':' inside the password must be %-encoded, but the password character class explicitly allows ':' and the URL is accepted.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "URLValidator()('http://@example.com') raised ValidationError before the change, but the new zero-length user pattern now accepts this previously rejected URL.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "URLValidator()('http://foo.com/bar@example.com') should raise ValidationError for an unencoded '/' before '@', but the validator accepts it by reinterpreting foo.com as the host and /bar@example.com as the path.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling URLValidator() on a crafted candidate such as 'http://' + 'a:' * 40 + '!' promptly raised ValidationError before, but the nested user/password quantifiers now cause excessive backtracking and the call hangs or times out.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 999,
+      "cached_tokens": 116,
+      "output_tokens": 10318,
+      "reasoning_tokens": 9964,
+      "micro_usd": 209916,
+      "seconds": 74.78482356599852
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 1,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~django__django-10097/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~django__django-10097/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1173.4709508029991
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 6,
+        "unchecked": 4
+      },
+      "blockers": [],
+      "wall_seconds": 395.77984710999954
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:222e91d800a2914c5e996ef854c209911481f6da3d6cad3b2efce3d698526750"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:222e91d800a2914c5e996ef854c209911481f6da3d6cad3b2efce3d698526750"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

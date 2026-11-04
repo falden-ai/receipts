@@ -1,0 +1,13 @@
+{
+ "python": "3.10.19",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "hooks.tests",
+  "hookmodule.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "test_ok (hooks.tests.A) ... ok\ntest_fails (hooks.tests.B) ... FAIL\ntest_after_the_hooks (hooks.tests.C) ... ok\nERROR\nskipped 'no backend'\ntest_runs (hooks.tests.TearDownClassFails) ... ok\nERROR\nERROR\n\n======================================================================\nERROR: setUpClass (hooks.tests.SetUpClassFails)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/hooks/tests.py\", line 22, in setUpClass\n    raise RuntimeError(\"setUpClass boom\")\nRuntimeError: setUpClass boom\n\n======================================================================\nERROR: tearDownClass (hooks.tests.TearDownClassFails)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/hooks/tests.py\", line 40, in tearDownClass\n    raise RuntimeError(\"tearDownClass boom\")\nRuntimeError: tearDownClass boom\n\n======================================================================\nERROR: setUpModule (hookmodule.tests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/hookmodule/tests.py\", line 5, in setUpModule\n    raise RuntimeError(\"setUpModule boom\")\nRuntimeError: setUpModule boom\n\n======================================================================\nFAIL: test_fails (hooks.tests.B)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/hooks/tests.py\", line 11, in test_fails\n    self.assertEqual(1, 2)\nAssertionError: 1 != 2\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=1, errors=3, skipped=1)\n"
+}

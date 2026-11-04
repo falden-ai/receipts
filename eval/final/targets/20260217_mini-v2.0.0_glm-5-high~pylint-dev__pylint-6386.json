@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:32:23Z",
+  "wall_seconds": 1310.1616730599999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Argument expected for short verbose option\n### Bug description\r\n\r\nThe short option of the `verbose` option expects an argument.\r\nAlso, the help message for the `verbose` option suggests a value `VERBOSE` should be provided.\r\n\r\nThe long option works ok & doesn't expect an argument:\r\n`pylint mytest.py --verbose`\r\n\r\n\r\n### Command used\r\n\r\n```shell\r\npylint mytest.py -v\r\n```\r\n\r\n\r\n### Pylint output\r\n\r\n```shell\r\nusage: pylint [options]\r\npylint: error: argument --verbose/-v: expected one argument\r\n```\r\n\r\n### Expected behavior\r\n\r\nSimilar behaviour to the long option.\r\n\r\n### Pylint version\r\n\r\n```shell\r\npylint 2.14.0-dev0\r\nastroid 2.11.2\r\nPython 3.10.0b2 (v3.10.0b2:317314165a, May 31 2021, 10:02:22) [Clang 12.0.5 (clang-1205.0.22.9)]\r\n```\r\n\n",
+        "start": 0,
+        "end": 739
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run `pylint mytest.py -v` exactly as reported: it still exits with argparse error `argument --verbose/-v: expected one argument` because the verbose definition in the main parser still expects a value despite _DoNothingAction forcing nargs=0 in the other parser.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run a command with another _DoNothingAction-backed option taking a separate value, e.g. `pylint --rcfile customrc mytest.py`: `customrc` is now treated as a positional file to lint instead of being consumed as the option's argument, causing a spurious no-such-file error.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run `pylint --help`: the verbose entry still displays a `VERBOSE` metavar (e.g. `-v VERBOSE, --verbose VERBOSE`), so the help-text half of the issue remains unfixed even if `-v` parses.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run the equals form for such an option, e.g. `pylint --rcfile=customrc mytest.py`: argparse now errors with `ignored explicit argument 'customrc'` because nargs=0 actions reject `=value`, whereas this worked before the change.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Compare `pylint mytest.py -v` with `pylint mytest.py --verbose`: `-v` parses but produces no verbose-level output because the _DoNothingAction discards it, so short and long forms still behave differently.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build an ArgumentParser with a _DoNothingAction option declared to consume one argument and parse `['--opt', 'value', 'file.py']`: `value` now leaks into the positional arguments instead of being consumed, breaking any option that relied on the previously honored nargs.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 798,
+      "cached_tokens": 500,
+      "output_tokens": 3903,
+      "reasoning_tokens": 3459,
+      "micro_usd": 79352,
+      "seconds": 31.594095861000824
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 2,
+        "blocker": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~pylint-dev__pylint-6386/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1035.2365634000016
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 242.9351339829991
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a3f8137ab6d759a49ad43726fb51303deb900e29ad150385f890a739118deb40"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a3f8137ab6d759a49ad43726fb51303deb900e29ad150385f890a739118deb40"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~mwaskom__seaborn-3187",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:25:57Z",
+  "wall_seconds": 1779.7600852930009,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Wrong legend values of large ranges\nAs of 0.12.1, legends describing large numbers that were created using `ScalarFormatter` with an offset are formatted without their multiplicative offset value. An example:\r\n```python\r\nimport seaborn as sns\r\nimport seaborn.objects as so\r\n\r\npenguins = sns.load_dataset(\"Penguins\")\r\npenguins[\"body_mass_mg\"] = penguins[\"body_mass_g\"]*1000\r\n(\r\n    so.Plot(\r\n        penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\r\n        color=\"species\", pointsize=\"body_mass_mg\",\r\n    )\r\n    .add(so.Dot())\r\n)\r\n```\r\nThe code creates the following plot:\r\n![image](https://user-images.githubusercontent.com/13831112/205512305-778966db-f8d8-43f3-a2c0-5e5ce95bae39.png)\r\nwhich is wrong because `body_mass_mg` is in the order of 1E6. The issue also reproduces if you create the mentioned plot using `scatterplot`.\r\n \r\nI believe the issue stems from not using the offset value of the `ScalarFormatter` used to generate the tick labels:\r\nhttps://github.com/mwaskom/seaborn/blob/ba786bc14eb255f6b4fb7619c8210c5a8016a26f/seaborn/_core/scales.py#L377-L382\r\nExamining the code of `ScalarFormatter` suggests the issue also depends on the following rcParam settings:\r\n`mpl.rcParams['axes.formatter.useoffset']`\r\n`mpl.rcParams['axes.formatter.offset_threshold']`\r\nHowever, I did not test it. \r\n\r\nThe offset value can be safely retrieved from all formatters and based on that it can be used to create the legend title and/or labels.\n",
+        "start": 0,
+        "end": 1438
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~mwaskom__seaborn-3187",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With so.Plot(pointsizes) for values clustered at 3,000,000-3,000,003, ScalarFormatter uses an additive offset, so legend labels become expressions such as '0+3000000' instead of the actual values 3000000, 3000001, etc.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling locator_to_legend_entries with a pd.CategoricalDtype raises UnboundLocalError because the new get_offset() code executes although formatter is only defined in the non-categorical branch, breaking categorical legend handling that previously worked.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With sns.scatterplot(size=...) for values around 2,000,000 spanning only 20,000, the formatter combines scientific notation with an additive offset, producing labels such as '0.0e4+2e6' rather than the plotted values.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A scatterplot whose size values are clustered around a large mean, such as 100,000-100,100, previously matched the axis tick labels; now every legend label becomes an unevaluated expression such as '0+100000', changing behavior beyond the multiplicative-offset fix.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running the issue's so.Plot example with mpl.rcParams['axes.formatter.use_mathtext']=True produces double-wrapped legend text such as '$\\\\mathdefault{3.0}$$\\\\times10^{6}$' instead of a clean label for 3x10^6, failing label or rendering checks.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With axes.formatter.use_mathtext enabled, previously clean mathtext legend labels gain a second appended mathtext block on every entry, changing existing large-number legend strings and rendering beyond what the fix requires.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1041,
+      "cached_tokens": 116,
+      "output_tokens": 15835,
+      "reasoning_tokens": 15403,
+      "micro_usd": 320424,
+      "seconds": 116.54167804399913
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 3,
+        "suspected": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~mwaskom__seaborn-3187/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1071.361308525
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 6,
+        "refuted": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 591.562444176001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

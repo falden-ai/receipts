@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8551",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:54:35Z",
+  "wall_seconds": 1071.8153350730026,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": ":type: and :rtype: gives false ambiguous class lookup warnings\n**Describe the bug**\r\nThe implicit xrefs created by the info fields ``:type:`` and ``:rtype:`` seems to do lookup differently than explicit xref roles. For unqualified names it seems like they search for the name in every (sub)module instead of in the current module and then parent modules.\r\n\r\n**To Reproduce**\r\n```rst\r\n.. py:class:: mod.A\r\n.. py:class:: mod.submod.A\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param mod.A a:\r\n\t:param mod.submod.A b:\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n\r\n.. py:currentmodule:: mod\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`A`\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param A a:\r\n\t:param mod.A b:\r\n\t:param mod.submod.A c:\r\n\t:rtype: A\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n\r\n.. py:currentmodule:: mod.submod\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`A`\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param A a: BUG: links to mod.A instead of mod.submod.A\r\n\t:param mod.A b:\r\n\t:param mod.submod.A c:\r\n\t:rtype: A\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n```\r\ngives the warnings\r\n```\r\nindex.rst:28: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:28: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:43: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:43: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\n```\r\nwhich refer to the 4 unqualified type names ``A``.\r\nThe ``:param:`` annotated with ``BUG`` as well as the corresponding ``rtype`` gets resolved to ``mod.A``.\r\n\r\n**Expected behavior**\r\nNo warnings, and the two mentioned types should resolve to ``mod.submod.A``.\r\n\r\n**Environment info**\r\n- Sphinx version: tested both with v3.3 and with master\n",
+        "start": 0,
+        "end": 1874
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8551",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the issue's exact example with `mod.A` and `mod.submod.A`, then under `py:currentmodule:: mod.submod` use `:param A a:` and `:rtype: A`. The field xrefs still emit ambiguous-target warnings or resolve to `mod.A` instead of `mod.submod.A`.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define both `mod.A` and `other.mod.A`, then use a fully qualified field type `:type: mod.A` with no current module. Previously this resolved exactly to `mod.A`, but after removing `refspecific` it suffix-matches both targets and warns as ambiguous or picks the wrong one.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a three-level hierarchy `mod.A`, `mod.submod.A`, and `mod.submod.deep` as the current module, with `:type: A` in a function there. It warns as ambiguous or picks the wrong `A` instead of preferring the nearest parent scope `mod.submod.A` over `mod.A`.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Under `py:currentmodule:: mod.submod` with both `mod.A` and `mod.submod.A` defined, use `:type: ~A` for a parameter. Previously the tilde form got specific lookup and resolved to the nearby target, but now only dot-prefixed targets keep `refspecific`, so `~A` warns as ambiguous or resolves to `mod.A`.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a method inside `py:class:: Outer` under `py:currentmodule:: mod.submod`, with `:param A a:` where `A` should resolve to `mod.submod.A`. The attached class context makes it search for a nested `Outer.A`-style target and then fall back ambiguously, so it warns or links to `mod.A`.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In one document, document a top-level function after a class or after a `py:currentmodule` change, using `:type: SomeUniqueClass` that only exists in an unrelated module. The unconditional `ref_context` copy attaches stale module/class context and makes the previously resolving field xref unresolved or pointed at a wrong scoped target.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1245,
+      "cached_tokens": 244,
+      "output_tokens": 5694,
+      "reasoning_tokens": 5165,
+      "micro_usd": 117933,
+      "seconds": 46.7370150689967
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 4,
+        "blocker": 1,
+        "suspected": 1,
+        "refuted": 3
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-8551/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 725.817895041997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 5,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 298.9803945530002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:13a792107451e9b23fcccafbc9c8418adbfb4cbb1f49ed1ad130a72c3a563cf1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:13a792107451e9b23fcccafbc9c8418adbfb4cbb1f49ed1ad130a72c3a563cf1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

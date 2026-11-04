@@ -1,0 +1,6 @@
+**
+!Dockerfile
+!checkout_demo/
+!checkout_demo/__init__.py
+!tests/
+!tests/test_checkout.py

@@ -1,0 +1,13 @@
+{
+ "python": "3.10.19",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "asserthooks.tests",
+  "asserthookmodule.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "test_ok (asserthooks.tests.A) ... ok\ntest_fails (asserthooks.tests.B) ... FAIL\nERROR\ntest_runs (asserthooks.tests.TearDownClassAsserts) ... ok\nERROR\nERROR\n\n======================================================================\nERROR: setUpClass (asserthooks.tests.SetUpClassAsserts)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/asserthooks/tests.py\", line 12, in setUpClass\n    assert 1 == 2, \"setUpClass assert\"\nAssertionError: setUpClass assert\n\n======================================================================\nERROR: tearDownClass (asserthooks.tests.TearDownClassAsserts)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/asserthooks/tests.py\", line 21, in tearDownClass\n    assert 1 == 2, \"tearDownClass assert\"\nAssertionError: tearDownClass assert\n\n======================================================================\nERROR: setUpModule (asserthookmodule.tests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/asserthookmodule/tests.py\", line 5, in setUpModule\n    assert 1 == 2, \"setUpModule assert\"\nAssertionError: setUpModule assert\n\n======================================================================\nFAIL: test_fails (asserthooks.tests.B)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/asserthooks/tests.py\", line 29, in test_fails\n    self.assertEqual(1, 2)\nAssertionError: 1 != 2\n\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nFAILED (failures=1, errors=3)\n"
+}

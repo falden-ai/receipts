@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~astropy__astropy-14365",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:16:34Z",
+  "wall_seconds": 1558.9851995249992,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "ascii.qdp Table format assumes QDP commands are upper case\n### Description\n\nascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be \"READ SERR 1 2\" whereas QDP itself is not case sensitive and case use \"read serr 1 2\". \r\n\r\nAs many QDP files are created by hand, the expectation that all commands be all-caps should be removed.\n\n### Expected behavior\n\nThe following qdp file should read into a `Table` with errors, rather than crashing.\r\n```\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n```\n\n### How to Reproduce\n\nCreate a QDP file:\r\n```\r\n> cat > test.qdp\r\nread serr 1 2 \r\n1 0.5 1 0.5\r\n<EOF>\r\n\r\n > python\r\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from astropy.table import Table\r\n>>> Table.read('test.qdp',format='ascii.qdp')\r\nWARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp]\r\nTraceback (most recent call last):\r\n...\r\n    raise ValueError(f'Unrecognized QDP line: {line}')\r\nValueError: Unrecognized QDP line: read serr 1 2\r\n```\r\n\r\nRunning \"qdp test.qdp\" works just fine.\r\n\n\n### Versions\n\nPython 3.10.9 (main, Dec  7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nastropy 5.1\r\nNumpy 1.24.1\r\npyerfa 2.0.0.1\r\nScipy 1.10.0\r\nMatplotlib 3.6.3\r\n\n",
+        "start": 0,
+        "end": 1339
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~astropy__astropy-14365",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reading the exact issue example via Table.read(..., format='ascii.qdp') with 'read serr 1 2' followed by '1 0.5 1 0.5' still fails or yields plain columns instead of error-associated columns, because downstream SERR parsing remains case-sensitive.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing uppercase files using 'READ SERR 1 2' and 'READ TERR 1' no longer produce the identical table and error column names as before the change.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reading a file with lowercase 'read terr 1 2' and six-column two-sided-error data fails or does not produce the expected positive/negative error columns, because the TERR branch downstream still expects uppercase.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Invalid lines such as 'READ XERR 1', 'read error 1 2', 'serr 1 2', or 'READ SERR' without column numbers are now silently accepted instead of raising ValueError for an unrecognized QDP line.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reading mixed/title-case commands such as 'Read Serr 1 2' or a file combining 'read serr 1' with 'Read Terr 2' is recognized by _line_type but misparsed or silently ignored when assigning error specifications.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Non-command lines are misclassified after the regex change: _line_type or Table.read mishandles numeric data, 'NO' missing-value rows, comments, blank lines, or delimiter-separated data that previously parsed correctly.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 955,
+      "cached_tokens": 244,
+      "output_tokens": 5967,
+      "reasoning_tokens": 5571,
+      "micro_usd": 122233,
+      "seconds": 40.82073095600208
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 2,
+        "unchecked": 4,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 940.3271016079998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "possibly_toxic": 4,
+        "refuted": 4,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 576.8135801960016
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

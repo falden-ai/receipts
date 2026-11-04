@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15037",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:56:40Z",
+  "wall_seconds": 1696.339152044,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Foreign key to a specific field is not handled in inspectdb\nDescription\n\t \n\t\t(last modified by Tim Graham)\n\t \nif you have a DB like that\nCREATE TABLE foo ( id serial primary key, other_id int UNIQUE);\nCREATE TABLE bar (\n\tid serial primary key, other_id int,\n\tconstraint myconst \n\tFOREIGN KEY(other_id) references foo(other_id)\n);\nthe generated model for the bar table will have the other_id be a FK to foo and not foo(other_id).\nI'm attaching a potential fix for this. Sorry I had no time for the UTs.\n",
+        "start": 0,
+        "end": 502
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15037",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create foo with a unique non-PK column that inspectdb renames as a field, e.g. foo.author_id as a unique FK column whose generated Foo field is 'author', and bar referencing foo(author_id); run inspectdb and import the output. The generated Bar field uses to_field='author_id' (the DB column) instead of to_field='author', so the generated model raises a FieldError or points at a nonexistent field.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On SQLite, create an ordinary FK that references the target's PK implicitly (FOREIGN KEY(x) REFERENCES foo without naming the column) and run inspectdb. Because the relation's target column is None while the cached PK is 'id', the output gains a spurious to_field=None, changing previously correct generated models.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a self-referencing table employee(code UNIQUE, manager_code REFERENCES employee(code)) and run inspectdb. The generated manager field is ForeignKey('self') without to_field='code' (or with a wrong to_field), so it silently targets the PK instead of code.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run inspectdb on a table whose FK references a table outside the inspected set (or a view/external table) where get_primary_key_column for that related table returns None or raises NotImplementedError. Previously a plain ForeignKey was generated; now inspectdb either crashes on the new lookup or emits an unwarranted to_field.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reproduce the issue exactly: foo(id PK, other_id UNIQUE) and bar(other_id REFERENCES foo(other_id)), then run inspectdb. The generated Bar.other_id is a plain ForeignKey(Foo) with no to_field='other_id', so it still references foo's PK rather than foo(other_id).",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run inspectdb on existing ordinary models with FKs and OneToOneFields to another table's PK, including a self-referential FK to the PK. Previously the output had no to_field argument; the change adds a redundant to_field (e.g. due to a name/case mismatch with the returned PK column), altering generated output for unchanged cases.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 996,
+      "cached_tokens": 116,
+      "output_tokens": 4452,
+      "reasoning_tokens": 3933,
+      "micro_usd": 92584,
+      "seconds": 32.624302489
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "unchecked": 1,
+        "not_reproduced": 3,
+        "suspected": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1234.2639480950002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 6,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 428.6670570389997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:76ea54c305ea65f4c8c50c51438389ccda5ae1ad4646c2a340be87b30fcda4ca"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:76ea54c305ea65f4c8c50c51438389ccda5ae1ad4646c2a340be87b30fcda4ca"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

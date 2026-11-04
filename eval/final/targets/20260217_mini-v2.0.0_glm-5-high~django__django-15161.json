@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15161",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:08:19Z",
+  "wall_seconds": 1465.1010460860016,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Use simplified paths for deconstruct of expressions\nDescription\n\t\nPreviously F() deconstructed to: django.db.models.expressions.F(). But since it can also be imported from django.db.models, ​PR #14047 changed it to deconstruct to django.db.models.F(). This simplifies generated migration code where it will be referenced only as from django.db import models / models.F().\nAs Mariusz pointed out on the PR, the same technique can be applied to other expressions, further simplifying generated migrations.\n",
+        "start": 0,
+        "end": 504
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15161",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Deconstruct an instance of each newly decorated class (Expression, OuterRef, Func, Value, ExpressionList, ExpressionWrapper, When, Case, OrderBy, Window, WindowFrame, RowRange, ValueRange) and import the returned path; at least one path, such as django.db.models.ExpressionList, OrderBy, or WindowFrame, is not actually exported from django.db.models, so reconstruction raises ImportError/AttributeError.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deconstruct built-in or custom subclasses of the newly decorated bases, e.g. Func subclasses like Length/Lower/Random or a user-defined Func subclass used in an index; the subclass incorrectly deconstructs to django.db.models.Func (or another base path) and reconstructs as the wrong class, losing its function/behavior.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Serialize a migration expression such as Case(When(condition, Value(1)), default=Value(0)) or a Window with RowRange through MigrationWriter; the generated code still emits django.db.models.expressions.* imports, or emits models.* names that cannot be evaluated from 'from django.db import models' alone, so migrations are not simplified as claimed.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deconstruct OuterRef and ResolvedOuterRef instances; because both inherit F's hardcoded deconstruct logic, one of them now returns django.db.models.OuterRef or django.db.models.F instead of its own class path and reconstructs with changed resolution semantics.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Deconstruct other django.db.models-importable expressions omitted from the diff, such as Col, Subquery, Exists, or a CombinedExpression; at least one still returns a django.db.models.expressions.* path, leaving the issue only partially fixed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Round-trip expressions with custom deconstruct state, such as Value(1, output_field=IntegerField()), ExpressionWrapper(F('x'), output_field=...), When with a Q condition, or Window(frame=RowRange(...)); the added decorator drops or alters kwargs such as output_field/frame, so the reconstructed expression is unequal or raises TypeError.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1272,
+      "cached_tokens": 116,
+      "output_tokens": 8985,
+      "reasoning_tokens": 8480,
+      "micro_usd": 184348,
+      "seconds": 81.3162114049992
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "s_sat_inconclusive": 2,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 1097.9194131660006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "refuted": 6,
+        "unchecked": 2,
+        "s_sat_inconclusive": 1,
+        "suspected": 1,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 285.29161525999734
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:60d152397625da8183d1c38e26f6572f12f9ea45270a81c78b9ecab9b528e622"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:60d152397625da8183d1c38e26f6572f12f9ea45270a81c78b9ecab9b528e622"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

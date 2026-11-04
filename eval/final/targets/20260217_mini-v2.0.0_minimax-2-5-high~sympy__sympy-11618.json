@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-11618",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:21:18Z",
+  "wall_seconds": 854.7890715169997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "distance calculation wrong\n``` python\n>>> Point(2,0).distance(Point(1,0,2))\n1\n```\n\nThe 3rd dimension is being ignored when the Points are zipped together to calculate the distance so `sqrt((2-1)**2 + (0-0)**2)` is being computed instead of `sqrt(5)`.\n\n",
+        "start": 0,
+        "end": 252
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-11618",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Point(2, 0).distance(Point(1, 0, 2)) should return sqrt(5); it fails if the third coordinate is still ignored and it returns 1.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Point(2, 0).taxicab_distance(Point(1, 0, 2)) previously returned 1 and now returns 3, although the quoted issue only requires fixing Euclidean distance.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] The reverse and symbolic cases Point(1, 0, 2).distance(Point(2, 0)) == sqrt(5) and Point(2, 0).distance(Point(1, 0, z)) == sqrt(1 + z**2) fail if padding only works when the second point is longer or breaks on a symbolic extra coordinate.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Point(0, 0).distance((3, 4, 100)) previously returned 5 by ignoring the extra tuple coordinate and now returns sqrt(10025), changing non-Point argument behavior beyond the Point-to-Point issue.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Point(2, 0).distance([1, 0, 2]) should return sqrt(5) and Point(0, 0, 0, 4).distance(Point(3, 0)) should return 5; they fail if the non-Point branch or padding by more than one missing coordinate still truncates.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Point(0, 0).distance(itertools.count()) previously terminated after two coordinates under zip, but zip_longest keeps padding against the infinite iterable and hangs instead of returning sqrt(1).",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 750,
+      "cached_tokens": 244,
+      "output_tokens": 8906,
+      "reasoning_tokens": 8468,
+      "micro_usd": 180193,
+      "seconds": 64.19110212899977
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 5,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 441.65219524700115
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 348.5708314689982
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9f8cf9cf263301d0a70570ee2e8d4cb36cf0f49f36178617fe6784aa7cbbb0ab"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9f8cf9cf263301d0a70570ee2e8d4cb36cf0f49f36178617fe6784aa7cbbb0ab"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

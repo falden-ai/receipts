@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~scikit-learn__scikit-learn-11310",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:48:02Z",
+  "wall_seconds": 1326.454205529999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Retrieving time to refit the estimator in BaseSearchCV\nBasically, I'm trying to figure out how much time it takes to refit the best model on the full data after doing grid/random search. What I can so far do is retrieve the time it takes to fit and score each model:\r\n```\r\nimport sklearn.datasets\r\nimport sklearn.model_selection\r\nimport sklearn.ensemble\r\n\r\nX, y = sklearn.datasets.load_iris(return_X_y=True)\r\n\r\nrs = sklearn.model_selection.GridSearchCV(\r\n    estimator=sklearn.ensemble.RandomForestClassifier(),\r\n    param_grid={'n_estimators': [2, 3, 4, 5]}\r\n)\r\nrs.fit(X, y)\r\nprint(rs.cv_results_['mean_fit_time'])\r\nprint(rs.cv_results_['mean_score_time'])\r\n```\r\nIn case I run this on a single core, I could time the whole search procedure and subtract the time it took to fit the single folds during hyperparameter optimization. Nevertheless, this isn't possible any more when setting `n_jobs != 1`.\r\n\r\nThus, it would be great to have an attribute `refit_time_` which is simply the time it took to refit the best model.\r\n\r\nUsecase: for [OpenML.org](https://openml.org) we want to support uploading the results of hyperparameter optimization, including the time it takes to do the hyperparameter optimization. \n",
+        "start": 0,
+        "end": 1212
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~scikit-learn__scikit-learn-11310",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Fit GridSearchCV with refit=False on the iris data and access refit_time_; it raises AttributeError instead of being defined as 0, so the requested timing cannot be retrieved for a no-refit search.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Fit a search with refit=True, then set refit=False and fit the same object again; the stale refit_time_ from the first fit remains, changing the fitted-attribute state of a search that performed no refit.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Fit a search whose estimator's fit sleeps for 0.5 seconds with n_jobs=2 and several candidates, then check refit_time_; it may be near zero or include cumulative CV fit times instead of approximately the single 0.5-second full-data refit.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run an existing search test with time.time mocked by a finite side-effect sequence or a time-sensitive estimator; the two extra time() calls around refitting consume sequence values and shift the estimator's or CV timing behavior.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Fit a search with an estimator that succeeds on CV folds but raises when fit on the full dataset after sleeping; refit_time_ is never assigned, so the time spent on the attempted refit cannot be retrieved.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Fit GridSearchCV with refit=True on iris and compare the object's fitted attributes and behavior against pre-change expectations; the new refit_time_ attribute breaks code that enumerates trailing-underscore fitted attributes or asserts the exact set of attributes in vars(search_cv).",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 852,
+      "cached_tokens": 116,
+      "output_tokens": 6193,
+      "reasoning_tokens": 5797,
+      "micro_usd": 126828,
+      "seconds": 59.21953957000005
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "possibly_toxic": 3,
+        "not_reproduced": 2,
+        "suspected": 4
+      },
+      "blockers": [],
+      "wall_seconds": 780.8600143290005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "refuted": 1,
+        "possibly_toxic": 3,
+        "not_reproduced": 3,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 485.30898415000047
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

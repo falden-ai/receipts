@@ -1,0 +1,13 @@
+[
+  {
+    "FromPort": 443,
+    "IpProtocol": "tcp",
+    "IpRanges": [
+      {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "receipts glimmer: image and weights, then sealed"
+      }
+    ],
+    "ToPort": 443
+  }
+]

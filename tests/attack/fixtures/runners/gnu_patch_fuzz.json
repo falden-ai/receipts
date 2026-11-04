@@ -1,0 +1,35 @@
+{
+ "patch_version": "GNU patch 2.7.6",
+ "fuzz": {
+  "argv": [
+   "patch",
+   "--batch",
+   "--fuzz=5",
+   "-p1",
+   "-i",
+   ".receipts-fuzz.diff"
+  ],
+  "exit_code": 0,
+  "seconds": 0.1,
+  "stdout": "patching file src/lines.py\nHunk #1 succeeded at 7 with fuzz 3.\n",
+  "stderr": "",
+  "diff": "diff --git a/src/lines.py b/src/lines.py\n--- a/src/lines.py\n+++ b/src/lines.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-line 10\n+line ten\n wrong 11\n wrong 12\n wrong 13\n",
+  "file_after": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline ten\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\n"
+ },
+ "none": {
+  "argv": [
+   "patch",
+   "--batch",
+   "--fuzz=5",
+   "-p1",
+   "-i",
+   ".receipts-none.diff"
+  ],
+  "exit_code": 1,
+  "seconds": 0.1,
+  "stdout": "patching file src/lines.py\nHunk #1 FAILED at 7.\n1 out of 1 hunk FAILED -- saving rejects to file src/lines.py.rej\n",
+  "stderr": "",
+  "diff": "diff --git a/src/lines.py b/src/lines.py\n--- a/src/lines.py\n+++ b/src/lines.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-no such line\n+line ten\n wrong 11\n wrong 12\n wrong 13\n",
+  "file_after": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\n"
+ }
+}

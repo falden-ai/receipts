@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:01:43Z",
+  "wall_seconds": 1441.4792445789972,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "evalf does not call _imp_ recursively\nExample from https://stackoverflow.com/questions/41818842/why-cant-i-evaluate-a-composition-of-implemented-functions-in-sympy-at-a-point:\r\n\r\n```\r\n>>> from sympy.utilities.lambdify import implemented_function\r\n>>> f = implemented_function('f', lambda x: x ** 2)\r\n>>> g = implemented_function('g', lambda x: 2 * x)\r\n>>> print(f(  2 ).evalf())\r\n4.00000000000000\r\n>>> print(  g(2) .evalf())\r\n4.00000000000000\r\n>>> print(f(g(2)).evalf())\r\nf(g(2))\r\n```\r\n\r\nThe code for this is in `Function._eval_evalf`. It isn't calling evalf recursively on the return of `_imp_`. \n",
+        "start": 0,
+        "end": 598
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define g as implemented_function('g', lambda x: 2*x) and f as implemented_function('f', lambda x: g(x) + 1), then call f(2).evalf(). It should give 5.00000000000000, but the fix only evalfs the arguments, so _imp_ returns the unevaluated g(2.0) + 1, Float() of that fails, and the result stays f(2).",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define f as implemented_function('f', lambda x: sum(range(x))) and call f(5).evalf(), which previously returned 10.0000000000000. After the change the argument is pre-evaluated to Float(5.0), range(Float) raises TypeError, the exception is swallowed, and f(5) is left unevaluated.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define f as implemented_function('f', lambda x: sin(1)) and call f(2).evalf(). It should give the numeric value of sin(1), but _imp_ returns the symbolic sin(1), Float() of it fails because the return value is never evalf'd, and the result stays f(2).",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define f as implemented_function('f', lambda x: x - 10**20) and call f(10**20 + 1).evalf(), which previously used exact integer arithmetic and returned 1.00000000000000. After the change the argument is first rounded to a Float, the +1 is lost, and the result is wrongly 0.0.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With f as lambda x: x**2 and g as lambda x: 2*x implemented functions, call f(g(x)).evalf(subs={x: 2}). It should give 16.0000000000000, but the inner arg.evalf(prec) call drops the subs option, so the inner g(x) is never resolved to a number and the composition is left unevaluated.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define f as implemented_function('f', lambda x: 7 if x == sqrt(2) else 0) and call f(sqrt(2)).evalf(), which previously matched the exact sqrt(2) and returned 7.00000000000000. After the change the argument becomes Float(1.41421356237310), the equality check fails, and it wrongly returns 0.0.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 654,
+      "cached_tokens": 500,
+      "output_tokens": 9303,
+      "reasoning_tokens": 8703,
+      "micro_usd": 186776,
+      "seconds": 85.41083040100057
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 1,
+        "blocker": 4,
+        "not_reproduced": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1105.513783268998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 3,
+        "suspected": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12096/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 250.268894912002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

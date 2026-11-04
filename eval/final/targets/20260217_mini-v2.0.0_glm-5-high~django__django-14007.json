@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-14007",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:19:47Z",
+  "wall_seconds": 1693.437526193,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Database converters (from_db_value) not called for returning_fields on insert\nDescription\n\t\nMaking a subclass of BigAutoField, I've found that, unlike all other query pathways, on insert the returned integer is not passed through any database converters defined for the field - including the from_db_value hook.\nThis means that a field which would normally use a wrapper class has instead a plain integer.\nTake this field:\nclass MyAutoField(models.BigAutoField):\n\tdef from_db_value(self, value, expression, connection):\n\t\tif value is None:\n\t\t\treturn None\n\t\treturn MyIntWrapper(value)\n\tdef get_prep_value(self, value):\n\t\tif value is None:\n\t\t\treturn None\n\t\treturn int(value)\nAnd a model that uses it:\nclass AutoModel(models.Model):\n\tid = MyAutoField(primary_key=True)\nQueried instances have the wrapper class for id:\n>>> am = AutoModel.objects.first()\n>>> am.id\n<MyIntWrapper: 1>\nBut on creation, the returned integer is directly set as an attribute on the class:\n>>> am2 = AutoModel.objects.create()\n>>> am2.id\n2\nThis also affects bulk_create on backends that support fetching the primary key value:\n>>> ams = [AutoModel()]\n>>> AutoModel.objects.bulk_create(ams)\n[<AutoModel: AutoModel object (2)>]\n>>> ams[0].id\n2\n",
+        "start": 0,
+        "end": 1214
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-14007",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a BigAutoField subclass whose from_db_value uses expression.output_field, as SELECT does when passing a Col; AutoModel.objects.create() and bulk_create() pass the field itself as expression, so creation raises AttributeError or returns the wrong type while AutoModel.objects.first() works.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An existing model with a returning DurationField or ArrayField whose get_db_converters converter accesses expression.output_field worked on create() before; now create()/bulk_create() pass the field as expression and crash with AttributeError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a model with a db_default returning field whose conversion lives only in connection.ops.get_db_converters, such as a DateTimeField with db_default on a backend that converts datetimes in ops; create() calls only field.get_db_converters, so the attribute stays a raw string/number unlike a freshly fetched instance.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a model with a non-pk db_default DurationField/DecimalField returning field that the insert compiler already backend-converts; the extra get_db_converters call in save()/bulk_create() converts the timedelta/Decimal a second time, giving a wrong value or TypeError compared with refresh_from_db().",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call AutoModel.objects.bulk_create([AutoModel(id=7)]) with an explicit pk on a RETURNING-capable backend; the objs_with_pk branch skips the pk field, so id remains a plain int instead of MyIntWrapper unlike create() or a fetched instance.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a Book with an author ForeignKey using db_default pointing to an Author whose pk field defines a wrapper from_db_value; Book.objects.create() now stores the wrapper in book.author_id instead of the raw id seen on queried Books, breaking author_id comparisons and subsequent FK queries/saves.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1181,
+      "cached_tokens": 116,
+      "output_tokens": 15291,
+      "reasoning_tokens": 14839,
+      "micro_usd": 310104,
+      "seconds": 111.33956627800035
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "s_sat_inconclusive": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1092.5928154970006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 11,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 487.98613338799987
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f4dbbfc63007c1cd7dfd24554bf2d93322826cded6cefbc36220742299504efb"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f4dbbfc63007c1cd7dfd24554bf2d93322826cded6cefbc36220742299504efb"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

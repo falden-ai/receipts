@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11734",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:35:19Z",
+  "wall_seconds": 1606.434607225,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "OuterRef in exclude() or ~Q() uses wrong model.\nDescription\n\t\nThe following test (added to tests/queries/test_qs_combinators) fails when trying to exclude results using OuterRef()\ndef test_exists_exclude(self):\n\t# filter()\n\tqs = Number.objects.annotate(\n\t\tfoo=Exists(\n\t\t\tItem.objects.filter(tags__category_id=OuterRef('pk'))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # works\n\t# exclude()\n\tqs = Number.objects.annotate(\n\t\tfoo =Exists(\n\t\t\tItem.objects.exclude(tags__category_id=OuterRef('pk'))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # crashes\n\t# filter(~Q())\n\tqs = Number.objects.annotate(\n\t\tfoo =Exists(\n\t\t\tItem.objects.filter(~Q(tags__category_id=OuterRef('pk')))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # crashes\nIt results in the following error\nValueError: This queryset contains a reference to an outer query and may only be used in a subquery\n",
+        "start": 0,
+        "end": 832
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11734",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Inside an Exists() subquery, call Item.objects.exclude(tags__category_id=OuterRef('pk') + Value(0)) or with OuterRef wrapped in Coalesce(); because only a bare OuterRef RHS is rewrapped, the nested OuterRef still resolves against Item instead of Number and raises ValueError or returns wrong rows.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call a top-level Item.objects.exclude(tags__category_id=OuterRef('pk')) with no enclosing subquery; behavior that previously raised ValueError ('may only be used in a subquery') now compiles into a self-referential subquery and silently returns wrong rows.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Execute, not just compile, the issue's Exists(Item.objects.exclude(tags__category_id=OuterRef('pk'))) and Exists(Item.objects.filter(~Q(tags__category_id=OuterRef('pk')))) querysets on populated Number/Item data; at least one still crashes during evaluation or returns the complement/wrong Number rows instead of the expected filtered set.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In a doubly nested subquery, use the previously working OuterRef(OuterRef('pk')) inside exclude() to reach the grand-outer query; the extra wrapping overshoots one more level and breaks compilation or changes which query's pk is compared.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use exclude() or ~Q() with OuterRef referring to an outer annotation or joined field, e.g. OuterRef('annotated_value') or OuterRef('related__pk'), inside Exists(); the double-wrapped OuterRef loses the name/annotation resolution and raises FieldError/ValueError or resolves on the wrong model.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use exclude() over the same multi-valued relation with an F() RHS or a plain constant inside Exists(), e.g. Exists(Item.objects.exclude(tags__category_id=F('id'))); previously correct inner-model F()/constant semantics change or crash because the shared inner-query path now treats related expressions differently.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 701,
+      "cached_tokens": 116,
+      "output_tokens": 9532,
+      "reasoning_tokens": 9048,
+      "micro_usd": 193004,
+      "seconds": 70.04414901699965
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "blocker": 3,
+        "s_sat_inconclusive": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11734/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11734/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11734/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1216.8514955310002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 8,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 318.94741361900014
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:51bde15d21afbe70c3685db53a52873e29e230c589c944cf5d1bd9a5b3130805"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:51bde15d21afbe70c3685db53a52873e29e230c589c944cf5d1bd9a5b3130805"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,15 @@
+{
+  "architecture": "x86_64",
+  "catalog_sha256": "2429afdb1f7d243412804bcab89de7112460d0bc2d246adfeb409a61113aab8b",
+  "catalog_updated": "Fri, 23 Oct 2026 21:16:12 +0000",
+  "catalog_url": "https://cloud-images.ubuntu.com/releases/streams/v1/com.ubuntu.cloud:released:aws.json",
+  "image_id": "ami-0fa5967347d08d2df",
+  "name": "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20261004",
+  "owner_id": "099720109477",
+  "read_at": "2026-10-27",
+  "region": "us-east-1",
+  "root_device_name": "/dev/sda1",
+  "root_device_type": "ebs",
+  "serial": "20261004",
+  "virtualization": "hvm"
+}

@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9602",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:34:58Z",
+  "wall_seconds": 1527.0935281250022,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Nitpick flags Literal annotation values as missing py:class\n### Describe the bug\n\nWhen a value is present in a type annotation as `Literal`, sphinx will treat the value as a `py:class`. With nitpick enabled, values like `Literal[True]` end up failing, because `True` is not a class.\r\n\r\nThis is a problem for builds which want to use `-n -W` to catch doc errors.\n\n### How to Reproduce\n\nSetup a simple function which uses Literal, then attempt to autodoc it. e.g.\r\n```python\r\nimport typing\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[True]\") -> int: ...\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[False]\") -> str: ...\r\ndef foo(x: bool):\r\n    \"\"\"a func\"\"\"\r\n    return 1 if x else \"foo\"\r\n```\r\n\r\nI've pushed an example [failing project](https://github.com/sirosen/repro/tree/master/sphinxdoc/literal) to [my repro repo](https://github.com/sirosen/repro). Just run `./doc.sh` with `sphinx-build` available to see the failing build.\n\n### Expected behavior\n\n`Literal[True]` (or whatever literal value) should be present in the type annotation but should not trigger the nitpick warning.\n\n### Your project\n\nhttps://github.com/sirosen/repro/tree/master/sphinxdoc/literal\n\n### Screenshots\n\n_No response_\n\n### OS\n\nLinux\n\n### Python version\n\n3.8, 3.9\n\n### Sphinx version\n\n4.1.2\n\n### Sphinx extensions\n\nautodoc\n\n### Extra tools\n\n_No response_\n\n### Additional context\n\n_No response_\n",
+        "start": 0,
+        "end": 1373
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9602",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Parsing `Literal[-1, 0, 1]` or building a nitpick signature using it fails because the literal value is an ast.UnaryOp, which unparse does not handle, so it raises SyntaxError or falls back instead of rendering -1 as a non-xref literal.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A user-defined generic also named Literal, such as `mymodule.Literal[Widget]`, loses the previously working xref to the documented Widget class because any subscript head ending in Literal suppresses xrefs for its arguments.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Using an aliased import such as `from typing import Literal as Lit` and annotating `Lit[True]` still creates a py:class xref for True, because detection only recognizes the exact name or attribute `Literal`, so nitpick still warns.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A nested type expression inside a Literal argument, such as `Literal[Annotated[Widget, 'meta']]` or `Literal[list[Widget]]`, loses Widget's xref because in_literal is propagated into nested subscript arguments and never reset for real type arguments.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Documenting the type through an info-field/docstring type such as `:type x: Literal[True]` still flags True as a missing py:class, because that path does not go through the patched signature annotation unparsing.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Parsing `Literal[Literal[1, 2], 3]` turns the inner Literal head into desc_sig_name instead of the pending xref that a top-level `Literal[1, 2]` head receives, changing linking for the inner Literal beyond suppressing its literal values.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1735,
+      "cached_tokens": 244,
+      "output_tokens": 10556,
+      "reasoning_tokens": 10140,
+      "micro_usd": 217133,
+      "seconds": 77.0184455430026
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "possibly_toxic": 4,
+        "not_reproduced": 1,
+        "blocker": 1,
+        "refuted": 3,
+        "unchecked": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9602/fixed_x/correctness-2.1"
+      ],
+      "wall_seconds": 1074.0730409989992
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "refuted": 5,
+        "unchecked": 2,
+        "not_reproduced": 1,
+        "possibly_toxic": 3
+      },
+      "blockers": [],
+      "wall_seconds": 375.4767668480017
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

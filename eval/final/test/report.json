@@ -1,0 +1,456 @@
+{
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "efficiency": {
+        "catches": 69,
+        "catches_final": true,
+        "catches_with_fv": 91,
+        "catches_with_fv_final": true,
+        "cost_by_stage_micro_usd": {
+          "at2_runs": 0,
+          "at2_stage1": 38991989,
+          "at3_intent": 154671,
+          "at3_suite": 0,
+          "attack.correctness.explore": 55848235,
+          "attack.correctness.sandbox": 0,
+          "attack.correctness.write": 6497459,
+          "refuter": 37023608,
+          "skeptic": 0,
+          "surrogate": 70379404
+        },
+        "cost_micro_usd": 208895366,
+        "cost_per_catch_micro_usd": 3027469,
+        "cost_per_catch_with_fv_micro_usd": 2295553,
+        "cost_per_target_p50_micro_usd": 901049,
+        "cost_per_target_p95_micro_usd": 1447147,
+        "time_to_catch_final": true,
+        "time_to_catch_p50_s": 801.0793433589997,
+        "time_to_catch_p95_s": 1367.106824073002,
+        "timed_catches": 69
+      },
+      "excluded": 0,
+      "negatives": 90,
+      "positives": 135,
+      "rates": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.725527452209701,
+          "k": 57,
+          "low": 0.5302230476398118,
+          "n": 90,
+          "small_n": false,
+          "value": 0.6333333333333333
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.46977695236018824,
+          "k": 33,
+          "low": 0.27447254779029884,
+          "n": 90,
+          "small_n": false,
+          "value": 0.36666666666666664
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13297",
+          "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15563",
+          "20250807_openhands_gpt5~psf__requests-1142",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~astropy__astropy-13579",
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819",
+          "20250807_openhands_gpt5~django__django-14017",
+          "20260217_mini-v2.0.0_minimax-2-5-high~pylint-dev__pylint-7080",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677",
+          "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346",
+          "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pylint-dev__pylint-7080",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314"
+        ],
+        "invalid_repro": {
+          "high": 0.4869813500556845,
+          "k": 125,
+          "low": 0.37396086558796443,
+          "n": 291,
+          "small_n": false,
+          "value": 0.42955326460481097
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.22136348159052674,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.3474794747931882,
+          "low": 0.09388145331091709
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.5308056872037915,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.22047244094488186,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.0299881826911656,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.6954715485407025,
+          "k": 69,
+          "low": 0.518493599210193,
+          "n": 113,
+          "small_n": false,
+          "value": 0.6106194690265486
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.6991150442477876,
+          "low": 0.5213675213675214
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.4991581160469058,
+          "k": 56,
+          "low": 0.3351853128153392,
+          "n": 135,
+          "small_n": false,
+          "value": 0.4148148148148148
+        },
+        "wdr_bounds": null
+      },
+      "refutations_by_category": {
+        "intended_change": 222,
+        "out_of_scope": 7,
+        "test_bug": 48,
+        "unsupported_by_quote": 2
+      },
+      "targets": 225,
+      "with_fv": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.7053008278906345,
+          "k": 55,
+          "low": 0.5078245886506263,
+          "n": 90,
+          "small_n": false,
+          "value": 0.6111111111111112
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.49217541134937376,
+          "k": 35,
+          "low": 0.2946991721093655,
+          "n": 90,
+          "small_n": false,
+          "value": 0.3888888888888889
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13297",
+          "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13551",
+          "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15563",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999",
+          "20250807_openhands_gpt5~psf__requests-1142",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~astropy__astropy-13579",
+          "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24443",
+          "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819",
+          "20250807_openhands_gpt5~django__django-14017",
+          "20260217_mini-v2.0.0_minimax-2-5-high~pylint-dev__pylint-7080",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677",
+          "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346",
+          "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-7889",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pylint-dev__pylint-7080",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314"
+        ],
+        "invalid_repro": {
+          "high": 0.6324463892973856,
+          "k": 360,
+          "low": 0.5544874413746913,
+          "n": 606,
+          "small_n": false,
+          "value": 0.594059405940594
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.28909232890504455,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.412632312949319,
+          "low": 0.16205131949917922
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.5882352941176471,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.26315789473684215,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.03757168281589875,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.7876617361134488,
+          "k": 91,
+          "low": 0.6326943230112994,
+          "n": 127,
+          "small_n": false,
+          "value": 0.7165354330708661
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.7936507936507936,
+          "low": 0.6363636363636364
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.6366861904754905,
+          "k": 75,
+          "low": 0.4713507037447845,
+          "n": 135,
+          "small_n": false,
+          "value": 0.5555555555555556
+        },
+        "wdr_bounds": null
+      }
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "efficiency": {
+        "catches": 19,
+        "catches_final": true,
+        "catches_with_fv": 27,
+        "catches_with_fv_final": true,
+        "cost_by_stage_micro_usd": {
+          "at2_runs": 0,
+          "at2_stage1": 0,
+          "at3_intent": 0,
+          "at3_suite": 0,
+          "attack.correctness.explore": 0,
+          "attack.correctness.sandbox": 0,
+          "attack.correctness.write": 0,
+          "refuter": 9403017,
+          "skeptic": 0,
+          "surrogate": 4498738
+        },
+        "cost_micro_usd": 13901755,
+        "cost_per_catch_micro_usd": 731671,
+        "cost_per_catch_with_fv_micro_usd": 514880,
+        "cost_per_target_p50_micro_usd": 0,
+        "cost_per_target_p95_micro_usd": 349771,
+        "time_to_catch_final": true,
+        "time_to_catch_p50_s": 328.1490147839977,
+        "time_to_catch_p95_s": 1143.9308892730005,
+        "timed_catches": 19
+      },
+      "excluded": 0,
+      "negatives": 90,
+      "positives": 135,
+      "rates": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.9303638403451762,
+          "k": 79,
+          "low": 0.7942625758951103,
+          "n": 90,
+          "small_n": false,
+          "value": 0.8777777777777778
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.2057374241048897,
+          "k": 11,
+          "low": 0.06963615965482382,
+          "n": 90,
+          "small_n": false,
+          "value": 0.12222222222222222
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+          "20250807_openhands_gpt5~psf__requests-1142",
+          "20250807_openhands_gpt5~django__django-14017",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677"
+        ],
+        "invalid_repro": {
+          "high": 0.5766023821279712,
+          "k": 23,
+          "low": 0.3159505681940129,
+          "n": 52,
+          "small_n": false,
+          "value": 0.4423076923076923
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.0658584620914614,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.18740677915975695,
+          "low": -0.06170509516436569
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.47619047619047616,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.18518518518518515,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.0242404359633295,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.7111651775375785,
+          "k": 19,
+          "low": 0.3945389925620307,
+          "n": 34,
+          "small_n": false,
+          "value": 0.5588235294117647
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.7272727272727273,
+          "low": 0.39285714285714285
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.17524136444236246,
+          "k": 15,
+          "low": 0.06850037601571249,
+          "n": 135,
+          "small_n": false,
+          "value": 0.1111111111111111
+        },
+        "wdr_bounds": null
+      },
+      "refutations_by_category": {
+        "intended_change": 97,
+        "out_of_scope": 3,
+        "test_bug": 11
+      },
+      "targets": 225,
+      "with_fv": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.9303638403451762,
+          "k": 79,
+          "low": 0.7942625758951103,
+          "n": 90,
+          "small_n": false,
+          "value": 0.8777777777777778
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.2057374241048897,
+          "k": 11,
+          "low": 0.06963615965482382,
+          "n": 90,
+          "small_n": false,
+          "value": 0.12222222222222222
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+          "20250807_openhands_gpt5~psf__requests-1142",
+          "20250807_openhands_gpt5~django__django-14017",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3677"
+        ],
+        "invalid_repro": {
+          "high": 0.8147047903015938,
+          "k": 127,
+          "low": 0.685756510424069,
+          "n": 168,
+          "small_n": false,
+          "value": 0.7559523809523809
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.13504303275488555,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.25041893931651854,
+          "low": 0.01013090976386049
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.5822784810126581,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.2584269662921348,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.036694276340648584,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.7701081168438123,
+          "k": 27,
+          "low": 0.4916636571945582,
+          "n": 42,
+          "small_n": false,
+          "value": 0.6428571428571429
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.7857142857142857,
+          "low": 0.5
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.24268773961525997,
+          "k": 23,
+          "low": 0.116293354677775,
+          "n": 135,
+          "small_n": false,
+          "value": 0.17037037037037037
+        },
+        "wdr_bounds": null
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "spark",
+      "b": "glimmer",
+      "negatives_alarm": {
+        "a_only": 23,
+        "b_only": 1,
+        "p": 2.9802322387695312e-06,
+        "pairs": 90
+      },
+      "positives_caught": {
+        "a_only": 41,
+        "b_only": 0,
+        "p": 9.094947017729282e-13,
+        "pairs": 135
+      },
+      "shared_targets": 225
+    }
+  ],
+  "final": true,
+  "format": "receipts.eval.report/1",
+  "pilot_status": "frozen",
+  "resamples": 10000,
+  "score_format": "receipts.eval.score/3",
+  "seed": 0,
+  "small_n": 10
+}

@@ -1,0 +1,181 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:57:21Z",
+  "wall_seconds": 1070.8914451879996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Python Enum values (used to show default values in function signatures) are rendered ugly.\nPython Enum values (used to show default values in function signatures) are rendered ugly.\r\n\r\n**To Reproduce**\r\n\r\nI made a minimal example to show the issue:\r\n\r\nhttps://github.com/sidneycadot/sphinx_issue_ugly_enum\r\n\r\n```\r\n$ git clone git@github.com:sidneycadot/sphinx_issue_ugly_enum.git\r\n$ cd sphinx_issue_ugly_enum/\r\n$ make html\r\n$ firefox build/html/index.html \r\n```\r\n\r\n**Expected behavior**\r\n\r\nI would hope the signature rendered as:\r\n\r\n    ugly_enum_func(e: ugly_enum.MyEnum = MyEnum.ValueA) → None\r\n\r\nUnfortunately, it renders as:\r\n\r\n    ugly_enum_func(e: ugly_enum.MyEnum = <MyEnum.ValueA: 10>) → None\r\n\r\n**Environment info**\r\n\r\n- Python version: 3.9.5\r\n- Sphinx version: 4.0.2\r\n- Sphinx extensions: autodoc\r\n\n",
+        "start": 0,
+        "end": 809
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For a function defaulting to a composite flag, e.g. def f(p=Perm.READ | Perm.WRITE) with Perm an IntFlag, stringify_signature still renders '<Perm.READ|WRITE: 3>' because the composite member's name is None and the new branch is skipped.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An Enum subclass defining a custom __repr__ (returning e.g. 'custom-repr') used as a default previously rendered via that repr through object_description, but now always renders 'MyEnum.ValueA', breaking the existing custom-repr behavior.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For an Enum defined inside a function and used as a signature default, stringify_signature renders 'make.<locals>.MyEnum.ValueA' from __qualname__, which is still ugly and not the expected 'MyEnum.ValueA'.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling object_description(MyEnum.ValueA) outside signature rendering, e.g. when autodoc documents a module-level data value, previously produced '<MyEnum.ValueA: 10>' including the value 10, but now produces only 'MyEnum.ValueA', losing value information in non-signature contexts.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For a signature default that is a container holding an Enum member, e.g. def f(opts=(MyEnum.ValueA,)), the rendered default still contains '<MyEnum.ValueA: 10>' via repr of the container instead of 'MyEnum.ValueA'.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For an Enum nested inside a class, e.g. Outer.MyEnum.ValueA used as a default, object_description previously used the short repr class name but now expands __qualname__ to 'Outer.MyEnum.ValueA', changing existing documented signatures for nested enums beyond the top-level case in the issue.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 684,
+      "cached_tokens": 244,
+      "output_tokens": 9237,
+      "reasoning_tokens": 8793,
+      "micro_usd": 186549,
+      "seconds": 66.90464024399989
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "blocker": 5,
+        "not_reproduced": 1,
+        "suspected": 3,
+        "unchecked": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-2.3"
+      ],
+      "wall_seconds": 620.5769329630002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "blocker": 1,
+        "possibly_toxic": 2,
+        "suspected": 2,
+        "refuted": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9281/fixed_x/correctness-2.1"
+      ],
+      "wall_seconds": 382.63162904399996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

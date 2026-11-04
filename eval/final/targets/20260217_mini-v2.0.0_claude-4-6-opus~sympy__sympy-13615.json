@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-13615",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:35:33Z",
+  "wall_seconds": 2044.5582288299993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Complement doesn't work when input is a mixture of Symbols and numbers\n```\r\n>>> a=FiniteSet(x,y,2)\r\n>>> b=Interval(-10,10)\r\n>>> Complement(a,b)\r\n{x, y}\r\n```\r\n`{x, y} \\ [-10,10]` is expected as output.\n",
+        "start": 0,
+        "end": 201
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-13615",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call Complement(FiniteSet(x, y, 2), Interval(-10, 10)) with plain Symbols x and y; it still returns FiniteSet(x, y) instead of the unevaluated Complement(FiniteSet(x, y), Interval(-10, 10)).",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Complement(FiniteSet(x, 20), Interval(-10, 10)); 20 is definitely outside the interval, but the patch lumps it into an unevaluated Complement(FiniteSet(x, 20), Interval(-10, 10)) instead of retaining it as a definite FiniteSet element, changing the result type and iteration behavior from before.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call Complement(FiniteSet(x, y, pi, sqrt(2), 20), Interval(-10, 10)); pi and sqrt(2), which are definitely inside the interval, remain in the returned unevaluated minuend instead of being removed, so the result is not Complement(FiniteSet(x, y, 20), Interval(-10, 10)).",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Complement(FiniteSet(-20, 20), Interval(-10, 10)) and Complement(FiniteSet(1, 2), Interval(-10, 10)), which previously returned FiniteSet(-20, 20) and EmptySet respectively; the patch returns an unevaluated Complement or keeps removed elements because its identity-based S.true check misclassifies the contains result.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Take Complement(FiniteSet(x, y, 2), Interval(-10, 10)) and call .doit() on it or place it in a Union with another FiniteSet; re-evaluation collapses it back to FiniteSet(x, y), losing the unevaluated complement.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Complement(FiniteSet(x, y, z), FiniteSet(x)), which previously returned FiniteSet(y, z); the patch now returns an unevaluated Complement(FiniteSet(y, z), FiniteSet(x)) because FiniteSet.contains for distinct symbols is treated as uncertain rather than S.false.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 633,
+      "cached_tokens": 244,
+      "output_tokens": 11009,
+      "reasoning_tokens": 10495,
+      "micro_usd": 221785,
+      "seconds": 74.52399430500009
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 2,
+        "suspected": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1217.4477654719994
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 16,
+      "statuses": {
+        "unchecked": 15,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 752.2962188180009
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f1f29ac61e72cd5ac8a3da39c12774c3040b28f3c3a751e9a5503715bd2ae252"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f1f29ac61e72cd5ac8a3da39c12774c3040b28f3c3a751e9a5503715bd2ae252"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

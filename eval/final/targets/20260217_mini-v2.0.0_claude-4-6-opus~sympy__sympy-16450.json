@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-16450",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:38:17Z",
+  "wall_seconds": 2524.142964595998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Posify ignores is_finite assmptions\nPosify removes a finite assumption from a symbol:\r\n```julia\r\nIn [1]: x = Symbol('x', finite=True)                                                                                                           \r\n\r\nIn [2]: x._assumptions                                                                                                                         \r\nOut[2]: {'finite': True, 'infinite': False, 'commutative': True}\r\n\r\nIn [3]: x.is_finite                                                                                                                            \r\nOut[3]: True\r\n\r\nIn [4]: xp, _ = posify(x)                                                                                                                      \r\n\r\nIn [5]: xp._assumptions                                                                                                                        \r\nOut[5]: \r\n{'positive': True,\r\n 'real': True,\r\n 'hermitian': True,\r\n 'imaginary': False,\r\n 'negative': False,\r\n 'nonnegative': True,\r\n 'nonzero': True,\r\n 'zero': False,\r\n 'complex': True,\r\n 'nonpositive': False,\r\n 'commutative': True}\r\n\r\nIn [6]: xp.is_finite                                                                                                                           \r\n\r\nIn [7]: print(xp.is_finite)                                                                                                                    \r\nNone\r\n```\r\nI think that posify should preserve the finiteness assumption. Possibly other assumptions should be preserved as well (integer, rational, prime, even, odd...).\n",
+        "start": 0,
+        "end": 1610
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-16450",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "posify(Symbol('x', real=True, finite=False)) or posify(Symbol('x', infinite=True)) raises an inconsistent-assumptions error, or returns a dummy whose is_finite is not False, because assumptions0 carries infinite=True/finite=False into Dummy(positive=True).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "posify(Symbol('x', infinite=True)) previously returned a positive dummy but now raises ValueError from Dummy(positive=True, infinite=True, finite=False), breaking existing calls on non-finite symbols.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "posify([Symbol('x', finite=True), Symbol('y', finite=True)]) and the tuple/Matrix equivalents return dummies with is_finite still None, because the iterable branch does not apply the updated Dummy construction used for a bare expression.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "posify(Symbol('x', integer=True)) now returns an integer dummy, so expressions such as sin(pi*x) or floor(x) in the posified form simplify differently than before, changing behavior of posify and its internal simplify callers beyond preserving finite.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "posify(Symbol('x', finite=True, even=True)) or posify(Symbol('x', finite=True, integer=True)) fails to return a positive dummy with is_finite, is_even/is_integer preserved, because the expanded assumptions0 deduced facts conflict with positive=True in Dummy creation.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "posify(Symbol('x', real=True, commutative=False)) now keeps a noncommutative dummy instead of producing the previous commutative positive dummy, so prior posify-based simplifications such as sqrt(x**2) to x no longer occur and existing posify expectations on the dummy's assumptions change.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 760,
+      "cached_tokens": 244,
+      "output_tokens": 15598,
+      "reasoning_tokens": 15167,
+      "micro_usd": 314073,
+      "seconds": 111.67786083800092
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 1,
+        "suspected": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1098.8990585690008
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "unchecked": 7,
+        "not_reproduced": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1313.1817723320019
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b61889605d35dcdb88ad1d68ae037e13e2a095a3f9e67961020268603b36d212"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b61889605d35dcdb88ad1d68ae037e13e2a095a3f9e67961020268603b36d212"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

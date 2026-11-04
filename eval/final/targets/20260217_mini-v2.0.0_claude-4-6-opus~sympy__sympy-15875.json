@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-15875",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:58:27Z",
+  "wall_seconds": 2098.8670966140016,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "is_zero is incorrect on complex integer\n`is_zero` should return `None` if it cannot decide, but should never give the wrong answer. However:\r\n\r\n```\r\n>>> e = -2*I + (1 + I)**2\r\n>>> e.is_zero\r\nFalse\r\n>>> simplify(e).is_zero\r\nTrue\r\n```\r\n\r\nThis is causing errors in determining the rank of a matrix. See issue #15872 \nFixing is_zero for complex numbers while Add\nReferences to other Issues or PRs\r\n#15873 \r\n\r\nOther comments:\r\n\r\n<!-- BEGIN RELEASE NOTES -->\r\n\r\n- core\r\n  - Fix `is_zero` becoming `False` on some expressions with `Add`.\r\n\r\n<!-- END RELEASE NOTES -->\r\n\n",
+        "start": 0,
+        "end": 563
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-15875",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: For e = -2*I + (1 + I)**2, e.is_zero returns None or False instead of True, because the new im_sum = 2 + I*(1 + I)**2 is itself undecidable without expansion.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: With a and b real positive symbols, (I*a + I*b).is_zero previously returned False since the imaginary part a + b is strictly positive, but now returns None because im_sum = -a - b is an Add of nonzero real terms whose is_zero is None.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: For the scaled variant e = -8*I + (2 + 2*I)**2, whose value is zero, e.is_zero fails to return True for the same hidden imaginary cancellation.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: With x real, (I*exp(x) + I*exp(-x)).is_zero previously returned False since exp(x) + exp(-x) > 0, but now returns None via the same im_sum path, losing a decidable nonzero result.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: For e = 2 + I*(1 + I)**2 - 2*I + (1 + I)**2, where both the hidden real part 2 + I*(1 + I)**2 and hidden imaginary part -2*I + (1 + I)**2 vanish, e.is_zero returns None instead of True because the real nz sub-sum is undecidable and the imaginary check is never reached.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: An Add of many large imaginary power terms such as sum((1 + I)**(4*k + 2) for k in range(20)) plus a cancelling imaginary constant previously returned False immediately, but now constructs im_sum and triggers expensive power/is_zero evaluation, causing a large slowdown or timeout.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 756,
+      "cached_tokens": 244,
+      "output_tokens": 11409,
+      "reasoning_tokens": 10937,
+      "micro_usd": 230277,
+      "seconds": 81.8265004370005
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 2,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1254.8116828249986
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 760.602458876001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

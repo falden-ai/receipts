@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:46:10Z",
+  "wall_seconds": 1218.769008403,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "srepr not printing dict and set properly\n`srepr` prints the element in `list` and `tuple` correctly.\r\n```python\r\n>>> from sympy import srepr\r\n>>> from sympy.abc import x,y\r\n>>> srepr([x,y])\r\n[Symbol('x'), Symbol('y')]\r\n>>> srepr((x,y))\r\n(Symbol('x'), Symbol('y'))\r\n```\r\n\r\nHowever, `srepr` prints the elements in `dict` and `set` wrong.\r\n```python\r\n>>> srepr({x, y})\r\n{x, y}\r\n>>> srepr({x: y})\r\n{x: y}\r\n```\r\n\r\nIs this behavior intended? If it isn't, fixing it will be an easy job.\n",
+        "start": 0,
+        "end": 480
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "srepr(set()) returns '{}', the same as srepr({}), so eval(srepr(set())) produces an empty dict rather than an empty set and the round-trip type check fails.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Because printer dispatch walks the MRO, srepr(OrderedDict([(x, y)])) (and likewise defaultdict/Counter or a set subclass) now prints as a plain '{Symbol('x'): Symbol('y')}' and loses the subclass type that Python repr previously preserved, so eval/type-preservation tests that passed before fail.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For srepr({Symbol('z'), Symbol('y'), Symbol('x'), Symbol('w')}) and larger sets of symbols or strings, iteration follows hash order instead of a canonical sorted order, so the exact output is not reliably \"{Symbol('w'), Symbol('x'), Symbol('y'), Symbol('z')}\" and can vary under different PYTHONHASHSEED values.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Previously exact outputs srepr(set()) == 'set()' and srepr(frozenset()) == 'frozenset()' now become '{}' and 'frozenset({})', changing behavior for empty containers beyond printing dict/set elements correctly and breaking prior exact-output tests.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A self-referential dict such as d = {}; d[x] = d makes srepr(d) recurse indefinitely and raise RecursionError, whereas a repr-style printer should terminate with a recursive placeholder like Python repr does.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A cyclic dict that Python repr previously printed finitely, e.g. d = {}; d['self'] = d, now triggers unbounded recursion through _print_dict and raises RecursionError in code paths that only embed such a dict in an srepr call.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 726,
+      "cached_tokens": 244,
+      "output_tokens": 12183,
+      "reasoning_tokens": 11745,
+      "micro_usd": 245637,
+      "seconds": 99.32659402499849
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "blocker": 10,
+        "not_reproduced": 1,
+        "unchecked": 4
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-1.3",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 762.1460959010001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "blocker": 1,
+        "not_reproduced": 3,
+        "unchecked": 3,
+        "refuted": 1,
+        "flaky": 1,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-19346/fixed_x/correctness-1.1"
+      ],
+      "wall_seconds": 356.8173475090007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~mwaskom__seaborn-3069",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:31:36Z",
+  "wall_seconds": 1468.7137051880018,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Nominal scale should be drawn the same way as categorical scales\nThree distinctive things happen on the categorical axis in seaborn's categorical plots:\r\n\r\n1. The scale is drawn to +/- 0.5 from the first and last tick, rather than using the normal margin logic\r\n2. A grid is not shown, even when it otherwise would be with the active style\r\n3. If on the y axis, the axis is inverted\r\n\r\nIt probably makes sense to have `so.Nominal` scales (including inferred ones) do this too. Some comments on implementation:\r\n\r\n1. This is actually trickier than you'd think; I may have posted an issue over in matplotlib about this at one point, or just discussed on their gitter. I believe the suggested approach is to add an invisible artist with sticky edges and set the margin to 0. Feels like a hack! I might have looked into setting the sticky edges _on the spine artist_ at one point?\r\n\r\n2. Probably straightforward to do in `Plotter._finalize_figure`. Always a good idea? How do we defer to the theme if the user wants to force a grid? Should the grid be something that is set in the scale object itself\r\n\r\n3. Probably straightforward to implement but I am not exactly sure where would be best.\n",
+        "start": 0,
+        "end": 1188
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~mwaskom__seaborn-3069",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Plot a numeric x against a Nominal y with two col facets sharing the y axis. Calling invert_yaxis once per shared subplot cancels the inversion, leaving the first category at the bottom instead of the top.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Plot continuous, non-Nominal data containing np.inf in x or y using a layer that drops missing rows. Removing mode.use_inf_as_null means the inf row is no longer dropped or nulled, changing axis limits or drawing behavior compared with before the change.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Plot two layers whose Nominal x categories are disjoint, such as ['a', 'b'] in one layer and ['b', 'c'] in another. If the stored category list reflects only the last-trained layer, xlim is set to (-0.5, 1.5) and the category at position 2 is clipped outside the axis.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use Plot.on(ax) with an existing y-Nominal axes that the user has already inverted. _finalize_figure calls invert_yaxis unconditionally, toggling the already-correct axis back to uninverted instead of preserving the user's setup.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a Nominal-y plot with an explicit expanded limit such as Plot.limit(y=(-1, 3)). The Nominal block inverts the axis, but the later user-limit block reapplies the ascending tuple, so the final axis is not inverted as required.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Render or finalize the same Nominal-y figure twice, such as repeated show/save on a supplied target figure. Each pass toggles the y axis, so category order alternates between renders whereas rendering was previously idempotent.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1704,
+      "cached_tokens": 116,
+      "output_tokens": 6786,
+      "reasoning_tokens": 6366,
+      "micro_usd": 142096,
+      "seconds": 57.60949742199955
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 1,
+        "refuted": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 881.7343988080029
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "s_sat_inconclusive": 1,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 529.0763714399982
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:293cd30a89ac038f8aaffcc0ac021d3d798f93e552f15b80b86fa0d99cb95879"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:293cd30a89ac038f8aaffcc0ac021d3d798f93e552f15b80b86fa0d99cb95879"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

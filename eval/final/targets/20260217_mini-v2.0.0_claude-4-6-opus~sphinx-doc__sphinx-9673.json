@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-9673",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1450.2276877979998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc_typehints_description_target not working with Napoleon\n### Describe the bug\n\nI was trying to use the config option `autodoc_typehints_description_target = \"documented\"` combined with the Napoleon plugin (using Google style).\r\n\r\nThe return types were missing from the resulting documentation.\r\n\r\n\n\n### How to Reproduce\n\nJust generate the documentation using Napoleon and the config options:\r\n```python\r\nautodoc_typehints = \"description\"\r\nautodoc_typehints_description_target = \"documented\"\r\n\r\nnapoleon_numpy_docstring = False\r\n```\r\n\r\nGenerate the documentation of a function with the following docstring:\r\n\r\n```\r\n\"\"\"\r\nDescription.\r\n\r\nParameters:\r\n    param1: First parameter.\r\n    param2: Second parameter.\r\n\r\nReturns:\r\n    The returned value.\r\n\r\n\"\"\"\r\n```\n\n### Expected behavior\n\nAs the return is specified, the return type should be present in the documentation, either as a rtype section or as part of the return description.\n\n### Your project\n\nhttps://github.com/Tuxemon/Tuxemon\n\n### Screenshots\n\n![bildo](https://user-images.githubusercontent.com/2364173/133911607-f45de9af-c9e9-4d67-815f-4c571e70ec49.png)\r\n\n\n### OS\n\nWin\n\n### Python version\n\n3.8\n\n### Sphinx version\n\n4.2.0\n\n### Sphinx extensions\n\n    'sphinx.ext.autodoc',     'sphinx.ext.todo',     'sphinx.ext.viewcode',     'sphinx.ext.githubpages',     'sphinx.ext.napoleon',\n\n### Extra tools\n\n_No response_\n\n### Additional context\n\n_No response_\n",
+        "start": 0,
+        "end": 1413
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-9673",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the exact issue example with autodoc and Napoleon Google style, autodoc_typehints='description', autodoc_typehints_description_target='documented', and a function annotated '-> bool' whose docstring has a Returns section without a type. The rendered output still contains no bool return type, because the field produced for the return description is not the one the new 'returns' handling successfully augments.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a Napoleon-documented function with a documented Returns section and target='documented' that previously rendered only an rtype for the return annotation. After the change it also renders a spurious 'type return' parameter-type field because 'returns' now registers return with a param flag.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call modify_field_list on a field list containing ':param param1:' and ':returns:' fields with annotations for param1 and return. It adds a bogus 'type return' field from treating return as a documented parameter, or otherwise fails to add exactly one proper 'rtype' field with the return annotation.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build plain reST documentation using ':returns:' without Napoleon and autodoc_typehints_description_target='all'. Previously the return annotation appeared as a separate rtype field, but after the change it is merged into or lost from the returns description, changing existing rendered output.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the same Napoleon Returns docstring with autodoc_typehints_description_target='all' so augment_descriptions_with_types runs. The return annotation is neither inserted into the 'returns' description nor emitted as an rtype, because recording 'returns' as a description suppresses the fallback while the later lookup still searches for a differently named return field.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a docstring that already documents a return type, such as ':returns:' together with an existing ':rtype:', plus a conflicting function return annotation and target='documented'. The change adds a second rtype field instead of leaving the existing documented return type alone.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1098,
+      "cached_tokens": 116,
+      "output_tokens": 13741,
+      "reasoning_tokens": 13253,
+      "micro_usd": 278772,
+      "seconds": 114.77259184299999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "suspected": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 646.277137991
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 9,
+        "not_reproduced": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 688.1600953689999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:506c06636145f5752827a4f9b21c5dc74f963917a335faa92f0086c68805079c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:506c06636145f5752827a4f9b21c5dc74f963917a335faa92f0086c68805079c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

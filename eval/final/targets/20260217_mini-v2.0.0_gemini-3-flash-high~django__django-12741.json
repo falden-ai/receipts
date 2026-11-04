@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12741",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:04:49Z",
+  "wall_seconds": 1043.7077225079993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Simplify signature of `DatabaseOperations.execute_sql_flush()`\nDescription\n\t\nThe current signature is:\ndef execute_sql_flush(self, using, sql_list):\nThe using argument can be dropped and inferred by the calling instance: self.connection.alias.\ndef execute_sql_flush(self, sql_list):\nSome internal ises of this method are already doing:\nconnection.ops.execute_sql_flush(connection.alias, sql_flush)\n",
+        "start": 0,
+        "end": 398
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12741",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call any remaining in-repo caller that still uses the quoted old pattern, e.g. connection.ops.execute_sql_flush(connection.alias, sql_list) in backend/flush tests or helpers; it now raises TypeError because the method takes only sql_list, so the simplification is incompletely applied.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define a custom backend operations subclass overriding the old execute_sql_flush(self, using, sql_list) signature and run the flush command; it raises TypeError from the new one-argument call, breaking backends that worked before.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the flush management command with --database set to a non-default connection after seeding both databases; the non-default database is not flushed, or the default is flushed instead, if the inferred self.connection.alias does not match the requested database.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the previously public API as existing user code does, connection.ops.execute_sql_flush('default', sql_list) or execute_sql_flush(using='default', sql_list=sql_list); it now raises TypeError instead of flushing the database.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call the new signature directly, connections['other'].ops.execute_sql_flush(sql_list), with a multi-statement list whose second statement fails; the first statement is not rolled back on that connection, showing the atomic block is not using self.connection.alias as claimed.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call execute_sql_flush with a using alias intentionally different from ops.connection.alias, as the old signature allowed; the transaction previously opened on the given alias is now silently opened on ops.connection.alias, changing which database's transaction/rollback semantics apply.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 739,
+      "cached_tokens": 116,
+      "output_tokens": 3603,
+      "reasoning_tokens": 3196,
+      "micro_usd": 74576,
+      "seconds": 30.99922719800088
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 3,
+        "suspected": 4,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 735.9582872319988
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 3,
+        "unchecked": 2,
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 3
+      },
+      "blockers": [],
+      "wall_seconds": 276.0851928919983
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:de01cb2862f1648cad44d885cbf16352b5681d6aa00c87b22a74cf369462c8cc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:de01cb2862f1648cad44d885cbf16352b5681d6aa00c87b22a74cf369462c8cc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

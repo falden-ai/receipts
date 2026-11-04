@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8595",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:00:39Z",
+  "wall_seconds": 1363.3305937309997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc: empty __all__ attribute is ignored\n**Describe the bug**\r\nautodoc: empty `__all__` attribute is ignored\r\n\r\n**To Reproduce**\r\n```\r\n# example.py\r\n__all__ = []\r\n\r\n\r\ndef foo():\r\n    \"docstring\"\r\n\r\n\r\ndef bar():\r\n    \"docstring\"\r\n\r\n\r\ndef baz():\r\n    \"docstring\"\r\n```\r\n```\r\n# index.rst\r\n.. automodule:: example\r\n   :members:\r\n```\r\n\r\nAll foo, bar, and baz are shown.\r\n\r\n**Expected behavior**\r\nNo entries should be shown because `__all__` is empty.\r\n\r\n**Your project**\r\nNo\r\n\r\n**Screenshots**\r\nNo\r\n\r\n**Environment info**\r\n- OS: Mac\r\n- Python version: 3.9.1\r\n- Sphinx version: HEAD of 3.x\r\n- Sphinx extensions: sphinx.ext.autodoc\r\n- Extra tools: No\r\n\r\n**Additional context**\r\nNo\n",
+        "start": 0,
+        "end": 676
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8595",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the issue's example with __all__ = [] and '.. automodule:: example' with ':members:'; foo, bar, and baz are still documented instead of producing no entries.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Document a module with __all__ = [] using automodule with ':members:' and ':ignore-module-all:'; members that were previously documented because __all__ was ignored are now incorrectly omitted.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a package whose __init__.py sets __all__ = [] and imports a submodule, using automodule with ':members:'; the imported submodule is still documented through submodule handling despite the empty __all__.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Document a module with __all__ = [] using automodule with explicit ':members: foo, bar'; the explicitly requested members are now incorrectly suppressed instead of being documented as before.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Generate module documentation through autosummary for a module with __all__ = [] and ':members:'; autosummary still lists foo, bar, and baz because its separate __all__ handling was not changed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Document a module with __all__ = () (empty tuple); it previously fell back to documenting implicit local members like a module without __all__, but now documents nothing, changing behavior beyond the empty-list case.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 682,
+      "cached_tokens": 244,
+      "output_tokens": 9167,
+      "reasoning_tokens": 8818,
+      "micro_usd": 185141,
+      "seconds": 64.67570995700044
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "refuted": 1,
+        "possibly_toxic": 3,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 900.8084136560001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 397.0523206809994
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a9acd43f02011ca3674a89c35de28d083116e52f2d36be27b5c4b992eda7810a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a9acd43f02011ca3674a89c35de28d083116e52f2d36be27b5c4b992eda7810a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a9acd43f02011ca3674a89c35de28d083116e52f2d36be27b5c4b992eda7810a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a9acd43f02011ca3674a89c35de28d083116e52f2d36be27b5c4b992eda7810a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

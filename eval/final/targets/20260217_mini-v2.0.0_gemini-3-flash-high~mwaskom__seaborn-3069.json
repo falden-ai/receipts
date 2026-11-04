@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3069",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:04:12Z",
+  "wall_seconds": 1494.6591990499983,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Nominal scale should be drawn the same way as categorical scales\nThree distinctive things happen on the categorical axis in seaborn's categorical plots:\r\n\r\n1. The scale is drawn to +/- 0.5 from the first and last tick, rather than using the normal margin logic\r\n2. A grid is not shown, even when it otherwise would be with the active style\r\n3. If on the y axis, the axis is inverted\r\n\r\nIt probably makes sense to have `so.Nominal` scales (including inferred ones) do this too. Some comments on implementation:\r\n\r\n1. This is actually trickier than you'd think; I may have posted an issue over in matplotlib about this at one point, or just discussed on their gitter. I believe the suggested approach is to add an invisible artist with sticky edges and set the margin to 0. Feels like a hack! I might have looked into setting the sticky edges _on the spine artist_ at one point?\r\n\r\n2. Probably straightforward to do in `Plotter._finalize_figure`. Always a good idea? How do we defer to the theme if the user wants to force a grid? Should the grid be something that is set in the scale object itself\r\n\r\n3. Probably straightforward to implement but I am not exactly sure where would be best.\n",
+        "start": 0,
+        "end": 1188
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~mwaskom__seaborn-3069",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With a theme or rcParams that enable minor gridlines, a Plot with a Nominal x or y axis still shows minor gridlines on that axis, because ax.grid(False, axis=axis) only disables the major grid by default.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A Plot drawn with Plot.on(fig) onto axes where the user explicitly enabled a grid (ax.grid(True)) or supplied ascending y limits has that customization clobbered: the Nominal check forces the grid off and invert_yaxis flips the user's y range even though the user overrode the defaults.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "In a multi-layer Plot where a later layer or a stat-transformed layer introduces a Nominal category absent from the data used to set scale._units_seed, that category is placed at or beyond position len(_units_seed) and is clipped by the hard (-0.5, n - 0.5) limit instead of being drawn with a tick inside padded limits.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "When a Nominal-y subplot shares its y axis with a continuous-y subplot (paired or shared-axis faceting), inverting and limiting the Nominal subplot also inverts and clamps the continuous subplot that shares the axis, changing a plot the fix did not target.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "In a paired or faceted Plot whose subplots share an axis but use Nominal variables with different numbers of categories, the last subplot processed overwrites the shared axis limits, so earlier subplots are not drawn to +/-0.5 around their own first and last ticks.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For a Nominal axis whose seed contains categories absent from the plotted data (e.g. unused pandas Categorical categories or an order list used only for ordering), the hard (-0.5, n - 0.5) limit and disabled autoscaling expand the axis with empty slots and clip later artists added to the returned axes, whereas before the axis autoscaled to the data.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1189,
+      "cached_tokens": 116,
+      "output_tokens": 10454,
+      "reasoning_tokens": 9983,
+      "micro_usd": 213396,
+      "seconds": 91.64106406899737
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 1,
+        "not_reproduced": 1,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 885.5375295429985
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 16,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 8,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 517.1850066760016
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:293cd30a89ac038f8aaffcc0ac021d3d798f93e552f15b80b86fa0d99cb95879"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:293cd30a89ac038f8aaffcc0ac021d3d798f93e552f15b80b86fa0d99cb95879"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

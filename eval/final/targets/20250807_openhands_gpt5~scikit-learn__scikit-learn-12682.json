@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~scikit-learn__scikit-learn-12682",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:04:45Z",
+  "wall_seconds": 1471.1277174829993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`SparseCoder` doesn't expose `max_iter` for `Lasso`\n`SparseCoder` uses `Lasso` if the algorithm is set to `lasso_cd`. It sets some of the `Lasso`'s parameters, but not `max_iter`, and that by default is 1000. This results in a warning in `examples/decomposition/plot_sparse_coding.py` complaining that the estimator has not converged.\r\n\r\nI guess there should be a way for the user to specify other parameters of the estimator used in `SparseCoder` other than the ones provided in the `SparseCoder.__init__` right now.\n",
+        "start": 0,
+        "end": 518
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~scikit-learn__scikit-learn-12682",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Fit a SparseCoder with transform_algorithm='lasso_cd' and transform_max_iter=10000 on data/dictionary that need >1000 Lasso iterations, then transform: it still emits ConvergenceWarning and matches the max_iter=1000 code instead of a Lasso(max_iter=10000) reference.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With no transform_max_iter supplied, SparseCoder/DictionaryLearning/MiniBatchDictionaryLearning transform with lasso_cd on fixed data produces different codes than before the change instead of exactly reproducing the old max_iter=1000 result.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call DictionaryLearning(transform_algorithm='lasso_cd', transform_max_iter=1).fit_transform(X) versus transform_max_iter=10000: the returned code is unchanged because fit_transform returns internal dictionary-learning code rather than going through transform(), so the new limit is ignored there.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Unpickle a SparseCoder (or DictionaryLearning) saved before the change and call transform(X): it raises AttributeError for transform_max_iter instead of transforming as the old object did.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use SparseCoder(transform_algorithm='lasso_cd', n_jobs=2, transform_max_iter=1) versus transform_max_iter=10000 and transform the same X: the codes are identical, showing max_iter is dropped on the parallel sparse_encode path.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call SparseCoder with the default transform_algorithm='omp' (and also 'threshold') on ordinary data: transform now raises TypeError or returns different coefficients because max_iter is forwarded unconditionally to sparse_encode paths that did not use it before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1254,
+      "cached_tokens": 244,
+      "output_tokens": 6686,
+      "reasoning_tokens": 6281,
+      "micro_usd": 137809,
+      "seconds": 57.10488163800255
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 3,
+        "blocker": 3,
+        "refuted": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~scikit-learn__scikit-learn-12682/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~scikit-learn__scikit-learn-12682/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~scikit-learn__scikit-learn-12682/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 894.7974518219999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 2,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 518.4207783019992
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:42e816804bf48e567e8e63eff71d8ee125e507270fa5b4d4ab65844acc2bceee"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:42e816804bf48e567e8e63eff71d8ee125e507270fa5b4d4ab65844acc2bceee"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

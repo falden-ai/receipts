@@ -1,0 +1,178 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-7889",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 1742.7332755040002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Autodoc extension's mock file throws TypeError for generic-typed classes.\n**Describe the bug**\r\nWhen building the docs for a generically-typed class, a TypeError is thrown as Autodoc's `mock._make_subclass` attempts to concatenate a `str` to a `TypeVar`. See the attached log: [sphinx-err-325ndteh.log](https://github.com/sphinx-doc/sphinx/files/4842672/sphinx-err-325ndteh.log)\r\n\r\n\r\n**To Reproduce**\r\n```\r\n$ git https://github.com/perrygoy/screenpy.git\r\n$ cd screenpy/docs\r\n$ python -m venv env\r\n$ source env/bin/activate\r\n$ pip install sphinx pyhamcrest selenium typing_extensions\r\n$ make html\r\n```\r\nObserve the docs command fails with a TypeError.\r\n\r\n**Expected behavior**\r\nDocs can still be built when generics are involved.\r\n\r\n**Your project**\r\nhttps://github.com/perrygoy/screenpy.git\r\n\r\n**Environment info**\r\n- OS: Mac 10.15.5 (19F101)\r\n- Python version: 3.7.7\r\n- Sphinx version: 3.1.1\r\n- Sphinx extensions:  sphinx.ext.autodoc, sphinx.ext.intersphinx, sphinx.ext.coverage, sphinx.ext.ifconfig, sphinx.ext.napoleon\r\n\r\n**Additional context**\r\nThis might just be me not knowing how to make Sphinx-friendly generic typing, if that's the case please let me know!\n",
+        "start": 0,
+        "end": 1166
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-7889",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] With autodoc_mock_imports, define a documented class inheriting from a mocked generic class at class level, e.g. class Foo(mocked.Base[T]), and build/import it; subscripting the mock type may bypass the instance __getitem__ path and still raise TypeError ('type' object is not subscriptable) before _make_subclass is reached.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call _make_subclass with invalid non-TypeVar inputs that previously raised TypeError, e.g. _make_subclass(123, 'mod') or _make_subclass('Foo', None); after the change they silently create types named '123' with __module__ 'None', changing fail-fast behavior beyond the TypeVar fix.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Subscript a mocked base with two type variables, e.g. mocked.Base[T, S] or _MockObject()[T, S], so the key is a tuple; the fix falls back to repr(tuple) as the type name, producing an invalid/weird __name__/__display_name__ that breaks subclass creation or autodoc rendering instead of cleanly supporting multi-parameter generics.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Subscript a mock with a real class or builtin, e.g. mocked.Base[RealClass] or mocked.Base[int]; the change now uses only __name__ ('RealClass'/'int') for __display_name__, losing module qualification and potentially colliding distinct same-named classes in autodoc output, whereas only TypeVar handling was required.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Subscript a mocked base with a nested typing construct or non-TypeVar object whose __name__ is missing or non-string, e.g. mocked.Base[List[T]] or a parameter object with __name__ set to a mock/int; _make_subclass still concatenates a non-str or misnames the subclass and raises TypeError or fails during documentation.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Pass a non-string module that is a mock/TypeVar-like object, e.g. _make_subclass('Foo', T) or a mock module object; str(module) now fabricates __module__ values such as '~T' or a mock repr instead of failing, corrupting __qualname__/module lookup for objects outside the reported issue.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 836,
+      "cached_tokens": 244,
+      "output_tokens": 13712,
+      "reasoning_tokens": 13156,
+      "micro_usd": 276657,
+      "seconds": 129.901075105
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "blocker": 4,
+        "not_reproduced": 1,
+        "possibly_toxic": 2,
+        "unchecked": 2,
+        "suspected": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-7889/fixed_x/correctness-1.1",
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-7889/fixed_x/correctness-1.2",
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-7889/fixed_x/correctness-3.1",
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-7889/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1228.557052247
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 2,
+        "possibly_toxic": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 383.58195049000005
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

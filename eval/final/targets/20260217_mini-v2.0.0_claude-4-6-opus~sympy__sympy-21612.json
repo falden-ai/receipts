@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:00:30Z",
+  "wall_seconds": 1933.4027995919987,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Latex parsing of fractions yields wrong expression due to missing brackets\nProblematic latex expression: `\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\"`\r\n\r\nis parsed to: `((a**3 + b)/c)/1/(c**2)`.\r\n\r\nExpected is: `((a**3 + b)/c)/(1/(c**2))`. \r\n\r\nThe missing brackets in the denominator result in a wrong expression.\r\n\r\n## Tested on\r\n\r\n- 1.8\r\n- 1.6.2\r\n\r\n## Reproduce:\r\n\r\n```\r\nroot@d31ef1c26093:/# python3\r\nPython 3.6.9 (default, Jan 26 2021, 15:33:00)\r\n[GCC 8.4.0] on linux\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from sympy.parsing.latex import parse_latex\r\n>>> parse_latex(\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\")\r\n((a**3 + b)/c)/1/(c**2)\r\n\r\n\n",
+        "start": 0,
+        "end": 681
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling parse_latex(r\"\\frac{\\frac{a^3+b}{c}}{\\frac{1}{c^2}}\") and comparing the returned object, or its evalf at a=2,b=3,c=5, to ((a**3+b)/c)/(1/(c**2)) still fails, because the change only alters StrPrinter output and does not fix the expression constructed by the LaTeX parser.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: sstr(a*(x**y)**-1) changes from the previously correct and unambiguous 'a/x**y' to 'a/(x**y)', breaking existing exact-string expectations for ordinary Pow-of-Pow denominators.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling sstr on a Mul whose denominator factor has exponent -2 rather than -1, e.g. Mul(a, Pow(Pow(Pow(c, 2), -1, evaluate=False), -2, evaluate=False), evaluate=False), still prints the inner 1/c**2 without surrounding brackets, because the new pow_paren handling only runs in the exp == -1 branch.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: sstr(Mul(a, Pow(Pow(b, 2), -1, evaluate=False), evaluate=False)) changes from 'a/b**2' to 'a/(b**2)' even though no nested fraction is involved, altering StrPrinter output beyond the reported issue.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling str(parse_latex(r\"\\frac{a}{\\frac{1}{b^2}\\frac{1}{c^2}}\")) still re-parses to a different value, because each Pow denominator is bracketed individually while their product in the denominator is not bracketed as a whole.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: sstr(Mul(x, Pow(Pow(a, b), -1, evaluate=False), Pow(Pow(a, b), -1, evaluate=False), evaluate=False)) double-wraps or mis-wraps the repeated denominator as '((a**b))' because the pow_paren fix-up always rewrites b_str[b.index(item.base)], i.e. the first matching entry.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 705,
+      "cached_tokens": 244,
+      "output_tokens": 13348,
+      "reasoning_tokens": 12813,
+      "micro_usd": 268853,
+      "seconds": 86.45389356799933
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "s_sat_inconclusive": 1,
+        "suspected": 2,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1435.0717387140012
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 2,
+        "blocker": 2,
+        "refuted": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-21612/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 411.432949156002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:58c0cae0b84682b84a36d2069c6c65e8853bf19540cfbdc1257adba8a404fb0a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:58c0cae0b84682b84a36d2069c6c65e8853bf19540cfbdc1257adba8a404fb0a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

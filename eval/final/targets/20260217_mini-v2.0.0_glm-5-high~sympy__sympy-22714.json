@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-22714",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:33:41Z",
+  "wall_seconds": 2552.995567834001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "simpify gives `Imaginary coordinates are not permitted.` with evaluate(False)\n## Issue\r\n`with evaluate(False)` crashes unexpectedly with `Point2D`\r\n\r\n## Code\r\n```python\r\nimport sympy as sp\r\nwith sp.evaluate(False):\r\n  sp.S('Point2D(Integer(1),Integer(2))')\r\n```\r\n\r\n## Error\r\n```\r\nTraceback (most recent call last):\r\n  File \"<stdin>\", line 1, in <module>\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/core/sympify.py\", line 472, in sympify\r\n    expr = parse_expr(a, local_dict=locals, transformations=transformations, evaluate=evaluate)\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/parsing/sympy_parser.py\", line 1026, in parse_expr\r\n    raise e from ValueError(f\"Error from parse_expr with transformed code: {code!r}\")\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/parsing/sympy_parser.py\", line 1017, in parse_expr\r\n    rv = eval_expr(code, local_dict, global_dict)\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/parsing/sympy_parser.py\", line 911, in eval_expr\r\n    expr = eval(\r\n  File \"<string>\", line 1, in <module>\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/geometry/point.py\", line 912, in __new__\r\n    args = Point(*args, **kwargs)\r\n  File \"/home/avinash/.local/lib/python3.8/site-packages/sympy/geometry/point.py\", line 153, in __new__\r\n    raise ValueError('Imaginary coordinates are not permitted.')\r\nValueError: Imaginary coordinates are not permitted.\r\n```\r\n\r\nHowever, it works without `with evaluate(False)`. Both of following commands work\r\n```python\r\nsp.S('Point2D(Integer(1),Integer(2))')\r\nsp.S('Point2D(Integer(1),Integer(2))', evaluate=False)\r\n```\n",
+        "start": 0,
+        "end": 1660
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-22714",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running the exact issue reproduction `with evaluate(False): S('Point2D(Integer(1),Integer(2))')` still raises ValueError('Imaginary coordinates are not permitted.') because unevaluated im(Integer(1)) has is_zero=None, and `not None` is True.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Genuinely imaginary numeric coordinates such as Point2D(1+2*I, 2), Point2D(I, 0), and the same under evaluate(False) no longer raise ValueError if the new is_zero check lets them through.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Direct construction under the context, `with evaluate(False): Point2D(1, 2)` and `Point3D(1, 2, 3)`, still raises the imaginary-coordinate ValueError even if the parsed-string case passes, because im() inside Point.__new__ is also unevaluated.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A numeric coordinate whose imaginary part SymPy cannot prove zero or nonzero, such as Point2D(zeta(2+2*I), 0), changes behavior: it previously passed or raised a different error, but `not im(a).is_zero` with is_zero=None now raises the imaginary-coordinate ValueError.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Compound real coordinates under evaluate(False), such as `S('Point2D(Integer(1)+Integer(2), sqrt(Integer(3)))')`, still raise the ValueError because im() of the unevaluated Add/sqrt expression has is_zero=None rather than True.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Ordinary non-imaginary inputs change behavior, e.g. Point2D(1.0, 2.0) or Point2D(x, y) with plain symbols raises AttributeError/TypeError instead of constructing the point, because im(a) for such coordinates does not provide the expected is_zero result.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 966,
+      "cached_tokens": 244,
+      "output_tokens": 7173,
+      "reasoning_tokens": 6706,
+      "micro_usd": 146397,
+      "seconds": 57.94686628999989
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 1,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1448.2109252379996
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1046.0340095659994
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0a5c6aeddc200087268967e99fee450e7971848b58687abc3c92a7bdea1c8bc7"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0a5c6aeddc200087268967e99fee450e7971848b58687abc3c92a7bdea1c8bc7"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

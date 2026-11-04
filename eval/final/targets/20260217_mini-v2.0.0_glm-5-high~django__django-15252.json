@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15252",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:20:21Z",
+  "wall_seconds": 1847.9179111179983,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "MigrationRecorder does not obey db_router allow_migrate rules\nDescription\n\t\nHi,\nWe have a multi-db setup. We have one connection that is for the django project, and several connections that talk to other dbs for information (ie models with managed = False). Django should only create tables in the first connection, never in any of the other connections. We have a simple router that does the following: \nclass Router(object):\n\tdef allow_migrate(self, db, model):\n\t\tif db == 'default':\n\t\t\treturn True\n\t\treturn False\nCurrent Behaviour\nWe run our functional tests and the migrate command is called against each connection when the test databases are created (see django/test/runner.py, setup_databases, line 300-ish, which calls django/db/backends/creation.py, create_test_db, line 377-ish)\nWhen this migrate runs, it tries to apply our migrations, which tries to record that a migration has been applied (see django/db/migrations/executor.py, apply_migration, which has several calls to self.recorder.record_applied). \nThe first thing that record_applied does is a call to self.ensure_schema() (see django/db/migrations/recorder.py, record_applied, lien 66-ish). \nensure_schema checks to see if the Migration model is in the tables in the connection. If it does not find the table then it tries to create the table. \nI believe that this is incorrect behaviour when a db_router has been provided. If using the router above, my expectation would be that the table is not created on any connection other than the 'default' connection. Looking at the other methods on the MigrationRecorder, I would expect that there will be similar issues with applied_migrations and record_unapplied.\n",
+        "start": 0,
+        "end": 1681
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15252",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With a router that denies only the target app on 'other' (allow_migrate returns False for app_label='myapp' but True/None otherwise), call MigrationRecorder(other_connection).record_applied('myapp', '0001') or run the executor on 'other'. The recorder checks only the internal Migration model, so it still creates the django_migrations table on 'other' and inserts the record.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On the default database, use a pre-existing whitelist router that returns True only for named installed app_labels and False otherwise (never expecting the internal 'migrations' app). MigrationRecorder(default).record_applied() now silently no-ops and applied_migrations() returns {}, so a normal migrate that previously created django_migrations and recorded migrations records nothing and re-runs migrations on every invocation.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the issue's verbatim old-style router allow_migrate(self, db, model) returning True only for db='default', then call MigrationRecorder(other_connection).ensure_schema() and record_applied('myapp', '0001'). Routing through allow_migrate_model passes an app_label string instead of the model class the router expects, so the router mis-evaluates or raises and the table is still created on 'other'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create the django_migrations table with recorded rows on a secondary database while migrations are allowed, then switch to a router denying that database and call applied_migrations() and record_unapplied(). Previously both reflected/removed the real rows; now applied_migrations() returns {} despite existing records and record_unapplied() silently leaves the row, causing duplicate re-application errors or stale state.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run migrations end-to-end on 'other' via MigrationExecutor.migrate() (as setup_databases/create_test_db does) with the issue router denying all migrations on 'other', using a migration containing RunPython/RunSQL operations. Even though the recorder no-ops, the executor still executes those operations against 'other', creating data/tables there despite the router.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a router on the default database that inspects the routed model, e.g. hints['model']._meta.app_config or apps.get_model(app_label, model_name), which worked for all real models before. Recorder methods now route the fake Migration model (app_label='migrations', backed by an empty Apps registry), raising LookupError/AttributeError and breaking migrate on the default database.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1141,
+      "cached_tokens": 116,
+      "output_tokens": 6275,
+      "reasoning_tokens": 5687,
+      "micro_usd": 129624,
+      "seconds": 61.11326558200017
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "not_reproduced": 2,
+        "blocker": 3,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15252/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15252/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15252/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1315.7150996669989
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 1,
+        "unchecked": 10
+      },
+      "blockers": [],
+      "wall_seconds": 470.36062796499755
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a0b5f4ded1ae6162e10a2d66a6e4a6b359b27d809c9935ae3675bb8d5d21df6e"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a0b5f4ded1ae6162e10a2d66a6e4a6b359b27d809c9935ae3675bb8d5d21df6e"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

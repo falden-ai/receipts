@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.001" timestamp="2026-10-27T00:00:00.000000+00:00" hostname="sandbox"><testcase classname="tests.test_crash" name="test_crash_in_changed" file="tests/test_crash.py" line="3" time="0.001"><failure message="ZeroDivisionError: division by zero">Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+                             ~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 250, in &lt;lambda&gt;
+    lambda: runtest_hook(item=item, **kwds),
+            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ~~~~~~~~~~~~~~^
+        self.name, self._hookimpls.copy(), call_kwargs, firstresult
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/logging.py", line 865, in pytest_runtest_call
+    yield
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/capture.py", line 900, in pytest_runtest_call
+    return (yield)
+            ^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/skipping.py", line 268, in pytest_runtest_call
+    return (yield)
+            ^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 184, in pytest_runtest_call
+    item.runtest()
+    ~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/python.py", line 1707, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ~~~~~~~~~~~~~~^
+        self.name, self._hookimpls.copy(), call_kwargs, firstresult
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/python.py", line 167, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File "/workspace/tests/test_crash.py", line 5, in test_crash_in_changed
+    assert divide(1, 0) == 0
+           ~~~~~~^^^^^^
+  File "/workspace/src/pkg/mod.py", line 2, in divide
+    return a / b
+           ~~^~~
+ZeroDivisionError: division by zero</failure></testcase></testsuite></testsuites>

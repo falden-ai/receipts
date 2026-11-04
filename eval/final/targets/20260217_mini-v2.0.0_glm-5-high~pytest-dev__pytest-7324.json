@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-7324",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:24:34Z",
+  "wall_seconds": 1172.243796113995,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Pytest crashes the interpreter on debug build for 3.8+\nShort reproducer\r\n```py\r\n>>> Expression.compile(\"False\")\r\npython: Python/compile.c:3559: compiler_nameop: Assertion `!_PyUnicode_EqualToASCIIString(name, \"None\") && !_PyUnicode_EqualToASCIIString(name, \"True\") && !_PyUnicode_EqualToASCIIString(name, \"False\")' failed.\r\n[1]    29440 abort (core dumped)  python\r\n```\r\n\r\nRelated issue for improvement of this behavior: [bpo-40870](https://bugs.python.org/issue40870)\n",
+        "start": 0,
+        "end": 469
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-7324",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On Python 3.12+, Expression.compile('True') fails or raises DeprecationWarning-as-error because ast.NameConstant is deprecated/removed, instead of compiling without crashing.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A test named test_False_positive previously matched by -k 'False' (and test_True by -k 'True') via the matcher is now never/always selected because False/True became constants instead of matcher names.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Expression.compile('not False and (True or None)') still crashes or raises on a debug build because a constant in a nested unary/boolean context is not converted correctly.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "The compound expression -k 'False or mytest' previously selected tests matching either substring, but now selects only mytest matches, changing selection beyond fixing the crash.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Expression.compile('None').evaluate(matcher) or Expression.compile('True').evaluate(matcher) does not return the constant's truth value, e.g. None evaluates through the matcher or raises instead of being falsey.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Expression.compile('True') under warnings-as-errors now emits a DeprecationWarning from ast.NameConstant on newer Pythons, breaking runs that previously compiled the same expression silently on release builds.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 621,
+      "cached_tokens": 116,
+      "output_tokens": 5327,
+      "reasoning_tokens": 4985,
+      "micro_usd": 108584,
+      "seconds": 50.17071003700403
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 696.2303530099962
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 425.59527009500016
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-16819",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:58:58Z",
+  "wall_seconds": 1366.1285198020014,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Reduce Add/RemoveIndex migration operations.\nDescription\n\t\nWe should reduce AddIndex/RemoveIndex operations when optimizing migration operations.\n",
+        "start": 0,
+        "end": 146
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-16819",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing [RemoveIndex('Pony', name='idx'), AddIndex('Pony', Index(fields=['other_field'], name='idx'))], where the removed index was originally on a different field, returns [] instead of preserving the replacement, so the new index definition is never applied.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimizing [AddIndex('Pony', Index(name='idx')), SeparateDatabaseAndState(database_operations=[RunSQL that drops or uses 'idx']), RemoveIndex('Pony', name='idx')] cancels or moves past the SQL operation even though it does not reference the model by name, leaving SQL to run against an index that was never created or in the wrong order.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing [AddIndex('Pony', Index(name='a')), RemoveIndex('Pony', name='b'), RemoveIndex('Pony', name='a')] fails to cancel the matching AddIndex/RemoveIndex pair for 'a' because the intervening RemoveIndex for a different index still references the same model.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimizing [RemoveIndex('Pony', name='myidx'), AddIndex('Pony', Index(name='MyIdx'))] on a database with case-sensitive quoted identifiers returns [] because names are compared lowercased, incorrectly treating two distinct index names as the same index.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing [AddIndex('Pony', Index(name='idx')), AddField('Pony', unrelated_field), RemoveIndex('Pony', name='idx')] fails to cancel the AddIndex/RemoveIndex pair even though the intervening field operation does not affect that index, because reduction-through is blocked at whole-model granularity.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling AddIndex('Pony', ...).references_model('Pony', app_label='other_app') returns True despite the different app_label, so cross-app optimizer or rename handling for a same-named model in another app is newly blocked or rewritten where it previously passed through.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 792,
+      "cached_tokens": 116,
+      "output_tokens": 13521,
+      "reasoning_tokens": 13035,
+      "micro_usd": 273148,
+      "seconds": 106.3604079910001
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 2,
+        "blocker": 2,
+        "suspected": 1,
+        "refuted": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-16819/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-16819/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 876.4571253779995
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 4,
+        "unchecked": 4,
+        "not_reproduced": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-16819/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 379.34830373300065
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

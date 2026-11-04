@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13590",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:31:40Z",
+  "wall_seconds": 1254.078073482,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Upgrading 2.2>3.0 causes named tuples used as arguments to __range to error.\nDescription\n\t\nI noticed this while upgrading a project from 2.2 to 3.0.\nThis project passes named 2-tuples as arguments to range queryset filters. This works fine on 2.2. On 3.0 it causes the following error: TypeError: __new__() missing 1 required positional argument: 'far'.\nThis happens because django.db.models.sql.query.Query.resolve_lookup_value goes into the tuple elements to resolve lookups and then attempts to reconstitute the tuple with the resolved elements.\nWhen it attempts to construct the new tuple it preserves the type (the named tuple) but it passes a iterator to it's constructor.\nNamedTuples don't have the code path for copying an iterator, and so it errors on insufficient arguments.\nThe fix is to * expand the contents of the iterator into the constructor.\n",
+        "start": 0,
+        "end": 859
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13590",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Filtering with a plain collections.namedtuple as the __range argument, e.g. filter(id__range=RangeTuple(1, 5)), still raises TypeError: __new__() missing a required positional argument or returns the wrong rows.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A non-namedtuple tuple subclass that happens to define a _fields attribute but whose constructor takes a single iterable, used as an __in/__range value, worked before via type(value)(iterator) and now is misdetected as a namedtuple and breaks or is misbuilt via *resolved_values.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] A namedtuple for __range whose elements are expressions needing resolution, e.g. filter(id__range=RangeTuple(F('other_id'), Value(5))) or an OuterRef inside a subquery, fails to construct or leaves the expressions unresolved and errors at query compilation.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A custom list or tuple subclass whose constructor expects a single iterable/generator (or is variadic) used as a lookup value, e.g. for __in, worked before and now receives a list instead of a generator, changing its contents or raising TypeError.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Namedtuples created via typing.NamedTuple class syntax, with field defaults, or nested inside a list for __in / inside another tuple, are not detected or reconstituted correctly and still crash or produce malformed lookup values.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Plain tuples/lists and ordinary tuple subclasses without _fields containing expressions, empty values, or single elements passed to __in/__range/exact change type or content because they are now rebuilt from a materialized list rather than the original iterator path.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 694,
+      "cached_tokens": 116,
+      "output_tokens": 5090,
+      "reasoning_tokens": 4650,
+      "micro_usd": 104136,
+      "seconds": 41.51124734100085
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "suspected": 3,
+        "unchecked": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13590/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 871.8865439359997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 2,
+        "refuted": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 340.0612059390005
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

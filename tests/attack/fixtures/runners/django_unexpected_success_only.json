@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "tests/runtests.py",
+  "--verbosity",
+  "2",
+  "--parallel",
+  "1",
+  "--settings=test_sqlite",
+  "receipts_unexpected"
+ ],
+ "exit_code": 0,
+ "seconds": 0.8,
+ "stdout": "Testing against Django installed in '/testbed/django'\nImporting application receipts_unexpected\nSkipping setup of unused database(s): default, other.\nSystem check identified no issues (0 silenced).\n",
+ "stderr": "test_passes_unexpectedly (receipts_unexpected.tests.OnlyAnUnexpectedSuccess) ... unexpected success\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (unexpected successes=1)\n"
+}

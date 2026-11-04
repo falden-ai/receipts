@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-13315",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:07:10Z",
+  "wall_seconds": 1866.704865767002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "limit_choices_to on a ForeignKey can render duplicate options in formfield\nDescription\n\t\nIf you pass a Q object as limit_choices_to on a ForeignKey field involving a join, you may end up with duplicate options in your form.\nSee regressiontest in patch for a clear view on the problem.\n",
+        "start": 0,
+        "end": 285
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-13315",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the admin autocomplete endpoint for a ForeignKey whose limit_choices_to is a Q object spanning a reverse FK or M2M that matches the same target object twice. The autocomplete view applies complex_filter without the new distinct() call, so its JSON results still contain duplicate object IDs.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On PostgreSQL, pass a formfield queryset or default manager that already uses distinct('name') and a simple/no-join limit_choices_to. The unconditional distinct() call clears the DISTINCT ON field list, so rows previously collapsed to one per name are returned again.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Give the related model a Meta ordering (or get_choices ordering) on the same joined relation used by the Q limit_choices_to, then call field.get_choices() or render the ModelChoiceField. Because DISTINCT queries include/order by the joined ordering value, the same PK can still appear once per distinct ordering value.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Field.get_choices() or ForeignObjectRel.get_choices() with limit_choices_to=None or only a local-field filter, on a model whose custom manager queryset itself joins a reverse relation and previously produced duplicate choice rows. The new unconditional distinct() collapses those unrelated duplicates and changes the choice list even though limit_choices_to introduced no join.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a ModelForm whose formfield queryset is annotated with a non-aggregated joined value, e.g. annotate(book_title=F('books__title')), together with a join-based limit_choices_to Q matching multiple books. distinct() compares the annotation column too, so identical PKs with different annotation values still render as duplicate options.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a related model with a TextField/BLOB-like field or an ordering by a related/expression field and call get_choices() with a plain limit_choices_to. On backends such as Oracle/PostgreSQL, SELECT DISTINCT over all columns or with that ordering can now raise a database error or change ordering where the pre-change query succeeded.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 934,
+      "cached_tokens": 116,
+      "output_tokens": 9457,
+      "reasoning_tokens": 8975,
+      "micro_usd": 192436,
+      "seconds": 93.26931744900139
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "unchecked": 5,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1377.273386165998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 12
+      },
+      "blockers": [],
+      "wall_seconds": 395.62112149699897
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:64488830217057ea7dcaae1df5c8378713e67dd17c8e568b823e6ffc11ed16d5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:64488830217057ea7dcaae1df5c8378713e67dd17c8e568b823e6ffc11ed16d5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

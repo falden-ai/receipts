@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~scikit-learn__scikit-learn-12585",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T07:20:15Z",
+  "wall_seconds": 1325.2236632799998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "clone fails for parameters that are estimator types\n#### Description\r\n\r\n`clone` fails when one or more instance parameters are estimator types (i.e. not instances, but classes). \r\n\r\nI know this is a somewhat unusual use case, but I'm working on a project that provides wrappers for sklearn estimators (https://github.com/phausamann/sklearn-xarray) and I'd like to store the wrapped estimators as their classes - not their instances - as a parameter inside of a wrapper that behaves like an estimator itself. \r\n\r\n#### Steps/Code to Reproduce\r\n\r\n    from sklearn.preprocessing import StandardScaler\r\n    from sklearn.base import clone\r\n    clone(StandardScaler(with_mean=StandardScaler))\r\n\r\n#### Expected Results\r\n\r\nNo error.\r\n\r\n#### Actual Results\r\n```\r\nTraceback (most recent call last):\r\n...\r\n  File \"...\\lib\\site-packages\\sklearn\\base.py\", line 62, in clone\r\n    new_object_params[name] = clone(param, safe=False)\r\n  File \"...\\lib\\site-packages\\sklearn\\base.py\", line 60, in clone\r\n    new_object_params = estimator.get_params(deep=False)\r\nTypeError: get_params() missing 1 required positional argument: 'self'\r\n```\r\n\r\n#### Possible fix\r\n\r\nChange `base.py`, line 51 to: \r\n\r\n    elif not hasattr(estimator, 'get_params') or isinstance(estimator, type):\r\n\r\nI'm not sure whether this might break stuff in other places, however. I'd happily submit a PR if this change is desired.\r\n\r\n#### Versions\r\n\r\n    sklearn: 0.20.0\r\n\r\n\n",
+        "start": 0,
+        "end": 1422
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~scikit-learn__scikit-learn-12585",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling clone(StandardScaler) directly with the default safe=True raises TypeError claiming the class has no get_params, instead of returning the estimator type, so type cloning only works when nested as a parameter.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An estimator instance that is also a class, created by inheriting from both BaseEstimator and type with a mutable parameter, was previously reconstructed through get_params by clone; after the change clone either raises TypeError under safe=True or returns a deepcopy sharing parameters under safe=False.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling clone([StandardScaler]) or clone((StandardScaler,)) with default safe=True fails with TypeError because the container branch propagates safe=True to the class element, even though the same class as an estimator parameter would be cloned with safe=False.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A class whose metaclass provides a bound get_params method could previously be cloned through its metaclass constructor, but clone(MyClass, safe=True) now raises TypeError falsely stating it does not implement get_params.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Cloning an estimator whose type-valued parameter is a class with a metaclass that makes copy.deepcopy return a distinct class object breaks the required identity of the parameter, causing clone to raise RuntimeError about the constructor modifying a parameter or to return a cloned estimator whose parameter is not the original class.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Cloning an estimator whose parameter is a non-estimator class that defines get_params previously raised TypeError for the unbound method, but now silently accepts and returns the identical class, so clone no longer rejects non-estimator type parameters beyond the estimator-type case required by the issue.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 787,
+      "cached_tokens": 116,
+      "output_tokens": 10557,
+      "reasoning_tokens": 10147,
+      "micro_usd": 213848,
+      "seconds": 126.61574190399983
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "refuted": 5,
+        "unchecked": 2,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 553.4130019720001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 3,
+        "refuted": 4,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 644.7740237349999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:22a6f6cef16b3787cc34f7c9069bb5facb136d1430973842c7df2ee6ef5c694a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:22a6f6cef16b3787cc34f7c9069bb5facb136d1430973842c7df2ee6ef5c694a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

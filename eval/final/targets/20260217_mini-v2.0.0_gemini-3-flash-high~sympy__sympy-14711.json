@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 823.99247354,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "vector add 0 error\n```python\r\nfrom sympy.physics.vector import ReferenceFrame, Vector\r\nfrom sympy import symbols\r\nsum([N.x, (0 * N.x)])\r\n```\r\ngives\r\n```\r\n---------------------------------------------------------------------------\r\nTypeError                                 Traceback (most recent call last)\r\n<ipython-input-1-0b9155eecc0e> in <module>()\r\n      2 from sympy import symbols\r\n      3 N = ReferenceFrame('N')\r\n----> 4 sum([N.x, (0 * N.x)])\r\n\r\n/usr/local/lib/python3.6/site-packages/sympy/physics/vector/vector.py in __add__(self, other)\r\n     59         \"\"\"The add operator for Vector. \"\"\"\r\n     60         #if other == 0: return self\r\n---> 61         other = _check_vector(other)\r\n     62         return Vector(self.args + other.args)\r\n     63 \r\n\r\n/usr/local/lib/python3.6/site-packages/sympy/physics/vector/vector.py in _check_vector(other)\r\n    708 def _check_vector(other):\r\n    709     if not isinstance(other, Vector):\r\n--> 710         raise TypeError('A Vector must be supplied')\r\n    711     return other\r\n\r\nTypeError: A Vector must be supplied\r\n```\n",
+        "start": 0,
+        "end": 1070
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the exact issue example sum([N.x, (0 * N.x)]): the first operation is the reflected 0 + N.x, which may still raise TypeError if Vector.__radd__ is not the patched __add__ function.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call N.x + numpy.array([0, 0, 0]) or the Dyadic equivalent: other == 0 now produces an array, so the if raises ValueError about ambiguous truth instead of the previous TypeError from _check_vector.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run sum([outer(N.x, N.x), 0 * outer(N.x, N.x)]) for Dyadic: the reflected 0 + dyadic step may still raise TypeError if Dyadic.__radd__ is separate from the patched __add__.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call N.x + False or N.x + 0.0: these previously raised TypeError as non-Vectors, but now compare equal to 0 and silently return N.x, beyond the integer zero needed by sum().",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call N.x - 0 and 0 - N.x style zero arithmetic around the fixed addition path: subtraction with integer zero may still raise TypeError because only __add__ was patched, leaving zero handling incomplete for the same vector workflow.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call N.x + (x - x) for a Symbol x, a scalar SymPy zero expression: it previously raised TypeError as a non-Vector, but now is silently accepted and returns N.x, masking scalar/vector type errors.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 847,
+      "cached_tokens": 116,
+      "output_tokens": 7063,
+      "reasoning_tokens": 6658,
+      "micro_usd": 144208,
+      "seconds": 68.70186662699999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "blocker": 3,
+        "suspected": 2,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 503.41272313200005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "blocker": 2,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 251.59467841700007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0537c2ceb11735efc535da347b05f73b805d36995d75f40309bc3734b2c73370"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0537c2ceb11735efc535da347b05f73b805d36995d75f40309bc3734b2c73370"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-14007",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:17:48Z",
+  "wall_seconds": 1289.6544015,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Database converters (from_db_value) not called for returning_fields on insert\nDescription\n\t\nMaking a subclass of BigAutoField, I've found that, unlike all other query pathways, on insert the returned integer is not passed through any database converters defined for the field - including the from_db_value hook.\nThis means that a field which would normally use a wrapper class has instead a plain integer.\nTake this field:\nclass MyAutoField(models.BigAutoField):\n\tdef from_db_value(self, value, expression, connection):\n\t\tif value is None:\n\t\t\treturn None\n\t\treturn MyIntWrapper(value)\n\tdef get_prep_value(self, value):\n\t\tif value is None:\n\t\t\treturn None\n\t\treturn int(value)\nAnd a model that uses it:\nclass AutoModel(models.Model):\n\tid = MyAutoField(primary_key=True)\nQueried instances have the wrapper class for id:\n>>> am = AutoModel.objects.first()\n>>> am.id\n<MyIntWrapper: 1>\nBut on creation, the returned integer is directly set as an attribute on the class:\n>>> am2 = AutoModel.objects.create()\n>>> am2.id\n2\nThis also affects bulk_create on backends that support fetching the primary key value:\n>>> ams = [AutoModel()]\n>>> AutoModel.objects.bulk_create(ams)\n[<AutoModel: AutoModel object (2)>]\n>>> ams[0].id\n2\n",
+        "start": 0,
+        "end": 1214
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-14007",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a single object via AutoModel.objects.create() using the issue's MyAutoField(BigAutoField) whose from_db_value returns MyIntWrapper, on a RETURNING-capable backend. The saved instance's id remains a plain int instead of MyIntWrapper, showing the can_return_columns_from_insert path still bypasses converters.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Insert a model that has a non-PK db_default field declared before its PK on a backend that only returns last_insert_id. The single returned id is converted with the first returning field's converter rather than the PK's, corrupting or mistyping the PK that previously was assigned correctly.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call AutoModel.objects.bulk_create([AutoModel(), AutoModel()]) with the same custom auto field on a backend with can_return_rows_from_bulk_insert. The assigned ids remain plain ints instead of MyIntWrapper, showing the fetch_returned_insert_rows bulk path is not converted.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a model with a driver-converted db_default field such as a PostgreSQL UUIDField, DateTimeField, DecimalField, or ArrayField whose RETURNING value is already a Python object. Applying backend/field converters a second time raises an error or changes the value compared with pre-change insert behavior.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Force the fallback path by disabling can_return_columns_from_insert and can_return_rows_from_bulk_insert (or use a last_insert_id-only backend) and then create()/bulk_create() a single AutoModel. The id obtained from last_insert_id remains a plain int instead of MyIntWrapper, showing that branch misses conversion.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call an InsertQuery compiler directly with execute_sql(returning_fields=True), as existing internal/third-party callers may do, instead of a list of fields. The new returning_fields[:num_cols] subscript raises TypeError where the old code returned the raw inserted id rows.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1025,
+      "cached_tokens": 116,
+      "output_tokens": 12435,
+      "reasoning_tokens": 11963,
+      "micro_usd": 252360,
+      "seconds": 119.69715553800052
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 2,
+        "suspected": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~django__django-14007/nothing_else_changed/regression-3.1",
+        "20250807_openhands_gpt5~django__django-14007/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 762.1651016000033
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 8,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 407.17489455800023
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f4dbbfc63007c1cd7dfd24554bf2d93322826cded6cefbc36220742299504efb"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f4dbbfc63007c1cd7dfd24554bf2d93322826cded6cefbc36220742299504efb"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

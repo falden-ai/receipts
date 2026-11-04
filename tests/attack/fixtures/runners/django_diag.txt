@@ -1,0 +1,41 @@
+uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
+PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+/opt/miniconda3/envs/testbed/bin/python
+Python 3.6.13 :: Anaconda, Inc.
+testbed
+total 124
+drwxr-xr-x  10 nobody nogroup   580 Oct 27 19:33 .
+drwxr-xr-x   1 root   root       12 Oct 27 19:33 ..
+-rw-r--r--   1 nobody nogroup   782 Oct 31  2024 .editorconfig
+-rw-r--r--   1 nobody nogroup    86 Oct 31  2024 .eslintignore
+-rw-r--r--   1 nobody nogroup  1165 Oct 31  2024 .eslintrc
+-rw-r--r--   1 nobody nogroup   297 Oct 31  2024 .gitattributes
+-rw-r--r--   1 nobody nogroup   353 Oct 31  2024 .gitignore
+-rw-r--r--   1 nobody nogroup   164 Oct 31  2024 .hgignore
+drwxr-xr-x   2 nobody nogroup    60 Oct 31  2024 .tx
+-rw-r--r--   1 nobody nogroup 36768 Oct 31  2024 AUTHORS
+-rw-r--r--   1 nobody nogroup  1115 Oct 31  2024 CONTRIBUTING.rst
+drwxr-xr-x   2 nobody nogroup   180 Oct 31  2024 Django.egg-info
+-rw-r--r--   1 nobody nogroup    51 Oct 31  2024 FUNDING.yml
+-rw-r--r--   1 nobody nogroup   353 Oct 31  2024 Gruntfile.js
+-rw-r--r--   1 nobody nogroup   311 Oct 31  2024 INSTALL
+-rw-r--r--   1 nobody nogroup  1552 Oct 31  2024 LICENSE
+-rw-r--r--   1 nobody nogroup 13231 Oct 31  2024 LICENSE.python
+-rw-r--r--   1 nobody nogroup   307 Oct 31  2024 MANIFEST.in
+-rw-r--r--   1 nobody nogroup  1900 Oct 31  2024 README.rst
+drwxr-xr-x  19 nobody nogroup   440 Oct 31  2024 django
+drwxr-xr-x  13 nobody nogroup   420 Oct 31  2024 docs
+drwxr-xr-x   2 nobody nogroup   100 Oct 31  2024 extras
+drwxr-xr-x   5 nobody nogroup   120 Oct 31  2024 js_tests
+-rw-r--r--   1 nobody nogroup   347 Oct 31  2024 package.json
+drwxr-xr-x   2 nobody nogroup    80 Oct 31  2024 scripts
+-rw-r--r--   1 nobody nogroup   390 Oct 31  2024 setup.cfg
+-rw-r--r--   1 nobody nogroup  4749 Oct 31  2024 setup.py
+drwxr-xr-x 212 nobody nogroup  4340 Oct 31  2024 tests
+-rw-r--r--   1 nobody nogroup  1535 Oct 31  2024 tox.ini
+50M	/testbed
+/opt/miniconda3/envs/testbed/bin/python 3.6.13
+['', '/opt/miniconda3/envs/testbed/lib/python36.zip', '/opt/miniconda3/envs/testbed/lib/python3.6', '/opt/miniconda3/envs/testbed/lib/python3.6/lib-dynload', '/opt/miniconda3/envs/testbed/lib/python3.6/site-packages', '/testbed']
+django /testbed/django/__init__.py
+sympy not importable ModuleNotFoundError
+pytest not importable ModuleNotFoundError

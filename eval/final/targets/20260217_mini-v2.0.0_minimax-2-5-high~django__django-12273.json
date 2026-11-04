@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-12273",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:37:17Z",
+  "wall_seconds": 2065.326874851,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Resetting primary key for a child model doesn't work.\nDescription\n\t\nIn the attached example code setting the primary key to None does not work (so that the existing object is overwritten on save()).\nThe most important code fragments of the bug example:\nfrom django.db import models\nclass Item(models.Model):\n\t# uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)\n\tuid = models.AutoField(primary_key=True, editable=False)\n\tf = models.BooleanField(default=False)\n\tdef reset(self):\n\t\tself.uid = None\n\t\tself.f = False\nclass Derived(Item):\n\tpass\nclass SaveTestCase(TestCase):\n\tdef setUp(self):\n\t\tself.derived = Derived.objects.create(f=True) # create the first object\n\t\titem = Item.objects.get(pk=self.derived.pk)\n\t\tobj1 = item.derived\n\t\tobj1.reset()\n\t\tobj1.save() # the first object is overwritten\n\tdef test_f_true(self):\n\t\tobj = Item.objects.get(pk=self.derived.pk)\n\t\tself.assertTrue(obj.f)\nDjango 2.1.2\n",
+        "start": 0,
+        "end": 926
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-12273",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reproduce the issue exactly: create Derived(f=True), fetch it via Item.objects.get(pk=...).derived, set uid=None and f=False, then save(). The original Item may still be overwritten (f becomes False and no new row is created) because the child link still drives an update of the old parent/child rows.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Load an existing Derived, assign item_ptr to a different existing Item, set uid=None so the old code would sync uid from the new link, and save(). Before the change this re-attached/updated the chosen parent; after the change it may insert a brand-new Item and silently discard the requested parent link.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Fetch a Derived directly and clone it the documented way by setting obj.pk=None (which clears item_ptr_id but leaves uid set), then save(). The save may still update the original Item/Derived instead of inserting a new object, so resetting the child's primary key does not create a copy.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Save an MTI instance representing an existing row constructed with only the parent-link id set (item_ptr_id=<existing pk>, uid=None, _state.adding=False), as in stub/deserialized/upsert-style code. Before the change save() synced uid and updated the existing parent and child; after the change it may insert a new parent with a new pk and duplicate the object.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Extend the example with a grandchild model (Derived subclass) loaded from the database, set the top-level Item uid to None, and save(). The multi-level parent chain may fail with an integrity error or overwrite the intermediate Derived row instead of creating a complete new Item/Derived/grandchild chain while leaving the original intact.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In a three-level MTI chain, load a grandchild and change only an intermediate parent link while clearing that intermediate parent pk to request syncing for that level. The global _state.adding check may block syncing for all parents, causing a new top-level parent to be inserted or the chain's ids to become inconsistent instead of updating the intended intermediate parent.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 777,
+      "cached_tokens": 116,
+      "output_tokens": 10747,
+      "reasoning_tokens": 10234,
+      "micro_usd": 217608,
+      "seconds": 85.01236188299845
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 4,
+        "refuted": 3,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1653.8631556680011
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 8,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 325.8647861010013
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

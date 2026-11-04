@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-16116",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:55:37Z",
+  "wall_seconds": 1365.5668257850011,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "makemigrations --check generating migrations is inconsistent with other uses of --check\nDescription\n\t\nTo script a check for missing migrations but without actually intending to create the migrations, it is necessary to use both --check and --dry-run, which is inconsistent with migrate --check and optimizemigration --check, which just exit (after possibly logging a bit).\nI'm suggesting that makemigrations --check should just exit without making migrations.\nThe choice to write the migrations anyway was not discussed AFAICT on ticket:25604 or ​https://groups.google.com/g/django-developers/c/zczdY6c9KSg/m/ZXCXQsGDDAAJ.\nNoticed when reading ​PR to adjust the documentation of migrate --check. I think the current documentation is silent on this question.\n",
+        "start": 0,
+        "end": 758
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-16116",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running makemigrations --check --merge on an app with conflicting leaf migrations still writes the merge migration file and exits 0, because the merge path returns before the relocated check.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Running makemigrations --check at verbosity 1 with a pending CreateModel now exits 1 silently instead of first logging the 'Migrations for ...' heading, migration filename, and operation descriptions as before.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running makemigrations --check --empty on an app still writes the empty migration file and exits 0, because the empty-migration path bypasses the relocated check.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Running makemigrations --check --scriptable with pending changes no longer emits the post-processable migration file to stdout before exiting 1, breaking scriptable consumers that relied on that output.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running makemigrations --check --dry-run with pending model changes returns without SystemExit(1), because the dry-run handling bypasses the relocated check before write_migration_files.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Running makemigrations --check on an app with no pending changes incorrectly exits 1 or loses the 'No changes detected' success output instead of completing with exit 0 as before.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 660,
+      "cached_tokens": 244,
+      "output_tokens": 8357,
+      "reasoning_tokens": 8024,
+      "micro_usd": 168853,
+      "seconds": 60.05361976700078
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "refuted": 8,
+        "unchecked": 4,
+        "s_sat_inconclusive": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1006.6435394209984
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 6,
+        "s_sat_inconclusive": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 298.2458937249976
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:322cd979beed24b460c58b4f5c09f0b06f7c2cdb1cbfbb3616ae81d7050a03e8"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:322cd979beed24b460c58b4f5c09f0b06f7c2cdb1cbfbb3616ae81d7050a03e8"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

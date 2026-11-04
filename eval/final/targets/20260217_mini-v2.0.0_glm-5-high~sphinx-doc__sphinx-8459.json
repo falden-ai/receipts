@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-8459",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:11:24Z",
+  "wall_seconds": 1211.4196841809971,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc_type_aliases doesn't work when autodoc_typehints is set to \"description\"\n**Describe the bug**\r\nautodoc_type_aliases doesn't work when autodoc_typehints is set to \"description\".\r\n\r\n**To Reproduce**\r\n\r\ntypes.py\r\n```python\r\nfrom __future__ import annotations\r\n\r\nfrom typing import Any, Dict\r\n\r\nJSONObject = Dict[str, Any]\r\n\r\n\r\ndef sphinx_doc(data: JSONObject) -> JSONObject:\r\n    \"\"\"Does it work.\r\n\r\n    Args:\r\n        data: Does it args.\r\n\r\n    Returns:\r\n        Does it work in return.\r\n    \"\"\"\r\n    return {}\r\n\r\n```\r\n\r\nconf.py\r\n```python\r\nautodoc_typehints = 'description'\r\nautodoc_type_aliases = {\r\n    'JSONObject': 'types.JSONObject',\r\n}\r\n```\r\n\r\nI get,\r\n```\r\ntypes.sphinx_doc(data)\r\nDoes it work.\r\n\r\nParameters\r\ndata (Dict[str, Any]) – Does it args.\r\n\r\nReturns\r\nDoes it work in return.\r\n\r\nReturn type\r\nDict[str, Any]\r\n```\r\n\r\nThen if I remove `autodoc_typehints = 'description'`\r\nI get,\r\n```\r\ntypes.sphinx_doc(data: types.JSONObject) → types.JSONObject\r\nDoes it work.\r\n\r\nParameters\r\ndata – Does it args.\r\n\r\nReturns\r\nDoes it work in return.\r\n```\r\n\r\n**Expected behavior**\r\n\r\n`types.JSONObject` instead of `Dict[str, Any]` in both cases.\r\n\r\n\r\n**Environment info**\r\n- OS: Mac Catalina 10.15.7\r\n- Python version: 3.7.9\r\n- Sphinx version: 3.3.1\r\n- Sphinx extensions:      sphinx.ext.autodoc, sphinx.ext.napoleon, sphinxarg.ext\r\n\r\n\n",
+        "start": 0,
+        "end": 1335
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-8459",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the exact issue example with autodoc_typehints='description' and inspect the Return type field: the parameter shows types.JSONObject but the return type still shows Dict[str, Any].",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With autodoc_typehints='description' and no aliases configured, document a function annotated with an unresolvable or locally-defined forward reference such as 'LocalType': previously rendered verbatim, it now fails evaluation or is rendered as a mangled fallback string because an empty alias dict still triggers type-hint evaluation.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Repeat the issue example without `from __future__ import annotations`, so JSONObject is evaluated to Dict[str, Any] at function definition time: the description fields still show Dict[str, Any] instead of types.JSONObject.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With autodoc_typehints='description' and no aliases configured, document `def f(x: 'Widget')` for a Widget defined in the same module: previously shown as Widget, the type field now expands to the fully qualified module.Widget.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document `def f(data: Optional[JSONObject]) -> List[JSONObject]` with the same alias config: nested aliases in the description still expand to Optional[Dict[str, Any]] and List[Dict[str, Any]] instead of using types.JSONObject.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With autodoc_typehints='description', document a builtin or C-implemented callable, or a callable object without normal __annotations__, that previously built successfully: the new type-hint evaluation raises or corrupts its annotations and breaks or degrades the build.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 870,
+      "cached_tokens": 116,
+      "output_tokens": 6371,
+      "reasoning_tokens": 5963,
+      "micro_usd": 130460,
+      "seconds": 48.480810713997926
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 757.6504022770023
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 6,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 404.95014769800036
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:613f3c290f0bc48035ebfcc5ffb64eb978da7312c4a6a10e922f7ab020cac94b"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:613f3c290f0bc48035ebfcc5ffb64eb978da7312c4a6a10e922f7ab020cac94b"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

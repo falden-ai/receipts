@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15741",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:31:06Z",
+  "wall_seconds": 1953.5806338790007,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "django.utils.formats.get_format should allow lazy parameter\nDescription\n\t\nCommit [659d2421c7adb] (fixing #20296) triggered a regression when the date template filter (possibly others are affected too) receives a lazy string, like in some_date|date:_('Y-m-d').\nThis fails with: TypeError: getattr(): attribute name must be string in django.utils.formats.get_format.\n",
+        "start": 0,
+        "end": 365
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15741",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call formats.date_format(datetime(2024, 1, 2), gettext_lazy('Y-m-d')) or render {{ d|date:_('Y-m-d') }} with USE_L10N=True. It still raises TypeError from getattr() or returns '' instead of '2024-01-02' in the localized branch.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call get_format('DATE_FORMAT', lang=lazy(lambda: 1/0, str)(), use_l10n=False), where lang was previously ignored. The unconditional str(lang) now raises ZeroDivisionError instead of returning settings.DATE_FORMAT.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call get_format(gettext_lazy('DATE_FORMAT'), lang='de', use_l10n=True) after reset_format_cache() with a German format module whose DATE_FORMAT differs from settings. It returns the settings/en value or raises instead of the German module value.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call get_format(mark_safe('Y-m-d'), use_l10n=False) for a custom format in the return-as-is branch. The result is now a plain str without SafeData instead of the original SafeText object, changing downstream escaping behavior.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call get_format('DATE_FORMAT', lang=lazy(lambda: 'de', str)(), use_l10n=True). It still fails to load the German format module or raises TypeError instead of returning the German DATE_FORMAT.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Obtain get_format(gettext_lazy('Y-m-d'), use_l10n=False) under language 'en' where the lazy pattern differs per language, then use the result under translation.override('de'). It is now frozen to the 'en' evaluation instead of resolving to the 'de' pattern as the returned lazy proxy did before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 571,
+      "cached_tokens": 116,
+      "output_tokens": 7038,
+      "reasoning_tokens": 6599,
+      "micro_usd": 142604,
+      "seconds": 46.808050057999935
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "blocker": 3,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15741/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15741/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15741/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 909.9428475050008
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 3,
+        "refuted": 2,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 995.6091081070008
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8f5b9c177f8c083a889d050cb6602fa17042f7ebe8f5f2f18f0de86fb8cb08ae"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:8f5b9c177f8c083a889d050cb6602fa17042f7ebe8f5f2f18f0de86fb8cb08ae"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8f5b9c177f8c083a889d050cb6602fa17042f7ebe8f5f2f18f0de86fb8cb08ae"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:8f5b9c177f8c083a889d050cb6602fa17042f7ebe8f5f2f18f0de86fb8cb08ae"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

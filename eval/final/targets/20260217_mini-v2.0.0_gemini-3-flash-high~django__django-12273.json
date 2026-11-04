@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12273",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:05:39Z",
+  "wall_seconds": 2168.0284866149996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Resetting primary key for a child model doesn't work.\nDescription\n\t\nIn the attached example code setting the primary key to None does not work (so that the existing object is overwritten on save()).\nThe most important code fragments of the bug example:\nfrom django.db import models\nclass Item(models.Model):\n\t# uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)\n\tuid = models.AutoField(primary_key=True, editable=False)\n\tf = models.BooleanField(default=False)\n\tdef reset(self):\n\t\tself.uid = None\n\t\tself.f = False\nclass Derived(Item):\n\tpass\nclass SaveTestCase(TestCase):\n\tdef setUp(self):\n\t\tself.derived = Derived.objects.create(f=True) # create the first object\n\t\titem = Item.objects.get(pk=self.derived.pk)\n\t\tobj1 = item.derived\n\t\tobj1.reset()\n\t\tobj1.save() # the first object is overwritten\n\tdef test_f_true(self):\n\t\tobj = Item.objects.get(pk=self.derived.pk)\n\t\tself.assertTrue(obj.f)\nDjango 2.1.2\n",
+        "start": 0,
+        "end": 926
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12273",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reproducing the issue exactly—fetching Derived through Item.derived, setting uid to None, and saving—still overwrites the original row instead of inserting a new Derived, so the original Item retains f=False rather than f=True.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Creating a Derived child for an already-saved Item by passing item_ptr or item_ptr_id and saving now breaks: pk propagation overwrites the link or clears its cached parent, producing a duplicate parent INSERT or IntegrityError instead of inserting only the child row.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With a three-level MTI hierarchy (Item -> Derived -> GrandDerived), setting the grandparent pk uid to None on a GrandDerived instance and saving leaves one of item_ptr_id or derived_ptr_id stale, causing an overwrite or IntegrityError instead of a new three-row chain.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On a plain non-MTI model, assigning a field a distinct but equality-equal mutable value (such as a new list/dict for a JSON-like field) is silently dropped by the new early return, so later mutations of the assigned object are lost and save() persists the old object.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Resetting a directly fetched Derived instance by assigning item_ptr_id or pk to None, rather than uid, leaves uid at the old value, so save() updates the original Item/Derived rows instead of inserting new ones.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Constructing or refreshing a Derived instance where uid and item_ptr_id are assigned sequentially, such as Derived(uid=X, item_ptr_id=Y) or refresh_from_db on only the parent-link field, now has the first assignment overwrite the second attname, changing the final pk/link values compared with pre-change behavior.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 982,
+      "cached_tokens": 116,
+      "output_tokens": 11059,
+      "reasoning_tokens": 10626,
+      "micro_usd": 224668,
+      "seconds": 115.352003668002
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 3,
+        "s_sat_inconclusive": 1,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12273/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12273/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-12273/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1599.4553582249973
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 9
+      },
+      "blockers": [],
+      "wall_seconds": 452.09629594099897
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9602",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:52:31Z",
+  "wall_seconds": 1482.8309994140009,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Nitpick flags Literal annotation values as missing py:class\n### Describe the bug\n\nWhen a value is present in a type annotation as `Literal`, sphinx will treat the value as a `py:class`. With nitpick enabled, values like `Literal[True]` end up failing, because `True` is not a class.\r\n\r\nThis is a problem for builds which want to use `-n -W` to catch doc errors.\n\n### How to Reproduce\n\nSetup a simple function which uses Literal, then attempt to autodoc it. e.g.\r\n```python\r\nimport typing\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[True]\") -> int: ...\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[False]\") -> str: ...\r\ndef foo(x: bool):\r\n    \"\"\"a func\"\"\"\r\n    return 1 if x else \"foo\"\r\n```\r\n\r\nI've pushed an example [failing project](https://github.com/sirosen/repro/tree/master/sphinxdoc/literal) to [my repro repo](https://github.com/sirosen/repro). Just run `./doc.sh` with `sphinx-build` available to see the failing build.\n\n### Expected behavior\n\n`Literal[True]` (or whatever literal value) should be present in the type annotation but should not trigger the nitpick warning.\n\n### Your project\n\nhttps://github.com/sirosen/repro/tree/master/sphinxdoc/literal\n\n### Screenshots\n\n_No response_\n\n### OS\n\nLinux\n\n### Python version\n\n3.8, 3.9\n\n### Sphinx version\n\n4.1.2\n\n### Sphinx extensions\n\nautodoc\n\n### Extra tools\n\n_No response_\n\n### Additional context\n\n_No response_\n",
+        "start": 0,
+        "end": 1373
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9602",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Annotating a function with Literal[-1] (or Literal[-42]) still triggers a nitpick warning or renders as a single unresolved py:class reference, because ast.UnaryOp is not handled by unparse and the whole annotation falls back to one xref.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] A documented custom generic class named Literal, e.g. `myapp.Literal[Widget]` where Widget is a documented class, loses its pending_xref to Widget after the change, breaking an existing cross-reference link that worked before.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] A function using a real (unquoted) annotation `x: Literal[True]` with autodoc_typehints='description' still emits a py:class reference for True in the type field and fails a nitpick build, because the diff only changes the signature parser in domains/python.py and not the restify/type-field path.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] An annotation `Literal[Color.RED]` where Color is a documented class/enum no longer links to Color's documentation, because all Literal arguments are converted to unlinked literal nodes instead of only suppressing warnings for undocumented values.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Using an aliased import such as `from typing import Literal as Lit` and annotating `x: Lit[True]` still flags True as a missing py:class under nitpick, because detection only matches a base whose final dotted component is exactly 'Literal'.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Building HTML/text for an existing documented function annotated `Literal['a', 1]` changes its rendered signature beyond removing the xref: the arguments become code-styled nodes.literal nodes with repr-added quotes (`'a'`) instead of the plain signature text produced before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1735,
+      "cached_tokens": 116,
+      "output_tokens": 9875,
+      "reasoning_tokens": 9429,
+      "micro_usd": 204000,
+      "seconds": 74.96821621100025
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "possibly_toxic": 4,
+        "not_reproduced": 1,
+        "unchecked": 2,
+        "refuted": 5,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-9602/fixed_x/correctness-3.1"
+      ],
+      "wall_seconds": 1068.2976564330002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "refuted": 8,
+        "not_reproduced": 2,
+        "possibly_toxic": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 338.20717793900076
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

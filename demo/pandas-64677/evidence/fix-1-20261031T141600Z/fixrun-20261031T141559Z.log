@@ -1,0 +1,63 @@
+start 14:16:00Z PIN d513d4cc4a895b50eaf07b8da14ef8c17775cd41 finding demo~pandas-64677/tests_pass:315a21d647/regression-2.1
+pending
+armed at 2026-10-29T01:31:24Z for $150.000000, the operator having confirmed the Meta credit
+spent $98.939396 (98,939,396 micro-dollars) of the $150.000000 cap
+left $51.060604
+== replay
+  base_sha     82315e7fb597d53f797f62d2a83f9ee9dcad5042
+  patch_sha    d27e2f320150e3b064f3256a8bada7478e89da53
+  harness_hash d5950111a1037755981bd4113d97d098ae21aa84836805e2d3b8d487c541f2c2
+  seed         0
+  image_digest sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a
+repro regression-2-0-e6877e5c  attack regression-2  claim tests_pass:315a21d647  lens regression  kind regression
+  command  pandas/tests/groupby/test_receipts_regression_2_0.py::test_any_bool_categorical_unobserved
+  cases
+    pandas/tests/groupby/test_receipts_regression_2_0.py::test_any_bool_categorical_unobserved
+  file pandas/tests/groupby/test_receipts_regression_2_0.py
+    | import pandas as pd
+    | import numpy as np
+    | 
+    | def test_any_bool_categorical_unobserved():
+    |     df = pd.DataFrame(
+    |         {
+    |             "g": pd.Categorical(["a", "a", "b"], categories=["a", "b", "c"]),
+    |             "v": [True, False, True],
+    |         }
+    |     )
+    |     result = df.groupby("g", observed=False)["v"].any()
+    |     assert list(result.index) == ["a", "b", "c"]
+    |     assert result.dtype == np.dtype("bool")
+    |     assert result.loc["a"] == True
+    |     assert result.loc["b"] == True
+    |     assert result.loc["c"] == False
+    | 
+runs
+  #   side   outcome  failure    exit  fresh  seed  seconds  problem
+  1   patch  fail     assertion  1     yes    0     2.9
+  2   patch  fail     assertion  1     yes    1     2.9
+  3   patch  fail     assertion  1     yes    2     3.0
+  4   patch  fail     assertion  1     yes    3     2.8
+  5   patch  fail     assertion  1     yes    4     3.0
+  6   base   pass                0     yes    0     3.1
+  7   base   pass                0     yes    1     3.0
+  8   base   pass                0     yes    2     3.0
+  9   base   pass                0     yes    3     2.9
+  10  base   pass                0     yes    4     2.9
+replay itself is not built yet: it will rerun these files with the target's runner through the sandbox, which gives each run a report path of its own; the command is the record of how they were run
+== fixcheck
+fixcheck exit 0
+wrote runs/demo-fix-20261031T141600Z/fixcheck.json: passes_on_fix=True
+launched
+fix launched 14:16:56Z
+14:18:57Z exit=1
+iteration 1: guard rejected: 3 answers in a row could not be used
+held_out: demo~pandas-64677/tests_pass:315a21d647/regression-2.2
+coverage: unchecked (not measured)
+canary coverage: lane replays only; internal ReAttack runs are not covered
+unchecked: runtime: 3 answers in a row could not be used
+armed at 2026-10-29T01:31:24Z for $150.000000, the operator having confirmed the Meta credit
+spent $98.961495 (98,961,495 micro-dollars) of the $150.000000 cap
+left $51.038505
+== done 14:18:58Z
+stopping
+eval VM stopped 14:19:15Z

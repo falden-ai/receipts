@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13401",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:59:45Z",
+  "wall_seconds": 1354.7095579260022,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Abstract model field should not be equal across models\nDescription\n\t\nConsider the following models:\nclass A(models.Model):\n\tclass Meta:\n\t\tabstract = True\n\tmyfield = IntegerField()\nclass B(A):\n\tpass\nclass C(A):\n\tpass\nIf I pull the fields of B and C into a shared set, one will be de-duplicated away, because they compare as equal. I found this surprising, though in practice using a list was sufficient for my need. The root of the issue is that they compare equal, as fields only consider self.creation_counter when comparing for equality.\nlen({B._meta.get_field('myfield'), C._meta.get_field('myfield')}) == 1\nB._meta.get_field('myfield') == C._meta.get_field('myfield')\nWe should adjust __eq__ so that if the field.model is different, they will compare unequal. Similarly, it is probably wise to adjust __hash__ and __lt__ to match.\nWhen adjusting __lt__, it may be wise to order first by self.creation_counter so that cases not affected by this equality collision won't be re-ordered. In my experimental branch, there was one test that broke if I ordered them by model first.\nI brought this up on IRC django-dev to check my intuitions, and those conversing with me there seemed to agree that the current behavior is not intuitive.\n",
+        "start": 0,
+        "end": 1234
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13401",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create abstract A with myfield, concrete subclasses B and C, and test hash(B._meta.get_field('myfield')) != hash(C._meta.get_field('myfield')); the hashes remain equal because __hash__ still uses only creation_counter, despite the fields now comparing unequal.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Take two copies of the same field with equal creation_counter and set model=None on both, as for unbound fields, then call f1 < f2 or sorted([f1, f2]). This previously returned False but now raises AttributeError because __lt__ dereferences None.__name__ after hasattr succeeds.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create two distinct subclasses of abstract A via type('B', (A,), ...) with the same __module__ and class name but different Meta.app_label values, then compare their myfield objects. Neither field is less than the other even though they compare unequal, so __lt__ fails to order distinct fields consistently with __eq__.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Compare a bound B.myfield with an unbound copy of it (model attribute deleted) using the total-ordering operators. Previously they compared equal so neither was greater, but now a > b and b > a are both True while a != b, breaking code relying on trichotomy.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Compare B's myfield with a copy of the same field whose model attribute is removed, giving the same creation_counter but no model. They compare unequal, yet neither is less than the other because __lt__ falls through to False, violating the ordering expected to match the new equality.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call sorted([C._meta.get_field('myfield'), B._meta.get_field('myfield')]) for abstract siblings B and C sharing a creation_counter. Previously the stable sort preserved the input order [C, B], but now the model-name tie-break silently reorders it to [B, C], changing cross-model field ordering beyond creation_counter.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 886,
+      "cached_tokens": 116,
+      "output_tokens": 10561,
+      "reasoning_tokens": 10077,
+      "micro_usd": 214324,
+      "seconds": 87.50173978599923
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 1,
+        "suspected": 3,
+        "blocker": 2,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13401/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13401/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1027.2066897439981
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 1,
+        "refuted": 1,
+        "suspected": 4
+      },
+      "blockers": [],
+      "wall_seconds": 239.3545534579971
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:46e40e6fece5fb0cc2b8e516534b17461a9f6ab367b26fa00f0fa041df1f6329"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:46e40e6fece5fb0cc2b8e516534b17461a9f6ab367b26fa00f0fa041df1f6329"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

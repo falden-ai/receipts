@@ -1,0 +1,173 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9367",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:26:53Z",
+  "wall_seconds": 1298.0760259359995,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "1-element tuple rendered incorrectly\n**Describe the bug**\r\nThis is a followup to #7964 which has been addressed in #8265.\r\n\r\nHowever the special case of a 1-element tuple is still not handled correctly.\r\n\r\n`(1,)` is rendered as `(1)`, but should keep the trailing comma.\r\n\r\n**To Reproduce**\r\nAdd a testcase\r\n```\r\n    (\"(1,)\", \"(1,)\"),                           # Tuple (single element)\r\n```\r\nat https://github.com/sphinx-doc/sphinx/blob/e0b1e1002b500acc63dfd0806f8095dd6b27037b/tests/test_pycode_ast.py#L57\r\n\r\n\n",
+        "start": 0,
+        "end": 511
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-9367",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call unparse() on ast.parse('x[(1,)]') or ast.parse('Dict[(1,), int]'): the subscript/Index slice path bypasses or strips visit_Tuple, rendering x[1] or Dict[1, int] and losing the tuple comma.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call unparse() on ast.parse('a[1,]') (a 1-element Tuple used as subscript dimensions, especially on Python 3.9+): before it rendered a[(1)] equivalent to a[1], after it renders a[(1,)], changing a single-index subscript into a tuple-index subscript and breaking existing subscript expectations.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Parse a module with sphinx.pycode for an annotated/default attribute such as 'x: (1,) = (1,)' and inspect the stringified annotation/value: a path that extracts tuple elements directly still renders (1) instead of (1,).",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Unparse bare implicit tuples from statements such as the value in 'x = 1,' or the target in 'for x, in y': before they rendered (1)/(x), after they render (1,)/(x,), changing autodoc/pycode output for code that never wrote a parenthesized tuple literal.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call unparse() on nested/compound cases such as '((1,),)', '[(1,), {(1,): 2}]', and 'f((1,))': at least one nested position that manually joins elements renders an inner 1-tuple as (1), so the trailing comma is still dropped there.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Process a function with a single-argument type comment such as 'def f(x): # type: (int) -> None' through the pycode/type-comment stringification path: the parameter-list rendering changes from (int) to (int,), altering signature text beyond the tuple-literal fix.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 638,
+      "cached_tokens": 244,
+      "output_tokens": 11900,
+      "reasoning_tokens": 11422,
+      "micro_usd": 239625,
+      "seconds": 93.3298568579994
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "unchecked": 4,
+        "suspected": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 750.8187292839975
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 2,
+        "not_reproduced": 2,
+        "possibly_toxic": 1,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 453.06132725099815
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

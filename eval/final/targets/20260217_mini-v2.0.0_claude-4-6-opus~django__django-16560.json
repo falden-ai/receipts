@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16560",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:36:52Z",
+  "wall_seconds": 1373.2085580539997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Allow to customize the code attribute of ValidationError raised by BaseConstraint.validate\nDescription\n\t\nIt is currently possible to customize the violation_error_message of a ValidationError raised by a constraint but not the code.\nI'd like to add a new violation_error_message parameter to BaseConstraint to allow to easily add one.\nCurrently, to achieve the same result, you have to subclass the constraint to tweak validate to catch and reraise the ValidationError.\nSince the documentation recommends to Provide a descriptive error code to the constructor: when raising a ValidationError in ​https://docs.djangoproject.com/en/4.1/ref/forms/validation/#raising-validationerror , I think it would make sense to provide this possibility for errors raised by constraints.\nIf you think it would be a good idea, I'd be happy to work on a PR.\n",
+        "start": 0,
+        "end": 840
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16560",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a UniqueConstraint with fields=['name'], no condition or expressions, and violation_error_code='unique_name', then call validate() on a duplicate instance. The fields branch delegates to instance.unique_error_message() instead of raising with the custom code, so the ValidationError code is '__all__' rather than 'unique_name'.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Without violation_error_code, call validate() on violating CheckConstraint, expression UniqueConstraint, field UniqueConstraint, and ExclusionConstraint instances. Codes that were previously None or '__all__' change, breaking the pre-existing ValidationError behavior.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call validate_constraints() or full_clean() on an instance violating a conditional single-field UniqueConstraint with violation_error_code='custom_code'. The model-level aggregation treats the non-'__all__' code specially and rebuilds the error from messages, moving it to the field and losing the custom code.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deconstruct existing CheckConstraint, UniqueConstraint, and ExclusionConstraint objects created without violation_error_code and compare them with their pre-change deconstruction and equality. Emitting violation_error_code or changing equality creates spurious migration operations for unchanged constraints.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Deconstruct and reconstruct an ExclusionConstraint created with violation_error_code='excluded', then call validate() on an overlapping instance. The reconstructed constraint loses the code during its separate deconstruct/reconstruction path, so validate() raises a ValidationError with code None.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Construct BaseConstraint using the deprecated positional form BaseConstraint('old_name', 'old_message', 'legacy_extra') and issue the expected deprecation warning. The extended positional-argument mapping now assigns 'legacy_extra' to violation_error_code where it was previously ignored, altering legacy construction behavior.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 2231,
+      "cached_tokens": 116,
+      "output_tokens": 8867,
+      "reasoning_tokens": 8429,
+      "micro_usd": 185824,
+      "seconds": 67.5950067520007
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 1,
+        "unchecked": 2,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 935.8598353449997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "refuted": 5,
+        "not_reproduced": 3,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 368.3519844399998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a3b2b9a0a5e75abb89c86500f9390e5dcbdaa87f7efe5ee78a9591127cd3b417"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a3b2b9a0a5e75abb89c86500f9390e5dcbdaa87f7efe5ee78a9591127cd3b417"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

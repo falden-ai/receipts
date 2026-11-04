@@ -1,0 +1,174 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:21:45Z",
+  "wall_seconds": 1545.7412374279993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Django 3.2.4+ autoreload breaks on empty string in TEMPLATES DIRS.\nDescription\n\t\nDjango versions > 3.2.3 changes the way template dirs are handled, they are now normalized using pathlib.Path.\nPeople having an invalid value in TEMPLATESDIRS? will notice that autoreload stops working.\n\"DIRS\": os.getenv(\"TEMPLATES_DIRS\", \"\").split(\",\") # wrong, should be filter(None, os.getenv(\"TEMPLATES_DIRS\", \"\").split(\",\"))\nor anything else that produces this:\n\"DIRS\": [''] # wrong\nwill break autoreload.\nThis happens because django/template/autoreload.py::template_changed was previously comparing the empty string to a directory, and would never match. Now the normalization transforms the empty string into the root of the project. The result is that template_changed() will now always return True, preventing the autoreload when the app code changes\nChange that produced the regression\nhttps://code.djangoproject.com/ticket/32744\nCommits in main and stable/3.2.x:\n​https://github.com/django/django/commit/68357b2ca9e88c40fc00d848799813241be39129\n​https://github.com/django/django/commit/c0d506f5ef253f006dbff0b0092c8eecbd45eedf\nPrevious reports\n[Server Reload Error...](https://code.djangoproject.com/ticket/33285)\n[Auto-reload not detecting changes in Django 3.2](https://code.djangoproject.com/ticket/33266)\n[Autoreloader doesn't work on Windows 10](https://code.djangoproject.com/ticket/32630)\n",
+        "start": 0,
+        "end": 1388
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] With TEMPLATES DIRS=[''] and the default filesystem loader, call get_template_directories() or template_changed() for an unrelated non-Python file under cwd: the unfiltered loader.get_dirs() loop still adds cwd, so template_changed() still returns True.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With DIRS=[''], a template at the project root loadable by the filesystem loader (e.g. cwd/index.html) previously made template_changed() return True, but after the change it returns falsy so editing that template no longer triggers reload.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Configure a filesystem or custom loader explicitly with dirs=[''] while engine DIRS is empty, then call template_changed() for a file under cwd: the loader loop still converts '' to cwd and returns True.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call watch_for_template_changes() with a mock sender when DIRS=[''] is the only template source: previously it registered a watch on cwd, after the change it registers an empty directory set and root-level template edits are not watched.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Set DIRS=[Path('')] and call template_changed() for an unrelated file under cwd: Path('') is truthy so it passes the 'if dir' filter, becomes cwd, and still returns True.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Set DIRS=[None] (or another falsy non-string such as 0/False) and call get_template_directories(): previously to_path() raised TypeError surfacing the misconfiguration, after the change the entry is silently ignored.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 803,
+      "cached_tokens": 116,
+      "output_tokens": 6518,
+      "reasoning_tokens": 6107,
+      "micro_usd": 133132,
+      "seconds": 45.61626677700042
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "blocker": 6,
+        "not_reproduced": 1,
+        "refuted": 1,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/fixed_x/correctness-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/fixed_x/correctness-2.3",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15572/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1124.7908607229983
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "refuted": 1,
+        "possibly_toxic": 1,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 373.854786584001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

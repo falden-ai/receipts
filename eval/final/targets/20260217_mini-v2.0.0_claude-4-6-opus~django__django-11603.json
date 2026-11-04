@@ -1,0 +1,141 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11603",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:14:42Z",
+  "wall_seconds": 926.0503236889999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Add DISTINCT support for Avg and Sum aggregates.\nDescription\n\t\nAs an extension of #28658, aggregates should be supported for other general aggregates such as Avg and Sum. Before 2.2, these aggregations just ignored the parameter, but now throw an exception.\nThis change would just involve setting these classes as allowing DISTINCT, and could also be applied to Min and Max (although pointless).\n",
+        "start": 0,
+        "end": 396
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11603",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling Book.objects.aggregate(Avg('rating', distinct=True), Sum('price', distinct=True)) on rows with duplicate values such as ratings 1, 2, 2, 4 still raises TypeError or returns the non-distinct average/sum instead of averaging/summing only unique values.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling Avg('rating') and Sum('price') without distinct, or with distinct=False, on duplicate values changes the generated SQL or result from before the change instead of returning the ordinary non-distinct aggregate.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Annotating a joined queryset, e.g. Publisher.objects.annotate(avg_price=Avg('book__price', distinct=True), total=Sum('book__price', distinct=True)), produces invalid SQL or deduplicates incorrectly when the join itself creates duplicate book rows.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Min, Max, StdDev, and Variance with distinct=True no longer raise TypeError, or Count with distinct=True stops working, indicating allow_distinct leaked beyond Avg and Sum.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Using Avg or Sum with distinct=True together with filter, e.g. Avg('rating', distinct=True, filter=Q(rating__gte=2)), generates invalid DISTINCT/FILTER or CASE SQL or computes the result over unfiltered/NULL rows incorrectly.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing non-distinct Avg/Sum behavior over DurationField and DecimalField, including annotated group-by querysets with filter and ordering, returns a different type or value than before the change.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 551,
+      "cached_tokens": 116,
+      "output_tokens": 4036,
+      "reasoning_tokens": 3648,
+      "micro_usd": 82484,
+      "seconds": 39.198012385000766
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 6
+      },
+      "blockers": [],
+      "wall_seconds": 572.7640077659998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 6,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 314.08656632499697
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

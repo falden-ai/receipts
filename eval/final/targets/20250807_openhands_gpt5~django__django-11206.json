@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-11206",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:04:01Z",
+  "wall_seconds": 1699.033042223,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "utils.numberformat.format renders small decimals in exponential notation.\nDescription\n\t\nWhen using utils.number_format with decimal_pos, extremely small numbers get displayed using exponential notation.\n>>> from django.utils.numberformat import format as nformat\n>>> nformat(Decimal('1e-199'), '.', decimal_pos=2)\n'0.00'\n>>> nformat(Decimal('1e-200'), '.', decimal_pos=2)\n'1.00e-200'\nThis is caused by a hardcoded cut-off point in the internal logic, but I would argue that when a decimal_pos argument is supplied and the number to be formatted is smaller in absolute size than what can be encoded using the provided number of decimal positions, the returned string should be 0.0000...000 instead.\n",
+        "start": 0,
+        "end": 698
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-11206",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: format(Decimal('1e-200'), '.', decimal_pos=250) still returns scientific notation such as '1.00e-200' instead of the fully expanded value representable with 250 decimal places.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: format(Decimal('0.009'), '.', decimal_pos=2) now returns '0.00' instead of the previous correctly rounded '0.01', because the zero shortcut applies even when scientific notation would not have been used.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: format(Decimal('1e-200'), '.', decimal_pos=200) still returns '1.00e-200' instead of '0.' followed by 199 zeros and '1', because the equality case is not handled.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: format(Decimal('0.9'), '.', decimal_pos=0) now returns '0' instead of the previous correctly rounded '1'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: format(Decimal('9e-201'), '.', decimal_pos=200) returns 200 zeros after the decimal point instead of rounding up to the representable value ending in '1' at the 200th decimal place.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: format(Decimal('1e-200'), '.', decimal_pos='2') now raises TypeError when multiplying a string by decimal_pos, whereas before the change it formatted the value using the string precision without crashing.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 752,
+      "cached_tokens": 116,
+      "output_tokens": 12744,
+      "reasoning_tokens": 12363,
+      "micro_usd": 257448,
+      "seconds": 80.40540570699886
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 1,
+        "suspected": 1,
+        "refuted": 4,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1314.8109582819998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "suspected": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 303.1704192419984
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:eae2ecace097dbfbeffa1b5a2cfa9a1a3671b489bd88bbc65920c702600df420"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:eae2ecace097dbfbeffa1b5a2cfa9a1a3671b489bd88bbc65920c702600df420"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

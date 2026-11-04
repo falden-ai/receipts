@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-7440",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:23:36Z",
+  "wall_seconds": 1407.5231848030016,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "glossary duplicate term with a different case\n**Describe the bug**\r\n```\r\nWarning, treated as error:\r\ndoc/glossary.rst:243:duplicate term description of mysql, other instance in glossary\r\n```\r\n\r\n**To Reproduce**\r\nSteps to reproduce the behavior:\r\n[.travis.yml#L168](https://github.com/phpmyadmin/phpmyadmin/blob/f7cc383674b7099190771b1db510c62bfbbf89a7/.travis.yml#L168)\r\n```\r\n$ git clone --depth 1 https://github.com/phpmyadmin/phpmyadmin.git\r\n$ cd doc\r\n$ pip install 'Sphinx'\r\n$ make html\r\n```\r\n\r\n**Expected behavior**\r\nMySQL != mysql term right ?\r\n\r\n**Your project**\r\nhttps://github.com/phpmyadmin/phpmyadmin/blame/master/doc/glossary.rst#L234\r\n\r\n\r\n**Environment info**\r\n- OS: Unix\r\n- Python version: 3.6\r\n- Sphinx version: 3.0.0\r\n\r\n**Additional context**\r\nDid occur some hours ago, maybe you just released the version\r\n\r\n- https://travis-ci.org/github/williamdes/phpmyadmintest/jobs/671352365#L328\r\n\r\n\n",
+        "start": 0,
+        "end": 905
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-7440",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Build with -W a single glossary containing 'MySQL' followed by 'mysql', as in the issue. The build still fails or both terms share the lowercased 'term-mysql' anchor, leaving the second term unreachable, because only the note_object key stopped lowercasing.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Build a project with a single non-duplicate glossary term 'MySQL' and reference it as :term:`mysql` from another project via intersphinx. The reference now fails because objects.inv stores 'MySQL' and the inventory lookup is case-sensitive, whereas before the inventory stored 'mysql'.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Define glossary terms 'MySQL' first and 'mysql' second, then reference the exact lower-case term with :any:`mysql`. It links to 'MySQL' instead of the exact 'mysql' term because resolve_any_xref returns the first case-insensitive match without checking an exact match first.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Inspect the std domain data or inventory for a project with one mixed-case term such as 'Django' and no duplicates. The key/name changes from ('term', 'django') to ('term', 'Django'), breaking consumers that relied on the previously lowercased term name even though no duplicate was involved.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Define 'MySQL' in one document and 'mysql' in another, then reference :term:`MYSQL`, which matches neither exactly. It silently links to whichever term was read first instead of warning that the case-distinct term is missing or ambiguous.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With glossary terms 'MySQL' and 'mysql' both present, use :any:`mysql` in a project that previously resolved that reference to the lower-case definition. It now resolves to the first-defined 'MySQL', changing an existing link destination beyond merely suppressing the duplicate warning.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1048,
+      "cached_tokens": 116,
+      "output_tokens": 13063,
+      "reasoning_tokens": 12583,
+      "micro_usd": 265012,
+      "seconds": 116.33585480699912
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 5,
+        "suspected": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-7440/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-7440/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 871.7116016559994
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 3,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 419.1432258019995
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:44a8cc2f2a6ea7b4be9d04171d91bb47071f3ab7e6dc1def5826552a0b9da586"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:44a8cc2f2a6ea7b4be9d04171d91bb47071f3ab7e6dc1def5826552a0b9da586"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

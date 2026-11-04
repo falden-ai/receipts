@@ -1,0 +1,73 @@
+{
+  "finding_id": "demo~pandas-64677/tests_pass:315a21d647/regression-2.1",
+  "fix_diff_sha256": "ccc08a430db00c134cc980a237f9f296df0a0fbfa82769279e5e797e2c2023f9",
+  "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+  "runs": [
+    {
+      "side": "gold",
+      "outcome": "pass",
+      "failure_type": null,
+      "exit_code": 0,
+      "seed": 0,
+      "fresh_container": true,
+      "duration_s": 4.377708651999999,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.16, pytest-9.0.2, pluggy-1.6.0\nrootdir: /workspace\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, hypothesis-6.151.9\ncollected 1 item\n\npandas/tests/groupby/test_receipts_regression_2_0.py .\n\n- generated xml file: /tmp/receipts-report-27a7b83fdff04f8aa0b03e485b427485.xml -\n============================= slowest 30 durations =============================\n\n(3 durations < 0.005s hidden.  Use -vv to show these durations.)\n============================== 1 passed in 0.13s ===============================\n",
+      "stderr_tail": "",
+      "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+      "problem": ""
+    },
+    {
+      "side": "gold",
+      "outcome": "pass",
+      "failure_type": null,
+      "exit_code": 0,
+      "seed": 1,
+      "fresh_container": true,
+      "duration_s": 3.2737719459999965,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.16, pytest-9.0.2, pluggy-1.6.0\nrootdir: /workspace\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, hypothesis-6.151.9\ncollected 1 item\n\npandas/tests/groupby/test_receipts_regression_2_0.py .\n\n- generated xml file: /tmp/receipts-report-af9bfcb5f501415b8d4c26caf47653d1.xml -\n============================= slowest 30 durations =============================\n\n(3 durations < 0.005s hidden.  Use -vv to show these durations.)\n============================== 1 passed in 0.08s ===============================\n",
+      "stderr_tail": "",
+      "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+      "problem": ""
+    },
+    {
+      "side": "gold",
+      "outcome": "pass",
+      "failure_type": null,
+      "exit_code": 0,
+      "seed": 2,
+      "fresh_container": true,
+      "duration_s": 3.322523077999996,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.16, pytest-9.0.2, pluggy-1.6.0\nrootdir: /workspace\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, hypothesis-6.151.9\ncollected 1 item\n\npandas/tests/groupby/test_receipts_regression_2_0.py .\n\n- generated xml file: /tmp/receipts-report-2303f642c01c4afcbb7bd570036dd1be.xml -\n============================= slowest 30 durations =============================\n0.01s setup    pandas/tests/groupby/test_receipts_regression_2_0.py::test_any_bool_categorical_unobserved\n\n(2 durations < 0.005s hidden.  Use -vv to show these durations.)\n============================== 1 passed in 0.10s ===============================\n",
+      "stderr_tail": "",
+      "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+      "problem": ""
+    },
+    {
+      "side": "gold",
+      "outcome": "pass",
+      "failure_type": null,
+      "exit_code": 0,
+      "seed": 3,
+      "fresh_container": true,
+      "duration_s": 3.222677462,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.16, pytest-9.0.2, pluggy-1.6.0\nrootdir: /workspace\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, hypothesis-6.151.9\ncollected 1 item\n\npandas/tests/groupby/test_receipts_regression_2_0.py .\n\n- generated xml file: /tmp/receipts-report-aa9a91b432df414d9caf257a842f8592.xml -\n============================= slowest 30 durations =============================\n\n(3 durations < 0.005s hidden.  Use -vv to show these durations.)\n============================== 1 passed in 0.07s ===============================\n",
+      "stderr_tail": "",
+      "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+      "problem": ""
+    },
+    {
+      "side": "gold",
+      "outcome": "pass",
+      "failure_type": null,
+      "exit_code": 0,
+      "seed": 4,
+      "fresh_container": true,
+      "duration_s": 3.1748736340000008,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.16, pytest-9.0.2, pluggy-1.6.0\nrootdir: /workspace\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, hypothesis-6.151.9\ncollected 1 item\n\npandas/tests/groupby/test_receipts_regression_2_0.py .\n\n- generated xml file: /tmp/receipts-report-18c33a0631ca4e3187cb4d564d8f8a27.xml -\n============================= slowest 30 durations =============================\n\n(3 durations < 0.005s hidden.  Use -vv to show these durations.)\n============================== 1 passed in 0.10s ===============================\n",
+      "stderr_tail": "",
+      "image_digest": "sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a",
+      "problem": ""
+    }
+  ],
+  "passes_on_fix": true
+}

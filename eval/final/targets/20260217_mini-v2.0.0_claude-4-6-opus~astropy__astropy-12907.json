@@ -1,0 +1,152 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~astropy__astropy-12907",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:54:39Z",
+  "wall_seconds": 1160.7587082969999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Modeling's `separability_matrix` does not compute separability correctly for nested CompoundModels\nConsider the following model:\r\n\r\n```python\r\nfrom astropy.modeling import models as m\r\nfrom astropy.modeling.separable import separability_matrix\r\n\r\ncm = m.Linear1D(10) & m.Linear1D(5)\r\n```\r\n\r\nIt's separability matrix as you might expect is a diagonal:\r\n\r\n```python\r\n>>> separability_matrix(cm)\r\narray([[ True, False],\r\n       [False,  True]])\r\n```\r\n\r\nIf I make the model more complex:\r\n```python\r\n>>> separability_matrix(m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5))\r\narray([[ True,  True, False, False],\r\n       [ True,  True, False, False],\r\n       [False, False,  True, False],\r\n       [False, False, False,  True]])\r\n```\r\n\r\nThe output matrix is again, as expected, the outputs and inputs to the linear models are separable and independent of each other.\r\n\r\nIf however, I nest these compound models:\r\n```python\r\n>>> separability_matrix(m.Pix2Sky_TAN() & cm)\r\narray([[ True,  True, False, False],\r\n       [ True,  True, False, False],\r\n       [False, False,  True,  True],\r\n       [False, False,  True,  True]])\r\n```\r\nSuddenly the inputs and outputs are no longer separable?\r\n\r\nThis feels like a bug to me, but I might be missing something?\n",
+        "start": 0,
+        "end": 1246
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~astropy__astropy-12907",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call separability_matrix(Pix2Sky_TAN() & (Linear1D(10) & (Linear1D(5) & Linear1D(2)))) with nesting deeper than the issue example. The deepest right-nested block may still be filled with True values, incorrectly coupling the last three inputs and outputs.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call separability_matrix(Linear1D(1) & (Pix2Sky_TAN() | Pix2Sky_TAN())), whose right-nested compound is legitimately all-coupled. Copying the composed matrix instead of ones may leak numeric counts such as 2 into the result instead of a clean all-True boolean block.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call separability_matrix(Linear1D(1) & (Pix2Sky_TAN() & Linear1D(5))), where the right-nested compound contains a nonseparable 2x2 block. It may incorrectly mark the Pix2Sky outputs as dependent on the Linear1D input, or the Linear1D output as dependent on the Pix2Sky inputs, instead of preserving only the internal 2x2 block.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call separability_matrix(Pix2Sky_TAN() & Linear1D(10) & Linear1D(5)), the flat non-nested chain that was already correct before the change. Its previously correct block-diagonal matrix may change in values, shape, or alignment.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call separability_matrix(Pix2Sky_TAN() & cm) for cm = Linear1D(10) & Linear1D(5), exactly as in the issue. The bottom-right 2x2 block may still be all True instead of the expected diagonal separability for the two Linear1D models.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call separability_matrix(cm & Pix2Sky_TAN()) with cm = Linear1D(10) & Linear1D(5), placing the nested compound on the left rather than the right. This previously correct result may regress if the changed right-side stacking shifts row or column placement for the whole matrix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 808,
+      "cached_tokens": 244,
+      "output_tokens": 5293,
+      "reasoning_tokens": 4782,
+      "micro_usd": 108165,
+      "seconds": 37.01006057900031
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 6
+      },
+      "blockers": [],
+      "wall_seconds": 552.481803571
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 570.9121937630002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:87fda8f3ae644b986737fad17ca1f05cc4ffdf4d9f11acd4ca70bae12674495c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:87fda8f3ae644b986737fad17ca1f05cc4ffdf4d9f11acd4ca70bae12674495c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

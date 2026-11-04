@@ -1,0 +1,12 @@
+{
+ "python": "3.11.15",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "imitates.tests"
+ ],
+ "exit_code": 0,
+ "stderr": "test_after (imitates.tests.Imitates.test_after) ... ok\ntest_prints_a_status_then_passes (imitates.tests.Imitates.test_prints_a_status_then_passes) ... expected failure\nok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n"
+}

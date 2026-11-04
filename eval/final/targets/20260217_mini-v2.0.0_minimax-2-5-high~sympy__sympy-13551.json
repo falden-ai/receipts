@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13551",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:47:22Z",
+  "wall_seconds": 2624.7174749159994,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Product(n + 1 / 2**k, [k, 0, n-1]) is incorrect\n    >>> from sympy import *\r\n    >>> from sympy.abc import n,k\r\n    >>> p = Product(n + 1 / 2**k, [k, 0, n-1]).doit()\r\n    >>> print(simplify(p))\r\n    2**(n*(-n + 1)/2) + n**n\r\n    >>> print(p.subs(n,2))\r\n    9/2\r\n\r\nThis is incorrect- for example, the product for `n=2` is `(2 + 2^0) * (2 + 2^(-1)) = 15/2`. The correct expression involves the [q-Pochhammer symbol](https://www.wolframalpha.com/input/?i=product+of+n+%2B+1%2F2%5Ek+from+k%3D0+to+n-1).\n",
+        "start": 0,
+        "end": 499
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13551",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Product((n + 1/2**k)**2, (k, 0, n-1)).doit() raises TypeError from operating on None returned for the Add base, instead of remaining unevaluated or giving 225/4 after subs(n, 2).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Product(k + n, (k, 0, n-1)).doit() previously gave the rising-factorial/gamma closed form gamma(2*n)/gamma(n), but now returns unevaluated if the new Add short-circuit preempts the polynomial evaluation.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Product(2**k*(n + 1/2**k), (k, 0, n-1)).doit() raises or corrupts the result when the Mul handling receives None for the Add factor, instead of remaining unevaluated or giving 15 after subs(n, 2).",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Product(1 + 1/k, (k, 1, n)).doit() previously gave n + 1, but now returns unevaluated or fails if the new None guard interrupts the numerator/denominator product evaluation.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Product(1 + 1/(n + 1/2**k), (k, 0, n-1)).doit() raises AttributeError when the denominator Add product returns None and is checked for is_Number, instead of remaining unevaluated or giving 28/15 after subs(n, 2).",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Product((k + 1)**2, (k, 0, n-1)).doit() previously gave factorial(n)**2, but now raises or returns unevaluated if the Pow handling receives None from its Add base subproduct.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 778,
+      "cached_tokens": 244,
+      "output_tokens": 14985,
+      "reasoning_tokens": 14535,
+      "micro_usd": 301885,
+      "seconds": 101.80583323300016
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "refuted": 1,
+        "s_sat_inconclusive": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1812.0574902829994
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 5,
+        "s_sat_inconclusive": 2,
+        "refuted": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 710.569754432001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f3964fc6f2de7a181b2c8b85bae1d64aa8adf64f15d9fdb44ec9f6796c1caa9f"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f3964fc6f2de7a181b2c8b85bae1d64aa8adf64f15d9fdb44ec9f6796c1caa9f"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

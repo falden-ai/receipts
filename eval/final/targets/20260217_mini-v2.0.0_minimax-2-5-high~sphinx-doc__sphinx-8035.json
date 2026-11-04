@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-8035",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 1535.3265196720001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Support defining specific `:private-members:` for autodoc\n**Is your feature request related to a problem? Please describe.**\r\nCurrently, if I'm using autodoc, the `:private-members:` option does not allow specification of which private members to document. The current behavior is to document all private members, but what if I would only like to document 1 or 2?\r\n\r\n**Describe the solution you'd like**\r\nFor `:private-members:` to take arguments, similarly to how `:members:` currently works\r\n\r\n**Describe alternatives you've considered**\r\nThe current best way to do this is to explicitly list each class in a module and use `:autoattribute:`\r\n\r\n- Some prior discussion: https://github.com/sphinx-doc/sphinx/issues/8009\r\n\r\n\n",
+        "start": 0,
+        "end": 725
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-8035",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: An autoclass or automodule using only ':private-members: _secret' without a bare ':members:', or with an explicit ':members: public' list, does not document _secret because get_object_members only selects names from :members: before filter_members can apply the private list.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Passing the pre-change boolean form programmatically, such as options or autodoc defaults containing 'private-members': True without RST option-spec conversion, crashes filter_members with 'argument of type bool is not iterable' when it evaluates membername in True, whereas it previously documented all private members.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: A private method or function explicitly named in ':private-members: _secret' but having no docstring is omitted unless ':undoc-members:' is also given, unlike an explicitly named ':members: _secret' entry. Test with ':members:' plus ':private-members: _secret' on an undocumented _secret.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: An autoclass with ':members:', ':special-members: __init__', and ':private-members: _helper' loses the requested __init__ documentation because __init__ is treated as private and is absent from the private list, although special-members previously kept it without private-members.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: An autoexception for an exception class with ':members:' and ':private-members: _helper' does not document _helper, because that directive's option handling does not use the updated ClassDocumenter/ModuleDocumenter conversion and still treats the value as a boolean flag.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: The bare ':private-members:' flag no longer documents all private members when its value reaches the option as an empty string, for example from a MyST directive or autodoc_default_options, because private_members_option('') returns [] instead of ALL as bool_option effectively did.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1177,
+      "cached_tokens": 0,
+      "output_tokens": 15310,
+      "reasoning_tokens": 14845,
+      "micro_usd": 310908,
+      "seconds": 145.21646619
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 1,
+        "refuted": 3,
+        "suspected": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1004.481991382
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 2,
+        "not_reproduced": 4,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 385.35574363399996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:7b1d256a32894419f0701347a4e9b744da45332c34ed332c97b2258993291d19"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:7b1d256a32894419f0701347a4e9b744da45332c34ed332c97b2258993291d19"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

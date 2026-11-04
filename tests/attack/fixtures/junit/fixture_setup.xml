@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.001" timestamp="2026-10-27T00:00:00.000000+00:00" hostname="sandbox"><testcase classname="tests.test_fixture" name="test_fixture" file="tests/test_fixture.py" line="8" time="0.001"><error message="failed on setup with &quot;RuntimeError: fixture setup boom&quot;">Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 361, in from_call
+    result: TResult | None = func()
+                             ~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 250, in &lt;lambda&gt;
+    lambda: runtest_hook(item=item, **kwds),
+            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ~~~~~~~~~~~~~~^
+        self.name, self._hookimpls.copy(), call_kwargs, firstresult
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/logging.py", line 858, in pytest_runtest_setup
+    yield
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/capture.py", line 895, in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 170, in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/runner.py", line 536, in setup
+    col.setup()
+    ~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/python.py", line 1710, in setup
+    self._request._fillfixtures()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 806, in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 630, in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 726, in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 1232, in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        fixturedef=self, request=request
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ~~~~~~~~~~~~~~^
+        self.name, self._hookimpls.copy(), call_kwargs, firstresult
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 64, in run_old_style_hookwrapper
+    return result.get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_result.py", line 103, in get_result
+    raise exc.with_traceback(tb)
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 49, in run_old_style_hookwrapper
+    res = yield
+          ^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/_pytest/setuponly.py", line 36, in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 1328, in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+  File "/usr/local/lib/python3.13/site-packages/_pytest/fixtures.py", line 1005, in call_fixture_func
+    fixture_result = fixturefunc(**kwargs)
+  File "/workspace/tests/test_fixture.py", line 6, in broken
+    raise RuntimeError("fixture setup boom")
+RuntimeError: fixture setup boom</error></testcase></testsuite></testsuites>

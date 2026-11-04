@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "bin/test",
+  "-C",
+  "--verbose",
+  "sympy/utilities/tests/test_receipts_a_ok.py",
+  "sympy/utilities/tests/test_receipts_b_import_error.py",
+  "sympy/utilities/tests/test_receipts_c_module_error.py",
+  "sympy/utilities/tests/test_receipts_d_module_error_first.py"
+ ],
+ "exit_code": 1,
+ "seconds": 0.4,
+ "stdout": "============================= test process starts ==============================\nexecutable:         /opt/miniconda3/envs/testbed/bin/python  (3.9.20-final-0) [CPython]\narchitecture:       64-bit\ncache:              no\nground types:       python \nnumpy:              None\nrandom seed:        87523195\nhash randomization: off\n\nsympy/utilities/tests/test_receipts_a_ok.py[1] \ntest_ok ok                                                                  [OK]\n\nsympy/utilities/tests/test_receipts_b_import_error.py[?]   Failed to import \n                                                                          [FAIL]\nEsympy/utilities/tests/test_receipts_c_module_error.py[1] \ntest_defined_before_the_error ok                                            [OK]\n\nE\n________________________________________________________________________________\n________ /testbed/sympy/utilities/tests/test_receipts_b_import_error.py ________\n  File \"/testbed/sympy/utilities/tests/test_receipts_b_import_error.py\", line 1, in <module>\n    import receipts_no_such_module  # noqa: F401\nModuleNotFoundError: No module named 'receipts_no_such_module'\n________________________________________________________________________________\n_____________ sympy/utilities/tests/test_receipts_a_ok.py:test_ok ______________\n  File \"/testbed/sympy/utilities/tests/test_receipts_c_module_error.py\", line 5, in <module>\n    raise ValueError(\"raised by the module's own code\")\nValueError: raised by the module's own code\n________________________________________________________________________________\n sympy/utilities/tests/test_receipts_c_module_error.py:test_defined_before_the_error \n  File \"/testbed/sympy/utilities/tests/test_receipts_d_module_error_first.py\", line 1, in <module>\n    raise ValueError(\"raised before any test\")\nValueError: raised before any test\n\n=========== tests finished: 2 passed, 3 exceptions, in 0.01 seconds ============\nDO *NOT* COMMIT!\n",
+ "stderr": "/testbed/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Mapping, defaultdict\n/testbed/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  class OrderedSet(collections.MutableSet):\n/testbed/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Callable\n"
+}

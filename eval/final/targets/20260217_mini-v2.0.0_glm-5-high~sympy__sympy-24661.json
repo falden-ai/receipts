@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:47:57Z",
+  "wall_seconds": 1738.1010575449982,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "The evaluate=False parameter to `parse_expr` is ignored for relationals\nSee also #22305 and #22098\r\n\r\nThis inequality evaluates even though `evaluate=False` is given:\r\n```python\r\nIn [14]: parse_expr('1 < 2', evaluate=False)\r\nOut[14]: True\r\n```\r\nThe result that should be returned is:\r\n```python\r\nIn [15]: Lt(1, 2, evaluate=False)\r\nOut[15]: 1 < 2\r\n```\n",
+        "start": 0,
+        "end": 351
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call parse_expr('1 < 2 < 3', evaluate=False) and parse_expr('1 < x <= 3', evaluate=False). The chained form may still evaluate to True, produce only one relational, or build a malformed And instead of And(Lt/Le with evaluate=False, evaluate=False).",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call parse_expr('1 in [1, 2]', evaluate=False) and parse_expr('x is None', evaluate=False), which previously used Python comparison semantics. The new relations lookup may raise KeyError for ast.In/ast.Is instead of preserving the old result.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call parse_expr('1 == 1', evaluate=False), parse_expr('1 != 1', evaluate=False), parse_expr('2 >= 2', evaluate=False), and parse_expr('2 <= 1', evaluate=False). At least one operator may still return an evaluated Python/SymPy boolean or the wrong relational class instead of Eq/Ne/Ge/Le with evaluate=False.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call parse_expr('[1, 2] == [1, 2]', evaluate=False) and parse_expr(\"'a' == 'b'\", evaluate=False), which previously returned Python booleans. Routing every equality through SymPy Eq may now raise a sympification/type error or return an unevaluated Eq object of a different type.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call parse_expr('1 + 2 < 3 * 4', evaluate=False) and parse_expr('sqrt(4) <= 2', evaluate=False). The outer relational may be unevaluated while its operands are incorrectly evaluated, or the nested transformed operands may make the relational construction fail.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call parse_expr('x < y', evaluate=False, local_dict={'x': Symbol('x'), 'y': Symbol('y')}, global_dict={}), which previously worked through Symbol.__lt__ without needing the name Lt. The generated Lt/And name references may now raise NameError or be affected by shadowing in the caller-provided namespace.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 940,
+      "cached_tokens": 116,
+      "output_tokens": 8811,
+      "reasoning_tokens": 8285,
+      "micro_usd": 179540,
+      "seconds": 76.20990551200157
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "blocker": 4,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24661/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1040.8781624080002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 4
+      },
+      "blockers": [],
+      "wall_seconds": 620.642212281
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:548e8fff8b2022fab8691fbc87687b1105c9a798894a7c49536aebce0f3bf22a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:548e8fff8b2022fab8691fbc87687b1105c9a798894a7c49536aebce0f3bf22a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

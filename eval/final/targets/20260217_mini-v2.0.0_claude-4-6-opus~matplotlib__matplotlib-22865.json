@@ -1,0 +1,177 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:21:36Z",
+  "wall_seconds": 2555.4973090290005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: Colorbar with drawedges=True and extend='both' does not draw edges at extremities\n### Bug summary\n\nWhen creating a matplotlib colorbar, it is possible to set drawedges to True which separates the colors of the colorbar with black lines. However, when the colorbar is extended using extend='both', the black lines at the extremities do not show up.\n\n### Code for reproduction\n\n```python\nimport matplotlib as mpl\r\nimport numpy as np\r\nimport matplotlib.pyplot as plt  \r\nfrom matplotlib.colors import from_levels_and_colors\r\n\r\nmy_cmap = mpl.cm.viridis\r\nbounds = np.arange(10)\r\nnb_colors = len(bounds) + 1\r\ncolors = my_cmap(np.linspace(100, 255, nb_colors).astype(int))\r\nmy_cmap, my_norm = from_levels_and_colors(bounds, colors, extend='both')\r\n\r\nplt.figure(figsize=(5, 1))\r\nax = plt.subplot(111)\r\ncbar = mpl.colorbar.ColorbarBase(ax, cmap=my_cmap, norm=my_norm, orientation='horizontal', drawedges=True)\r\nplt.subplots_adjust(left=0.05, bottom=0.4, right=0.95, top=0.9)\r\nplt.show()\n```\n\n\n### Actual outcome\n\n![image](https://user-images.githubusercontent.com/34058459/164254401-7516988d-1efb-4887-a631-de9a68357685.png)\r\n\n\n### Expected outcome\n\n![image](https://user-images.githubusercontent.com/34058459/164254881-92c167b7-aa13-4972-9955-48221b38b866.png)\r\n\n\n### Additional information\n\n_No response_\n\n### Operating system\n\n_No response_\n\n### Matplotlib Version\n\n3.5.1\n\n### Matplotlib Backend\n\n_No response_\n\n### Python version\n\n_No response_\n\n### Jupyter version\n\n_No response_\n\n### Installation\n\n_No response_\n",
+        "start": 0,
+        "end": 1515
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the exact issue reproduction with a horizontal ColorbarBase built from from_levels_and_colors(extend='both') and drawedges=True, draw it on Agg, and inspect cbar.dividers segments. The added first/last segments are placed at the outer mesh ends or extension tips rather than at the junctions between the triangular under/over regions and the first/last interior colors, so the extremity separators are still missing at the expected positions.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw a discrete colorbar with extend='neither' and drawedges=True in both orientations and compare dividers to the pre-change interior-only set. The new start/end slicing based on X.shape[0] drops interior dividers or adds outer side/top-bottom segments for one orientation.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Repeat the same discrete extend='both' drawedges=True setup with orientation='vertical'. The vertical colorbar still lacks horizontal divider segments at the lower and upper extension junctions, or the new segments are transposed along the wrong axis.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw a continuous imshow colorbar with extend='both' and drawedges=True, with no discrete levels. The change adds black segments at the first and last gradient mesh rows, producing unwanted lines at the bar ends or across the extension tips in a rendering that previously had no discrete color separators there.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a discrete mappable-based colorbar via plt.colorbar with BoundaryNorm and only extend='min' (and separately only extend='max') plus drawedges=True. Only the corresponding single extension junction should gain a line, but the change draws both junctions or neither because the lower/upper extension state is resolved differently in this path.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw a discrete colorbar with extend='both', extendrect=True, and drawedges=True. Because rectangular extensions are already part of the solid mesh, including row 0 and row N-1 draws extra outer-edge lines around the extension rectangles instead of only the already-present separators, changing appearance beyond the triangular-extension fix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1041,
+      "cached_tokens": 116,
+      "output_tokens": 12966,
+      "reasoning_tokens": 12472,
+      "micro_usd": 263044,
+      "seconds": 99.11945167700105
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 3,
+        "blocker": 5,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-22865/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1736.6002226980017
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 718.2437722799987
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

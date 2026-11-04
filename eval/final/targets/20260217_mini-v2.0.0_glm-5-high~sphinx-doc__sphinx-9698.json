@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9698",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:45:44Z",
+  "wall_seconds": 1058.9925183300002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "An index entry with parens was registered for `py:method` directive with `:property:` option\n### Describe the bug\n\nAn index entry with parens was registered for `py:method` directive with `:property:` option. It should not have parens.\r\n\n\n### How to Reproduce\n\n```\r\n# index.rst\r\n\r\n.. py:method:: Foo.bar\r\n   :property:\r\n\r\n.. py:property:: Foo.baz\r\n```\n\n### Expected behavior\n\nAn index entry for the property should not have parens.\n\n### Your project\n\nN/A\n\n### Screenshots\n\n<img width=\"528\" alt=\"スクリーンショット 2021-10-03 13 00 53\" src=\"https://user-images.githubusercontent.com/748828/135739148-7f404a37-159b-4032-ac68-efb0aaacb726.png\">\r\n\n\n### OS\n\nMac\n\n### Python version\n\n3.9.6\n\n### Sphinx version\n\nHEAD of 4.x\n\n### Sphinx extensions\n\n_No response_\n\n### Extra tools\n\n_No response_\n\n### Additional context\n\n_No response_\n",
+        "start": 0,
+        "end": 817
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9698",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build a document with `.. py:method:: Foo.bar` having both `:property:` and `:classmethod:`; the index entry takes the classmethod branch first and still appears as `bar() (Foo class method)`, retaining the forbidden parens.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build documents for ordinary `Foo.bar`, `:classmethod:` `Foo.bar`, and `:staticmethod:` `Foo.bar` methods; one of these non-property index entries loses its expected `bar()` parens or changes its method-kind wording.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build a document with `.. py:module:: foo` followed by an unqualified `.. py:method:: bar` with `:property:`; this hits the no-dot fallback with a module name, and its index entry may still be generated as `bar() (in module foo)`.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build an unqualified non-property `.. py:method:: bar` both under `.. py:module:: foo` and with no module; the fallback branches may now return plain `bar` instead of the previous `bar() (in module foo)` or `bar()`.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Nest `.. py:method:: bar` with `:property:` inside `.. py:class:: Foo` instead of writing `Foo.bar`; the implicit-class name path may bypass the qualified property branch and still register `bar()` in the index.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build the reproduction's separate `.. py:property:: Foo.baz` alongside a normal property method; the `py:property` index entry may change from its previous `baz (Foo property)` form even though only `py:method` needed fixing.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 853,
+      "cached_tokens": 244,
+      "output_tokens": 5372,
+      "reasoning_tokens": 4948,
+      "micro_usd": 109925,
+      "seconds": 38.84179759300241
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 5
+      },
+      "blockers": [],
+      "wall_seconds": 662.907726442998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 3,
+        "s_sat_inconclusive": 1,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 356.3411797270019
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:0d43c00c294ab70068279346b14f3a2906e94c4fabc7bc8e684d2d6ddfe8f54a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:0d43c00c294ab70068279346b14f3a2906e94c4fabc7bc8e684d2d6ddfe8f54a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

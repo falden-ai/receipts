@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3095",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:58:27Z",
+  "wall_seconds": 1571.1513200890004,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "REGRESSION: copy(deep=True) casts unicode indices to object\nDataset.copy(deep=True) and DataArray.copy (deep=True/False) accidentally cast IndexVariable's with dtype='<U*' to object. Same applies to copy.copy() and copy.deepcopy().\r\n\r\nThis is a regression in xarray >= 0.12.2. xarray 0.12.1 and earlier are unaffected.\r\n\r\n```\r\n\r\nIn [1]: ds = xarray.Dataset(\r\n   ...:     coords={'x': ['foo'], 'y': ('x', ['bar'])},\r\n   ...:     data_vars={'z': ('x', ['baz'])})                                                              \r\n\r\nIn [2]: ds                                                                                                                                                                                                                     \r\nOut[2]: \r\n<xarray.Dataset>\r\nDimensions:  (x: 1)\r\nCoordinates:\r\n  * x        (x) <U3 'foo'\r\n    y        (x) <U3 'bar'\r\nData variables:\r\n    z        (x) <U3 'baz'\r\n\r\nIn [3]: ds.copy()                                                                                                                                                                                                              \r\nOut[3]: \r\n<xarray.Dataset>\r\nDimensions:  (x: 1)\r\nCoordinates:\r\n  * x        (x) <U3 'foo'\r\n    y        (x) <U3 'bar'\r\nData variables:\r\n    z        (x) <U3 'baz'\r\n\r\nIn [4]: ds.copy(deep=True)                                                                                                                                                                                                     \r\nOut[4]: \r\n<xarray.Dataset>\r\nDimensions:  (x: 1)\r\nCoordinates:\r\n  * x        (x) object 'foo'\r\n    y        (x) <U3 'bar'\r\nData variables:\r\n    z        (x) <U3 'baz'\r\n\r\nIn [5]: ds.z                                                                                                                                                                                                                   \r\nOut[5]: \r\n<xarray.DataArray 'z' (x: 1)>\r\narray(['baz'], dtype='<U3')\r\nCoordinates:\r\n  * x        (x) <U3 'foo'\r\n    y        (x) <U3 'bar'\r\n\r\nIn [6]: ds.z.copy()                                                                                                                                                                                                            \r\nOut[6]: \r\n<xarray.DataArray 'z' (x: 1)>\r\narray(['baz'], dtype='<U3')\r\nCoordinates:\r\n  * x        (x) object 'foo'\r\n    y        (x) <U3 'bar'\r\n\r\nIn [7]: ds.z.copy(deep=True)                                                                                                                                                                                                   \r\nOut[7]: \r\n<xarray.DataArray 'z' (x: 1)>\r\narray(['baz'], dtype='<U3')\r\nCoordinates:\r\n  * x        (x) object 'foo'\r\n    y        (x) <U3 'bar'\r\n```\n",
+        "start": 0,
+        "end": 2811
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~pydata__xarray-3095",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling ds['z'].copy(deep=False) or ds['x'].copy(deep=False) on the issue's Dataset still casts the 'x' IndexVariable from '<U3' to object, because the changed line only handles a deep-copy branch.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deep-copying a Dataset with a plain non-unicode pandas MultiIndex (e.g. from_product([[1, 2], ['a', 'b']])) now breaks or flattens the index, because PandasIndexAdapter(..., dtype=self.dtype) with dtype=object converts the MultiIndex into an object array of tuples instead of preserving levels.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "copy.copy(ds) and copy.deepcopy(ds) from the issue still cast the unicode dimension coordinate 'x' to object, because the stdlib copy paths may reconstruct the IndexVariable without going through the changed deep-copy line.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deep-copying an IndexVariable with a tz-aware DatetimeIndex, or a MultiIndex containing a datetime level, loses timezone/frequency or coerces the level dtype, because the adapter is now forced with dtype=self.dtype instead of inferring it from the copied pandas array.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A Dataset with a pandas MultiIndex containing a unicode level, copied with copy(deep=True), still loses the unicode level dtype to object, because passing the MultiIndex variable's overall dtype (object) to PandasIndexAdapter does not preserve per-level '<U*' dtypes.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deep-copying a unicode IndexVariable and then mutating the copy's underlying index array in place also mutates the original, because constructing PandasIndexAdapter with an explicit matching dtype may reuse the original pandas Index object rather than retaining the deep-copied array.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 885,
+      "cached_tokens": 116,
+      "output_tokens": 4858,
+      "reasoning_tokens": 4419,
+      "micro_usd": 100260,
+      "seconds": 34.75977899099962
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 5,
+        "possibly_toxic": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1224.3871738519993
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 3,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 311.185640063999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:104d3632d769905ae2333b8eabfd84bd4c924043d426cc8b2048fde34fd657c6"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:104d3632d769905ae2333b8eabfd84bd4c924043d426cc8b2048fde34fd657c6"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:104d3632d769905ae2333b8eabfd84bd4c924043d426cc8b2048fde34fd657c6"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:104d3632d769905ae2333b8eabfd84bd4c924043d426cc8b2048fde34fd657c6"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

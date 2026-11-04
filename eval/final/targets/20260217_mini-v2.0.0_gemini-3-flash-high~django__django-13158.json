@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13158",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:23:23Z",
+  "wall_seconds": 1418.9695676869997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "QuerySet.none() on combined queries returns all results.\nDescription\n\t\nI came across this issue on Stack Overflow. I'm not 100% sure it's a bug, but it does seem strange. With this code (excuse the bizarre example filtering):\nclass Publication(models.Model):\n\tpass\nclass Article(models.Model):\n\tpublications = models.ManyToManyField(to=Publication, blank=True, null=True)\nclass ArticleForm(forms.ModelForm):\n\tpublications = forms.ModelMultipleChoiceField(\n\t\tPublication.objects.filter(id__lt=2) | Publication.objects.filter(id__gt=5),\n\t\trequired=False,\n\t)\n\tclass Meta:\n\t\tmodel = Article\n\t\tfields = [\"publications\"]\nclass ArticleAdmin(admin.ModelAdmin):\n\tform = ArticleForm\nThis works well. However, changing the ModelMultipleChoiceField queryset to use union() breaks things.\npublications = forms.ModelMultipleChoiceField(\n\tPublication.objects.filter(id__lt=2).union(\n\t\tPublication.objects.filter(id__gt=5)\n\t),\n\trequired=False,\n)\nThe form correctly shows only the matching objects. However, if you submit this form while empty (i.e. you didn't select any publications), ALL objects matching the queryset will be added. Using the OR query, NO objects are added, as I'd expect.\n",
+        "start": 0,
+        "end": 1176
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13158",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling .count() on Publication.objects.filter(id__lt=2).union(Publication.objects.filter(id__gt=5)).none() raises EmptyResultSet or returns a non-zero count instead of 0, because the aggregation/subquery compilation path does not handle the newly raised EmptyResultSet like normal iteration does.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Publication.objects.none().union(Publication.objects.filter(id__gt=5)) returns no rows instead of the id__gt=5 rows, because is_empty() only reflects the first union operand and the early raise bypasses get_combinator_sql()'s handling that omits an empty first part of a UNION.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Using the combined none() queryset as a subquery, e.g. Publication.objects.filter(id__in=Publication.objects.filter(id__lt=2).union(Publication.objects.filter(id__gt=5)).none()), returns matching publications or raises EmptyResultSet instead of returning no publications.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Publication.objects.filter(id__in=[]).union(Publication.objects.filter(id__gt=5)) returns no rows instead of the id__gt=5 rows, showing the change also breaks combined queries whose first operand is empty for reasons other than an explicit .none() call.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Submitting the issue's ModelForm with an empty publications field for a ModelMultipleChoiceField over Publication.objects.filter(id__lt=2).union(Publication.objects.filter(id__gt=5)) still adds all union-matching publications when saving the many-to-many data, instead of adding none.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With supports_select_intersection disabled, list(Publication.objects.all().intersection(Publication.objects.all()).none()) silently returns [] instead of raising NotSupportedError, because EmptyResultSet is now raised before the combinator feature-support check.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 733,
+      "cached_tokens": 116,
+      "output_tokens": 13205,
+      "reasoning_tokens": 12747,
+      "micro_usd": 266592,
+      "seconds": 113.02654296699984
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "possibly_toxic": 1,
+        "suspected": 3
+      },
+      "blockers": [],
+      "wall_seconds": 954.4961424859994
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 3,
+        "refuted": 2,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 350.3623366789998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

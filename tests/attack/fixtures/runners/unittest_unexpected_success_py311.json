@@ -1,0 +1,12 @@
+{
+ "python": "3.11.15",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "unexpected.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "test_passes_unexpectedly (unexpected.tests.OnlyAnUnexpectedSuccess.test_passes_unexpectedly) ... unexpected success\n\n======================================================================\nUNEXPECTED SUCCESS: test_passes_unexpectedly (unexpected.tests.OnlyAnUnexpectedSuccess.test_passes_unexpectedly)\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (unexpected successes=1)\n"
+}

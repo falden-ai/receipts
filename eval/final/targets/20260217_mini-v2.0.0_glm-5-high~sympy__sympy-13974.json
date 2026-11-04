@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13974",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:35:41Z",
+  "wall_seconds": 1500.7001323219997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Evaluating powers of `TensorProduct`\nPowers of tensor product expressions are not possible to evaluate with either `expand(tensorproduct=True)` method nor the `tensor_product_simp`function.\r\n\r\nThis is an example session showing the issue\r\n```\r\nIn [1]: from sympy import *\r\n        from sympy.physics.quantum import TensorProduct as tp\r\n        from sympy.physics.quantum import tensor_product_simp as tps\r\n        from sympy.physics.paulialgebra import Pauli\r\n        a = Symbol('a', commutative=False)\r\n\r\nIn [2]: t1 = tp(1,1)*tp(1,1)\r\n        t1\r\nOut[2]: 1x1**2\r\n\r\nIn [3]: tps(t1)\r\nOut[3]: 1x1**2\r\n\r\nIn [4]: t1.expand(tensorproduct=True)\r\nOut[4]: 1x1**2\r\n\r\nIn [5]: tps(tp(1,1)*tp(1,a)).subs(a, 1)\r\nOut[5]: 1x1\r\n\r\nIn [6]: t2 = tp(1,Pauli(3))*tp(1,Pauli(3))\r\n        t2\r\nOut[6]: 1xsigma3**2\r\n\r\nIn [7]: tps(t2)\r\nOut[7]: 1xsigma3**2\r\n\r\nIn [8]: t2.expand(tensorproduct=True)\r\nOut[8]: 1xsigma3**2\r\n\r\nIn [9]: tps(tp(1,Pauli(3))*tp(1,a)).subs(a, Pauli(3))\r\nOut[9]: 1x1\r\n```\r\nwhere `[5]` and `[9]` shows expected result for `t1` and `t2` respectively.\n",
+        "start": 0,
+        "end": 1044
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-13974",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Test tensor_product_simp and expand(tensorproduct=True) on TensorProduct(1, Pauli(3))**2 * TensorProduct(1, Pauli(3)), expecting TensorProduct(1, Pauli(3)). The Mul handling only special-cases an isolated power, so the mixed power/product may remain unexpanded.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Test tensor_product_simp and expand(tensorproduct=True) on TensorProduct(1, Pauli(3))**Symbol('n', integer=True), which previously returned the power unchanged. Evaluating exp >= 0 for an integer symbol of unknown sign may raise TypeError instead.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Test tensor_product_simp on TensorProduct(TensorProduct(1, Pauli(3)), Pauli(3))**2, expecting the nested factor to become TensorProduct(1, 1). The new code constructs arg**exp without recursively simplifying it, so an inner TensorProduct power may remain.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Test tensor_product_simp on TensorProduct(TensorProduct(1, Pauli(3))*TensorProduct(1, Pauli(3)), Pauli(3))**2, whose base arguments were previously simplified before powering. Bypassing tensor_product_simp(base) may leave the inner TensorProduct product unsimplified or produce a less simplified result.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Test tensor_product_simp and expand(tensorproduct=True) on TensorProduct(2, Pauli(3))**-2, expecting TensorProduct(1/4, 1). The explicit exp >= 0 restriction leaves negative integer powers unexpanded.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Test expand(tensorproduct=True) on TensorProduct(Matrix([[1, 2]]), Matrix([[1]]))**2, which previously left the inadmissible power unchanged. The new code attempts to square the non-square matrix factor and may raise a shape error.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1340,
+      "cached_tokens": 244,
+      "output_tokens": 8569,
+      "reasoning_tokens": 8092,
+      "micro_usd": 175813,
+      "seconds": 58.02967133199991
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 1,
+        "s_sat_inconclusive": 4,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1078.0444314879996
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "refuted": 3,
+        "unchecked": 4,
+        "s_sat_inconclusive": 2
+      },
+      "blockers": [],
+      "wall_seconds": 364.00187467000023
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

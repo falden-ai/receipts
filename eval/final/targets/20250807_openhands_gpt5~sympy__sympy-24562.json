@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sympy__sympy-24562",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 1691.3308852920002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Rational calc value error\npython 3.11, sympy 1.11.1\r\nwhen calc Rational('0.5', '100'), the value is 1/100100; but Rational(0.5, 100) the value is 1/200, this value is the true value, and the version of sympy 1.8 is normal\n",
+        "start": 0,
+        "end": 222
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sympy__sympy-24562",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('0.5', '100') does not equal Rational(1, 200), instead retaining the reported string-repetition result 1/100100 or another incorrect value.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(0.5, 0.25, gcd=1) previously returned Integer(2), but the change returns an unreduced Rational with p=4 and q=2 because the supplied gcd no longer cancels the newly introduced common factor.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational(0.5, '100') does not equal Rational(1, 200) because a non-integer float numerator combined with a string denominator still mishandles the denominator.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(1.5, 2.5) or Rational(Decimal('1.5'), Decimal('2.5')) no longer equals Rational(3, 5) because converting each operand separately changes the exact scaling previously produced by multiplying the denominator first.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('0.5', '0.25') does not equal 2, or Rational('1/2', '100') does not equal Rational(1, 200), because decimal or fraction strings in both arguments are not normalized independently.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(1, -0.5) no longer equals -2, or Rational(-1, -0.5) no longer equals 2, because combining a negative denominator numerator into q breaks the existing sign normalization.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 723,
+      "cached_tokens": 0,
+      "output_tokens": 9590,
+      "reasoning_tokens": 9208,
+      "micro_usd": 194692,
+      "seconds": 85.16253891900001
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 3,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 889.5774080759999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 10,
+        "refuted": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 716.202960477
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

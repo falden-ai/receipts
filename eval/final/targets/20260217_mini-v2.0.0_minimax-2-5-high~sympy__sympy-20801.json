@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:38:42Z",
+  "wall_seconds": 2049.068230609999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "S(0.0) == S.false returns True\nThis issue is related to those listed in #20033. \r\n\r\nAs shown by @sayandip18, comparing `S.false` to `S(0.0)` returns 2 different results depending on the order in which they are compared:\r\n\r\n```pycon\r\n>>> from sympy import *\r\n>>> S(0.0) == S.false\r\nTrue\r\n>>> S.false == S(0.0)\r\nFalse\r\n```\r\nBased on the results of comparison to `S(0)`:\r\n\r\n```pycon\r\n>>> S(0) == S.false\r\nFalse\r\n>>> S.false == S(0)\r\nFalse\r\n```\r\nI assume we would want `S(0.0) == S.false` to return True as well?\n",
+        "start": 0,
+        "end": 509
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "S(0.0) == False and S(1.0) == True (and the reversed orders) return True because Python bools are converted to int before the Boolean check, even though the equivalent S.false/S.true comparisons return False.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Float(1.0) == True changes from False to True (and Float(1.0) != True flips) while Float(1.0) == S.true remains False, breaking the previous distinctness of numeric 1 from Boolean true and equality transitivity with True == S.true.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Eq(S(0.0), S.false), S(0.0).equals(S.false), or S(0.0) != S.false still produce True/unevaluated results because those paths do not rely solely on the patched Float.__eq__.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Float(0.0) compared with a symbolic Boolean such as And(x, y) or Eq(x, y) now silently returns False instead of the previous behavior from evaluating `not other` (including raising TypeError for undecidable truth), changing comparisons beyond S.false/S.true.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Other zero-valued float forms such as Float('-0.0'), Float(0.0, 100), or S(0.0+0j) compared with S.false in either order still return True or disagree, because only one Float.__eq__ path was reordered.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Bool-like non-Python-bool values are now inconsistent: Float(1.0) == numpy.bool_(True) still returns False via sympification to S.true while Float(1.0) == True returns True, whereas before the change both returned False.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 685,
+      "cached_tokens": 116,
+      "output_tokens": 9888,
+      "reasoning_tokens": 9441,
+      "micro_usd": 200060,
+      "seconds": 83.15624108599877
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "blocker": 4,
+        "unchecked": 2,
+        "not_reproduced": 2,
+        "refuted": 2,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1345.6895081900002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "possibly_toxic": 2,
+        "unchecked": 7,
+        "suspected": 1,
+        "refuted": 2,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-20801/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 619.716627152
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

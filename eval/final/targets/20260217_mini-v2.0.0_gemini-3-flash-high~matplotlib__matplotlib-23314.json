@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:04:49Z",
+  "wall_seconds": 1746.4061250550003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: set_visible() not working for 3d projection \n### Bug summary\r\n\r\nin the subplot projection=\"3d\" the set_visible function doesn't work even if the value is set to False\r\n\r\n### Code for reproduction\r\n\r\n```python\r\nimport matplotlib.pyplot as plt\r\nfrom matplotlib.gridspec import GridSpec\r\n\r\nfig, (ax1, ax2) = plt.subplots(1, 2, subplot_kw={'projection': '3d'})\r\nax1.scatter(1,1,1)\r\nax2.scatter(1,1,1, c='r')\r\nax1.set_visible(False)\r\n\r\nplt.show()\r\n# Thanks Tim for your help! \r\n```\r\n\r\n\r\n### Actual outcome\r\n\r\nthe subplot remains visible which should not happen if the value is set to False\r\n\r\n### Expected outcome\r\n\r\nthe subplot is not visible if the value is set to False\r\n\r\n### Additional information\r\n\r\n_No response_\r\n\r\n### Operating system\r\n\r\n_No response_\r\n\r\n### Matplotlib Version\r\n\r\n3.4.2\r\n\r\n### Matplotlib Backend\r\n\r\nQt5Agg\r\n\r\n### Python version\r\n\r\n3.8.10\r\n\r\n### Jupyter version\r\n\r\n_No response_\r\n\r\n### Installation\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 943
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Create a 3D axes with ax.plot_surface(...) or ax.voxels(...), call set_visible(False) on the returned Poly3DCollection, and draw the canvas; the surface/voxels are still rendered because Poly3DCollection.draw has no visibility check.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Hide only one 3D axis, e.g. ax.xaxis.set_visible(False) while leaving the Axes visible, and draw; the x-axis pane disappears even though draw_pane is a separate path that previously still drew the pane when only ticks/labels were hidden.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Create a 3D contour with ax.tricontour(...) or add a Line3DCollection via add_collection3d, call set_visible(False) on it, and draw the canvas; the contour/lines are still rendered because Line3DCollection.draw has no visibility check.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Draw a visible Line3D, hide it, rotate the view with ax.view_init(...) and draw, then inspect line.get_data() or its window extent; the projected 2D data remains at the old view because Line3D.draw now returns before calling set_data with the new projection, whereas before the change an invisible draw still updated it.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Add a patch to a 3D axes that becomes a Patch3D, call set_visible(False) on the patch, and draw the canvas; the patch is still rendered because Patch3D.draw has no visibility check.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Hide a whole 3D Axes, add new scatter data while it is hidden, and draw the figure, then check ax.get_w_lims() or the projection matrix; the limits/projection remain stale because Axes3D.draw now returns before _unstale_viewLim/autoscaling, whereas before the change a draw updated them even for a hidden axes.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1296,
+      "cached_tokens": 244,
+      "output_tokens": 9702,
+      "reasoning_tokens": 9220,
+      "micro_usd": 198297,
+      "seconds": 80.32114691100287
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "blocker": 3,
+        "possibly_toxic": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~matplotlib__matplotlib-23314/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1280.2472776870054
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 3,
+        "suspected": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 384.41524888400454
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

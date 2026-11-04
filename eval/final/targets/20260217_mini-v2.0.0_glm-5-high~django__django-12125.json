@@ -1,0 +1,183 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-12125",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:47:56Z",
+  "wall_seconds": 1613.1729094539987,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "makemigrations produces incorrect path for inner classes\nDescription\n\t\nWhen you define a subclass from django.db.models.Field as an inner class of some other class, and use this field inside a django.db.models.Model class, then when you run manage.py makemigrations, a migrations file is created which refers to the inner class as if it were a top-level class of the module it is in.\nTo reproduce, create the following as your model:\nclass Outer(object):\n\tclass Inner(models.CharField):\n\t\tpass\nclass A(models.Model):\n\tfield = Outer.Inner(max_length=20)\nAfter running manage.py makemigrations, the generated migrations file contains the following:\nmigrations.CreateModel(\n\tname='A',\n\tfields=[\n\t\t('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),\n\t\t('field', test1.models.Inner(max_length=20)),\n\t],\n),\nNote the test1.models.Inner, which should have been test1.models.Outer.Inner.\nThe real life case involved an EnumField from django-enumfields, defined as an inner class of a Django Model class, similar to this:\nimport enum\nfrom enumfields import Enum, EnumField\nclass Thing(models.Model):\n\t@enum.unique\n\tclass State(Enum):\n\t\ton = 'on'\n\t\toff = 'off'\n\tstate = EnumField(enum=State)\nThis results in the following migrations code:\nmigrations.CreateModel(\n\tname='Thing',\n\tfields=[\n\t\t('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),\n\t\t('state', enumfields.fields.EnumField(enum=test1.models.State, max_length=10)),\n\t],\n),\nThis refers to test1.models.State, instead of to test1.models.Thing.State.\n",
+        "start": 0,
+        "end": 1589
+      },
+      "high_risk": true
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": true
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-12125",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Serialize a model using a field defined as class Outer with inner class Inner(models.CharField) in the same models module. The output still references module.Inner instead of module.Outer.Inner because only __module__ is passed and deconstruct() loses __qualname__, so the generated migration cannot resolve the field class.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Serialize a field whose deconstruct() intentionally returns a canonical path in a different module from its class __module__, such as a class defined in app.models but deconstructed to app.fields.CustomField. Previously the import followed the deconstructed path; now it imports app.models while still naming app.fields.CustomField, leaving the named module unimported.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define both a top-level Inner field class and a different Outer.Inner field class in one module, then use Outer.Inner on a model. Serialization silently resolves to the top-level module.Inner class rather than Outer.Inner, picking the wrong field implementation.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Serialize a third-party or contrib field whose public deconstructed path is a re-export module but whose __module__ is a private submodule, such as django.contrib.postgres ArrayField defined under fields.array. The import changes from the public fields module to the private submodule, changing previously stable migration output and potentially breaking exact import expectations.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a custom manager defined as an inner class, such as Outer.InnerManager, as a model's manager with use_in_migrations. ModelManagerSerializer passes only the manager's __module__, so the serialized manager still omits Outer and points to a nonexistent or wrong top-level manager.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the path serializer with an existing deep Django path such as django.db.models.fields.related.ForeignKey or serialize an object deconstructing to such a path without a module argument. It now collapses to models.fields.related.ForeignKey with only 'from django.db import models', whereas before it imported django.db.models.fields.related explicitly, so executing only the generated imports in a fresh process can fail.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": [
+      {
+        "what": "correctness-4",
+        "reason": "budget",
+        "detail": "mask diff_tests: over the plan's cap of 3 attacks per lens"
+      },
+      {
+        "what": "regression-4",
+        "reason": "budget",
+        "detail": "mask diff_tests: over the plan's cap of 3 attacks per lens"
+      },
+      {
+        "what": "correctness-5",
+        "reason": "budget",
+        "detail": "mask claim_only: over the plan's cap of 3 attacks per lens"
+      },
+      {
+        "what": "regression-5",
+        "reason": "budget",
+        "detail": "mask claim_only: over the plan's cap of 3 attacks per lens"
+      }
+    ]
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1555,
+      "cached_tokens": 116,
+      "output_tokens": 13095,
+      "reasoning_tokens": 12328,
+      "micro_usd": 267680,
+      "seconds": 117.22613192300196
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 3,
+        "blocker": 3,
+        "s_sat_inconclusive": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-12125/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-12125/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-12125/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1238.8351506260005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "unchecked": 8,
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 255.50873372099886
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:65097623b18daef73ca8e0325b83ab14e09ad48a7c3fac34858e0251ce71887c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:65097623b18daef73ca8e0325b83ab14e09ad48a7c3fac34858e0251ce71887c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,268 @@
+{
+ "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13974@sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4",
+ "git": "git version 2.34.1",
+ "patch": "GNU patch 2.7.6",
+ "uid": "0",
+ "cmds": [
+  "git apply --verbose",
+  "git apply --verbose --reject",
+  "patch --batch --fuzz=5 -p1 -i"
+ ],
+ "cases": {
+  "exact": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/exact/a.py b/receipts_chain/exact/a.py\n--- a/receipts_chain/exact/a.py\n+++ b/receipts_chain/exact/a.py\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 0,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/exact/a.py...\nApplied patch receipts_chain/exact/a.py cleanly.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    }
+   ],
+   "applied_by": "git apply --verbose"
+  },
+  "fuzz": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/fuzz/a.py b/receipts_chain/fuzz/a.py\n--- a/receipts_chain/fuzz/a.py\n+++ b/receipts_chain/fuzz/a.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/fuzz/a.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nrow 10\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/fuzz/a.py:7\nerror: receipts_chain/fuzz/a.py: patch does not apply\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/fuzz/a.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nrow 10\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/fuzz/a.py:7\nApplying patch receipts_chain/fuzz/a.py with 1 reject...\nRejected hunk #1.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/fuzz/a.py b/receipts_chain/fuzz/a.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 0,
+     "stdout": "patching file receipts_chain/fuzz/a.py\nHunk #1 succeeded at 7 with fuzz 3.\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/fuzz/a.py b/receipts_chain/fuzz/a.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    }
+   ],
+   "applied_by": "patch --batch --fuzz=5 -p1 -i"
+  },
+  "reject_then_gnu": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+    "b.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/reject_then_gnu/a.py b/receipts_chain/reject_then_gnu/a.py\n--- a/receipts_chain/reject_then_gnu/a.py\n+++ b/receipts_chain/reject_then_gnu/a.py\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\ndiff --git a/receipts_chain/reject_then_gnu/b.py b/receipts_chain/reject_then_gnu/b.py\n--- a/receipts_chain/reject_then_gnu/b.py\n+++ b/receipts_chain/reject_then_gnu/b.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/reject_then_gnu/a.py...\nChecking patch receipts_chain/reject_then_gnu/b.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nrow 10\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/reject_then_gnu/b.py:7\nerror: receipts_chain/reject_then_gnu/b.py: patch does not apply\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/reject_then_gnu/a.py...\nChecking patch receipts_chain/reject_then_gnu/b.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nrow 10\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/reject_then_gnu/b.py:7\nApplied patch receipts_chain/reject_then_gnu/a.py cleanly.\nApplying patch receipts_chain/reject_then_gnu/b.py with 1 reject...\nRejected hunk #1.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py.rej": "diff a/receipts_chain/reject_then_gnu/b.py b/receipts_chain/reject_then_gnu/b.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 0,
+     "stdout": "patching file receipts_chain/reject_then_gnu/a.py\nReversed (or previously applied) patch detected!  Assuming -R.\npatching file receipts_chain/reject_then_gnu/b.py\nHunk #1 succeeded at 7 with fuzz 3.\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "b.py.rej": "diff a/receipts_chain/reject_then_gnu/b.py b/receipts_chain/reject_then_gnu/b.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-row 10\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    }
+   ],
+   "applied_by": "patch --batch --fuzz=5 -p1 -i"
+  },
+  "reverse": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/reverse/a.py b/receipts_chain/reverse/a.py\n--- a/receipts_chain/reverse/a.py\n+++ b/receipts_chain/reverse/a.py\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/reverse/a.py...\nerror: while searching for:\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\n\nerror: patch failed: receipts_chain/reverse/a.py:7\nerror: receipts_chain/reverse/a.py: patch does not apply\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/reverse/a.py...\nerror: while searching for:\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\n\nerror: patch failed: receipts_chain/reverse/a.py:7\nApplying patch receipts_chain/reverse/a.py with 1 reject...\nRejected hunk #1.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/reverse/a.py b/receipts_chain/reverse/a.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 0,
+     "stdout": "patching file receipts_chain/reverse/a.py\nReversed (or previously applied) patch detected!  Assuming -R.\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/reverse/a.py b/receipts_chain/reverse/a.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\n"
+     }
+    }
+   ],
+   "applied_by": "patch --batch --fuzz=5 -p1 -i"
+  },
+  "exact_then_fuzz": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/exact_then_fuzz/a.py b/receipts_chain/exact_then_fuzz/a.py\n--- a/receipts_chain/exact_then_fuzz/a.py\n+++ b/receipts_chain/exact_then_fuzz/a.py\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13\n@@ -27,7 +27,7 @@\n wrong 27\n wrong 28\n wrong 29\n-row 30\n+row 30 changed\n wrong 31\n wrong 32\n wrong 33\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/exact_then_fuzz/a.py...\nerror: while searching for:\nwrong 27\nwrong 28\nwrong 29\nrow 30\nwrong 31\nwrong 32\nwrong 33\n\nerror: patch failed: receipts_chain/exact_then_fuzz/a.py:27\nerror: receipts_chain/exact_then_fuzz/a.py: patch does not apply\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/exact_then_fuzz/a.py...\nerror: while searching for:\nwrong 27\nwrong 28\nwrong 29\nrow 30\nwrong 31\nwrong 32\nwrong 33\n\nerror: patch failed: receipts_chain/exact_then_fuzz/a.py:27\nApplying patch receipts_chain/exact_then_fuzz/a.py with 1 reject...\nHunk #1 applied cleanly.\nRejected hunk #2.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/exact_then_fuzz/a.py b/receipts_chain/exact_then_fuzz/a.py\t(rejected hunks)\n@@ -27,7 +27,7 @@\n wrong 27\n wrong 28\n wrong 29\n-row 30\n+row 30 changed\n wrong 31\n wrong 32\n wrong 33\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 1,
+     "stdout": "patching file receipts_chain/exact_then_fuzz/a.py\nReversed (or previously applied) patch detected!  Assuming -R.\nHunk #2 FAILED at 27.\n1 out of 2 hunks FAILED -- saving rejects to file receipts_chain/exact_then_fuzz/a.py.rej\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "--- receipts_chain/exact_then_fuzz/a.py\n+++ receipts_chain/exact_then_fuzz/a.py\n@@ -27,7 +27,7 @@\n wrong 27\n wrong 28\n wrong 29\n-row 30 changed\n+row 30\n wrong 31\n wrong 32\n wrong 33\n"
+     }
+    }
+   ],
+   "applied_by": null
+  },
+  "none": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/none/a.py b/receipts_chain/none/a.py\n--- a/receipts_chain/none/a.py\n+++ b/receipts_chain/none/a.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-no such row\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/none/a.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nno such row\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/none/a.py:7\nerror: receipts_chain/none/a.py: patch does not apply\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 1,
+     "stdout": "",
+     "stderr": "Checking patch receipts_chain/none/a.py...\nerror: while searching for:\nwrong 7\nwrong 8\nwrong 9\nno such row\nwrong 11\nwrong 12\nwrong 13\n\nerror: patch failed: receipts_chain/none/a.py:7\nApplying patch receipts_chain/none/a.py with 1 reject...\nRejected hunk #1.\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "diff a/receipts_chain/none/a.py b/receipts_chain/none/a.py\t(rejected hunks)\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-no such row\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 1,
+     "stdout": "patching file receipts_chain/none/a.py\nHunk #1 FAILED at 7.\n1 out of 1 hunk FAILED -- saving rejects to file receipts_chain/none/a.py.rej\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.rej": "--- receipts_chain/none/a.py\n+++ receipts_chain/none/a.py\n@@ -7,7 +7,7 @@\n wrong 7\n wrong 8\n wrong 9\n-no such row\n+row 10 changed\n wrong 11\n wrong 12\n wrong 13\n"
+     }
+    }
+   ],
+   "applied_by": null
+  },
+  "no_newline": {
+   "files": {
+    "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+   },
+   "diff": "diff --git a/receipts_chain/no_newline/a.py b/receipts_chain/no_newline/a.py\n--- a/receipts_chain/no_newline/a.py\n+++ b/receipts_chain/no_newline/a.py\n@@ -7,7 +7,7 @@\n row 7\n row 8\n row 9\n-row 10\n+row 10 changed\n row 11\n row 12\n row 13",
+   "steps": [
+    {
+     "cmd": "git apply --verbose",
+     "exit_code": 128,
+     "stdout": "",
+     "stderr": "error: corrupt patch at line 12\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "git apply --verbose --reject",
+     "exit_code": 128,
+     "stdout": "",
+     "stderr": "error: corrupt patch at line 12\n",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    },
+    {
+     "cmd": "patch --batch --fuzz=5 -p1 -i",
+     "exit_code": 0,
+     "stdout": "patching file receipts_chain/no_newline/a.py\npatch unexpectedly ends in middle of line\nHunk #1 succeeded at 7 with fuzz 1.\n",
+     "stderr": "",
+     "tree": {
+      "a.py": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10 changed\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n",
+      "a.py.orig": "row 1\nrow 2\nrow 3\nrow 4\nrow 5\nrow 6\nrow 7\nrow 8\nrow 9\nrow 10\nrow 11\nrow 12\nrow 13\nrow 14\nrow 15\nrow 16\nrow 17\nrow 18\nrow 19\nrow 20\nrow 21\nrow 22\nrow 23\nrow 24\nrow 25\nrow 26\nrow 27\nrow 28\nrow 29\nrow 30\nrow 31\nrow 32\nrow 33\nrow 34\nrow 35\nrow 36\nrow 37\nrow 38\nrow 39\nrow 40\n"
+     }
+    }
+   ],
+   "applied_by": "patch --batch --fuzz=5 -p1 -i"
+  }
+ }
+}

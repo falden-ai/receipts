@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-15554",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:32:32Z",
+  "wall_seconds": 1788.0682824590003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Using multiple FilteredRelation with different filters but for same relation is ignored.\nDescription\n\t \n\t\t(last modified by lind-marcus)\n\t \nI have a relation that ALWAYS have at least 1 entry with is_all=True and then I have an optional entry that could have is_all=False but instead have zone set.\nI'm trying to use FilteredRelation together with Case(When()) to ensure that it use the zone level one (if exist) and fall back on \"All\" if zone do not exist.\nfrom django.db.models import FilteredRelation\nqs.alias(\n\trelation_zone=FilteredRelation(\n\t\t\"myrelation__nested\",\n\t\tcondition=Q(myrelation__nested__zone=F(\"zone\"))\n\t),\n\trelation_all=FilteredRelation(\n\t\t\"myrelation__nested\",\n\t\tcondition=Q(myrelation__nested__is_all=True)\n\t),\n\tprice_zone=F(\"relation_zone__price\")\n).annotate(\n\tprice_final=Case(\n\t\tWhen(\n\t\t\tprice_zone__isnull=True,\n\t\t\tthen=F(\"relation_all__price\"),\n\t\t),\n\t\tdefault=F(\"price_zone\")\n\t)\n)\nI noticed that when using multiple FilteredRelation with the same relation (myrelation__nested) it actually just generates a single SQL JOIN (if inspecting the raw SQL) and ignores the other. So in this case if I do print(str(qs.query)) I would only see a join for relation_zone. Not for relation_all.\nIs this intended behavior or should I be able to do the thing above?\n",
+        "start": 0,
+        "end": 1278
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-15554",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the issue's exact alias() with relation_zone=FilteredRelation('myrelation__nested', condition=Q(myrelation__nested__zone=F('zone'))) and relation_all with Q(myrelation__nested__is_all=True), plus the Case/When price_final, on rows with and without a zone match. It may still emit one JOIN or emit two JOINs whose second ON clause references the first alias because resolving the second condition reuses the first filtered join via the one-is-None allowance, so price_final is wrong for the fallback row.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Reference the same logical FilteredRelation twice in one query, e.g. annotate it once and use it in both a Count/Sum aggregate and a filter, or in two aggregates. Resolved copies of its condition containing Col/F expressions may not compare equal with Q.__eq__, so a duplicate identical LEFT JOIN is created where one was reused before, multiplying rows and inflating aggregates.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the two same-relation FilteredRelations via annotate() instead of alias(), and reference both only in a .filter() (e.g. relation_zone__price__isnull and relation_all__price__gt=0) rather than in F()/Case select expressions. The filter lookup-solving path may reuse the first join for the second name, so the queryset returns rows as if only one condition was applied.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define two aliases for the identical filtered relation with semantically identical conditions written differently, e.g. Q(a=1, b=2) versus Q(b=2, a=1) or Q(a=1) & Q(b=2). Previously they shared one JOIN, but strict Q equality now creates two identical JOINs, changing row multiplicity and non-distinct Count results.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define three FilteredRelations on the same relation in one queryset whose conditions differ only after resolution, e.g. Q(nested__zone=F('zone')), Q(nested__zone=F('fallback_zone')), and Q(nested__is_all=True), and select a field from each. Because Join.equals compares the stored Q objects, two conditions that resolve to different columns/values may compare equal (or the third may reuse an earlier alias), collapsing distinct JOINs and returning the same related row for different aliases.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a FilteredRelation whose condition itself traverses or references another filtered/plain join on the same underlying relation, relying on the previous unconditional reuse of that join during condition resolution. The new filtered_relation comparison may refuse that reuse and add an extra join, changing the ON-clause binding and returning different (extra or missing) rows compared with before the change.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1092,
+      "cached_tokens": 116,
+      "output_tokens": 8200,
+      "reasoning_tokens": 7569,
+      "micro_usd": 167928,
+      "seconds": 68.49598834100107
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1275.5506765310001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 1
+      },
+      "blockers": [],
+      "wall_seconds": 443.1336426889993
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

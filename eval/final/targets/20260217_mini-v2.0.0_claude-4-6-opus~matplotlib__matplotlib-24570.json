@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-24570",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:42:04Z",
+  "wall_seconds": 2555.0705237929997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: `align` in `HPacker` is reversed\n### Bug summary\n\nFor the `align` parameter in `HPacker`, the options `top` and `bottom` seems reversed\n\n### Code for reproduction\n\n```python\nimport matplotlib.pyplot as plt\r\nfrom matplotlib.offsetbox import DrawingArea, HPacker, VPacker, AnchoredOffsetbox, TextArea\r\nfrom matplotlib.patches import Rectangle\r\n\r\nda1 = DrawingArea(10, 20)\r\nrect1 = Rectangle((0, 0), 10, 20)\r\nda1.add_artist(rect1)\r\n\r\nda2 = DrawingArea(10, 30)\r\nrect2 = Rectangle((0, 0), 10, 30)\r\nda2.add_artist(rect2)\r\n\r\nalign = \"bottom\"\r\n\r\npack = HPacker(children=[da1, da2], pad=10, sep=10, align=align)\r\ntitle = TextArea(f\"align='{align}'\")\r\npack = VPacker(children=[title, pack], sep=10, pad=10, align=\"center\")\r\n\r\nbox = AnchoredOffsetbox(child=pack, loc=\"center\")\r\n\r\n_, ax = plt.subplots()\r\nax.add_artist(box)\n```\n\n\n### Actual outcome\n\n![download](https://user-images.githubusercontent.com/23433306/200162888-702626bf-ad47-40e2-8751-7dffe91df85c.png)\r\n\n\n### Expected outcome\n\n![download](https://user-images.githubusercontent.com/23433306/200162908-e0e9dfd5-6f8b-4aac-975e-bb363d809c41.png)\r\n\n\n### Additional information\n\n_No response_\n\n### Operating system\n\n_No response_\n\n### Matplotlib Version\n\n3.6.2\n\n### Matplotlib Backend\n\n_No response_\n\n### Python version\n\n_No response_\n\n### Jupyter version\n\n_No response_\n\n### Installation\n\n_No response_\n",
+        "start": 0,
+        "end": 1356
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~matplotlib__matplotlib-24570",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "HPacker(children=[DrawingArea(10, 20), DrawingArea(10, 30)], align='bottom') still places the shorter child with a y-offset of 10 instead of 0, so its bottom edge does not align with the taller child's bottom edge.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "VPacker(children=[DrawingArea(20, 10), DrawingArea(30, 10)], align='left' or 'right') changes behavior through the shared helper: 'left' no longer gives both children x-offset 0, or 'right' no longer gives the narrower child x-offset 10.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "HPacker(children=[DrawingArea(10, 20), DrawingArea(10, 30)], align='top') still places the shorter child with a y-offset of 0 instead of 10, so its top edge does not align with the taller child's top edge.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "HPacker with align='center' on children of heights 20 and 30 no longer offsets the shorter child by 5, or VPacker with align='center' on unequal widths is similarly shifted, even though center was not part of the bug.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "An HPacker containing descent-bearing children such as TextArea objects, drawn through AnchoredOffsetbox as in the issue example, still has non-coincident top edges for align='top' or bottom edges for align='bottom' in the rendered bounding boxes because the descent term in the offset formula is mishandled.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Packers with align='baseline' and descent-bearing children such as TextArea no longer return the pre-change baseline offsets and common baseline, even though the baseline branch was untouched by the fix.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 924,
+      "cached_tokens": 116,
+      "output_tokens": 3014,
+      "reasoning_tokens": 2578,
+      "micro_usd": 63536,
+      "seconds": 25.32322499499969
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1417.0671119710005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 2,
+        "possibly_toxic": 2,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1109.9082766150004
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

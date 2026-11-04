@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12489",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:51:47Z",
+  "wall_seconds": 1175.0172858059996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "combinatorics.Permutation can't be subclassed properly\nI stumbled across a subclassing issue with `combinatorics.Permutation`:\r\nThe object creation is done in `Permutation.__new__`, but internally the function `_af_new` is used (which itself is a reference to the static method `Permutation._af_new`). This method eventually creates the object calling `Basic.__new__(Perm, perm)` (`Perm` is a reference to `Permutation`).\r\nIn the end, this makes subclassing `Permutation` impossible (besides overriding `Permutation._af_new` as always instances of `Permutation` are returned.\r\n\r\nAn elegant solution would be to stick to Python's instance creation mechanisms, i.e. use classmethods where appropriate (`__new__` is one) and use the mandatory reference to the class (the first argument of a classmethod) the method is called on for instance creation.\r\n\r\nI'm completely new to sympy development and encountered this issue whilst trying to subclass `Permutation`. Therefore I'm not aware of any side effects changing the instance creation probably has. (I monkeypatched it locally and ran the tests, all succeeded.)\r\n\r\nMaybe there is a coherent explanation why the implementation is as it is and should not be changed?\n",
+        "start": 0,
+        "end": 1214
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12489",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: For `class S(Permutation): pass`, calling `S(Permutation([2, 0, 1]))` with no resizing returns the passed-in base Permutation object itself instead of an S instance, so `type(result) is S` fails.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: For a subclass S that previously worked with operations returning exact Permutation, `~S([1, 0, 2])`, `S([1, 0, 2])**2`, or `S([2, 0, 1]) * Permutation([1, 0, 2])` now returns S, breaking tests or group code that assert `type(result) is Permutation` or type-sensitive Basic equality with a Permutation.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling `S(Permutation([2, 0, 1]), size=5)` takes the copy-and-resize branch in `Permutation.__new__`, which still constructs `Perm(...)`, so the padded result is a base Permutation rather than S.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: An existing subclass using the old workaround of overriding `_af_new` as a static/plain function now has that override dispatched from `__mul__`, `__pow__`, `mul_inv`, and `commutator` via `self._af_new`, whereas the global Permutation `_af_new` previously bypassed it, so arithmetic can raise TypeError or produce different objects.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling subclass factories that do not go through `_af_new`, such as `S.identity(4)` or `S.from_sequence([2, 1, 0])`, still constructs a hard-coded Permutation, so at least one returns base Permutation instead of S.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling class factories through a subclass, such as `S.rmul_with_af(p1, p2)`, `S.random(4)`, `S.unrank_lex(4, 5)`, or `S.unrank_nonlex(4, 5)` with base Permutation inputs, now returns S instead of the Permutation returned before, changing element types in PermutationGroup-style code.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 2356,
+      "cached_tokens": 116,
+      "output_tokens": 9449,
+      "reasoning_tokens": 8905,
+      "micro_usd": 197964,
+      "seconds": 75.87745549400279
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 2,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 825.2013883519976
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "refuted": 6,
+        "unchecked": 4,
+        "not_reproduced": 1,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 273.6636803190013
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2011b47a82b6692c2b93eb5253cb277238c7abe9489d202348c78ace61f28931"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2011b47a82b6692c2b93eb5253cb277238c7abe9489d202348c78ace61f28931"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-13343",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:29:15Z",
+  "wall_seconds": 1501.013578552,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "FileField with a callable storage does not deconstruct properly\nDescription\n\t\nA FileField with a callable storage parameter should not actually evaluate the callable when it is being deconstructed.\nThe documentation for a FileField with a callable storage parameter, states:\nYou can use a callable as the storage parameter for django.db.models.FileField or django.db.models.ImageField. This allows you to modify the used storage at runtime, selecting different storages for different environments, for example.\nHowever, by evaluating the callable during deconstuction, the assumption that the Storage may vary at runtime is broken. Instead, when the FileField is deconstructed (which happens during makemigrations), the actual evaluated Storage is inlined into the deconstucted FileField.\nThe correct behavior should be to return a reference to the original callable during deconstruction. Note that a FileField with a callable upload_to parameter already behaves this way: the deconstructed value is simply a reference to the callable.\n---\nThis bug was introduced in the initial implementation which allowed the storage parameter to be callable: ​https://github.com/django/django/pull/8477 , which fixed the ticket https://code.djangoproject.com/ticket/28184\n",
+        "start": 0,
+        "end": 1260
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-13343",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a FileField with storage=get_storage, then assign field.storage = FileSystemStorage(location='/other') before deconstructing; deconstruct() still returns the stale get_storage callable, so reconstructing it does not produce the field's current '/other' storage.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Pickle a FileField created with storage=lambda: FileSystemStorage() (or deepcopy/pickle a model using a locally-defined callable storage); pickle.dumps now fails on the stored lambda in the field's __dict__, whereas before the change only the picklable evaluated storage instance was stored.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a FileField in a model with storage=lambda: FileSystemStorage(location='/tmp/x') or a locally-defined factory function and run migration serialization on its deconstruction; the serializer raises 'Cannot serialize function' for the lambda/local callable instead of producing a usable migration as it did with the evaluated storage instance.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Take an existing model whose callable storage returns default_storage and compare its old deconstruction (no storage kwarg) with the new one via the migration autodetector; the new storage=<callable> kwarg triggers a spurious AlterField migration even though the effective runtime storage is unchanged.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a non-function callable factory such as functools.partial(FileSystemStorage, location='/custom') or a callable instance whose __call__ returns FileSystemStorage(location='/custom'); deconstruct() returns the factory object itself, so serialization/reconstruction loses the evaluated storage's custom configuration or fails to serialize the factory.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Pass a storage instance that is itself callable, e.g. a CallableStorage instance whose __call__ returns a differently-configured FileSystemStorage; deconstruct() now returns the original callable instance instead of the evaluated storage, changing the serialized migration representation and the reconstructed storage type for code that worked before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 895,
+      "cached_tokens": 116,
+      "output_tokens": 8100,
+      "reasoning_tokens": 7639,
+      "micro_usd": 165140,
+      "seconds": 63.794413975
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 2,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 1124.414795852
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 4,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 311.05227447100015
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:96837d01d24b0aff40cda72400fbf57e37255ed5c6df4eea3a0a79a36219dbd7"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:96837d01d24b0aff40cda72400fbf57e37255ed5c6df4eea3a0a79a36219dbd7"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:96837d01d24b0aff40cda72400fbf57e37255ed5c6df4eea3a0a79a36219dbd7"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:96837d01d24b0aff40cda72400fbf57e37255ed5c6df4eea3a0a79a36219dbd7"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

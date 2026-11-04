@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13807",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:15:25Z",
+  "wall_seconds": 1198.1440555129993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "loaddata crashes on SQLite when table names are SQL keywords.\nDescription\n\t\nSteps to reproduce:\nCreate a Model called Order. (order is a SQL reserved word)\nCreate fixtures for the model\nUse manage.py loaddata to load the fixture.\nNotice that it fails with the following error. This is because the table name order is not quoted properly\n(0.000) PRAGMA foreign_key_check(order); args=None\nTraceback (most recent call last):\n File \"python3.7/site-packages/django/db/backends/utils.py\", line 82, in _execute\n\treturn self.cursor.execute(sql)\n File \"python3.7/site-packages/django/db/backends/sqlite3/base.py\", line 411, in execute\n\treturn Database.Cursor.execute(self, query)\nsqlite3.OperationalError: near \"order\": syntax error\nRoot Cause\nFile: python3.7/site-packages/django/db/backends/sqlite3/base.py line 327\nFunction: check_constraints\nDetails: due to missing back ticks around %s in the SQL statement PRAGMA foreign_key_check(%s)\nHere in check_constraints line 327 in context\n\t\t\t\tif table_names is None:\n\t\t\t\t\tviolations = cursor.execute('PRAGMA foreign_key_check').fetchall()\n\t\t\t\telse:\n\t\t\t\t\tviolations = chain.from_iterable(\n\t\t\t\t\t\tcursor.execute('PRAGMA foreign_key_check(%s)' % table_name).fetchall()\n\t\t\t\t\t\tfor table_name in table_names\n\t\t\t\t\t)\nAnd here line 333\n\t\t\t\tfor table_name, rowid, referenced_table_name, foreign_key_index in violations:\n\t\t\t\t\tforeign_key = cursor.execute(\n\t\t\t\t\t\t'PRAGMA foreign_key_list(%s)' % table_name\n\t\t\t\t\t).fetchall()[foreign_key_index]\nIssue confirmed in\n3.1.0\n3.1.2\n",
+        "start": 0,
+        "end": 1501
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13807",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Load a fixture for a model with db_table='order' via loaddata (or call connection.check_constraints(['order'])) with no FK violations. It still raises sqlite3.OperationalError near \"order\" if PRAGMA foreign_key_check does not accept the double-quoted identifier produced by quote_name.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call check_constraints on an ordinary non-keyword table containing an FK violation. Previously it raised IntegrityError with the correct primary-key and bad values, but the newly quoted PRAGMA/SELECT now raises a different error or wrong details.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Insert an FK-violating row into a keyword-named table such as 'order' with constraints deferred/disabled, then call check_constraints(['order']). It crashes with OperationalError or IndexError in the foreign_key_list/SELECT violation-reporting path instead of raising the expected IntegrityError describing the violation.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call check_constraints on a table with no primary key (get_primary_key_column returns None) that has an FK violation. quote_name(None) raises AttributeError, masking the previous violation-handling behavior instead of producing an IntegrityError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a keyword-named table whose primary-key and foreign-key columns are also keywords (e.g. db_column='group' for the PK and db_column='select' for the FK) and trigger check_constraints on an FK violation. The quoted SELECT still fails or reports the wrong columns, so no proper IntegrityError is raised.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Pass an already-quoted, schema-qualified, or special-character table name (e.g. '\"my_table\"', 'main.my_table', or a name containing a double quote) to check_constraints, as existing callers may do. The new quote_name wrapping causes a syntax error, double-quoting, or a silent no-op check where the unquoted form previously worked.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1064,
+      "cached_tokens": 116,
+      "output_tokens": 4691,
+      "reasoning_tokens": 4223,
+      "micro_usd": 97636,
+      "seconds": 36.338090717999876
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "possibly_toxic": 2,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 761.4589558469997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 5,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 398.93182742799763
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

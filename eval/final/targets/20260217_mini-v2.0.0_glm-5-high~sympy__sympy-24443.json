@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24443",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:31:12Z",
+  "wall_seconds": 2013.2604340399994,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`_check_homomorphism` is broken on PermutationGroups\n```python\r\nIn [1]: from sympy.combinatorics import *\r\n   ...: from sympy.combinatorics.homomorphisms import homomorphism\r\n   ...: D3 = DihedralGroup(3)\r\n   ...: T = homomorphism(D3, D3, D3.generators, D3.generators)\r\n\r\nValueError: The given images do not define a homomorphism\r\n```\r\n\r\nThe issue is in the internal `_image()` function, where it handles the case of a `PermutationGroup`:\r\n\r\nhttps://github.com/sympy/sympy/blob/809c53c077485ca48a206cee78340389cb83b7f1/sympy/combinatorics/homomorphisms.py#L336-L337\r\n\r\nWhen `r[i]` is an inverted generator, the `in gens` test fails.\r\n\r\nI think the whole thing can be greatly simplified.\n",
+        "start": 0,
+        "end": 687
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24443",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call homomorphism(DihedralGroup(4), DihedralGroup(4), D4.generators, D4.generators) for D4=DihedralGroup(4); it still raises ValueError because a relator entry is rotation**2, and neither rotation**2 nor its inverse is a generator, so the inverse-only lookup misses it.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With r, s = DihedralGroup(3).generators, call homomorphism(D3, D3, [r, s], [r, r]) expecting ValueError since the order-2 reflection is sent to the order-3 rotation; the change wrongly accepts it because a flipped exponent makes a non-identity relator evaluate to the identity.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With r, s = DihedralGroup(3).generators, call homomorphism(D3, D3, [r, s], [r**-1, s]), a valid inverting automorphism; it is rejected because the flipped power is applied to an already-signed exponent, evaluating r instead of r**-1 in a relator.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Let a = Permutation(0, 1, 2) and G = PermutationGroup(a, a**-1), and call the identity homomorphism(G, G, G.generators, G.generators) that passed before via direct generator lookup; the inverse/index lookup now conflates the two distinct generator entries and rejects it or maps one generator to the other's image.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With r, s = DihedralGroup(3).generators, call homomorphism(D3, D3, [r**2, s], [r**2, s]), the identity map on this alternative generating set; it raises ValueError because r**2 is remapped via its inverse r, which is not among the supplied gens/images.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the identity homomorphism on G = PermutationGroup(Permutation(0, 1), Permutation(2, 3)), whose self-inverse generators made it pass before; evaluating r[i]**-1 on non-generator product entries in relators now raises an exception or changes their image and breaks the check.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 730,
+      "cached_tokens": 244,
+      "output_tokens": 11069,
+      "reasoning_tokens": 10543,
+      "micro_usd": 223373,
+      "seconds": 84.31183300900011
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 1,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1564.1782330239985
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 7
+      },
+      "blockers": [],
+      "wall_seconds": 364.429827158001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:04d8df8b082d571edd21b528dcf7c49af7987efaa977b73f36178a0a0f18638d"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:04d8df8b082d571edd21b528dcf7c49af7987efaa977b73f36178a0a0f18638d"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

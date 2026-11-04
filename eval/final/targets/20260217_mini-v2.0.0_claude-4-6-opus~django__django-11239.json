@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11239",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:28:30Z",
+  "wall_seconds": 1357.8076937380001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Add support for postgresql client certificates and key to dbshell.\nDescription\n\t\nThis bug is very similar to the #28322\nA common security procedure for DB access is to require mutual TLS for the DB connection.\nThis involves specifying a server certificate, client certificate, and client key when connecting.\nDjango already supports this configuration, it looks like this:\nDATABASES = {\n\t'default': {\n\t\t'ENGINE': 'django.db.backends.postgresql',\n\t\t'NAME': os.environ.get('POSTGRES_DB_NAME'),\n\t\t'USER': os.environ.get('POSTGRES_DB_USER'),\n\t\t'HOST': 'postgres',\n\t\t'PORT': '5432',\n\t\t'SCHEMA': os.environ.get('POSTGRES_DB_SCHEMA'),\n\t\t'OPTIONS': {\n\t\t\t 'sslmode': 'verify-ca',\n\t\t\t 'sslrootcert': os.environ.get('POSTGRES_CLI_SSL_CA', 'ca.crt'),\n\t\t\t 'sslcert': os.environ.get('POSTGRES_CLI_SSL_CRT', 'client_cert_chain.crt'),\n\t\t\t 'sslkey': os.environ.get('POSTGRES_CLI_SSL_KEY', 'client_key.key')\n\t\t}\n\t}\n}\nHowever the dbshell command does not support the client cert params.\nShould be a trivial fix to add in support for the other 'ssl' parameters required here.\n",
+        "start": 0,
+        "end": 1056
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11239",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "End-to-end test: configure DATABASES exactly as in the issue, with sslmode/sslrootcert/sslcert/sslkey inside OPTIONS, mock subprocess.run, and invoke the dbshell management command. The captured environment lacks PGSSLCERT/PGSSLKEY (e.g. because the code reads top-level conn_params keys while the real settings store them under OPTIONS), so psql still connects without the client certificate.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call runshell with a plain database/user/password/host/port configuration and a clean environment, as existing dbshell tests do. The argument list or environment differs from pre-change behavior (e.g. new PGSSL* keys appear), breaking previously passing behavior.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call runshell with an encrypted client key configuration that also supplies sslpassword in OPTIONS alongside sslcert/sslkey. The environment sets PGSSLCERT/PGSSLKEY but not PGSSLPASSWORD, so psql cannot load the protected key and the mutual-TLS shell still fails.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Set PGSSLMODE/PGSSLCERT in os.environ and call runshell with no ssl options in the connection parameters. The inherited PGSSL* values are cleared, blanked, or overridden instead of being passed through to psql as before the change.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call runshell with only sslcert and sslkey set (the core case from the issue title, with no sslmode or sslrootcert). PGSSLCERT/PGSSLKEY are missing or incorrectly gated on the other ssl options, so psql is launched without the client certificate and key.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call runshell once with sslcert/sslkey set, then check os.environ and call runshell again without ssl options. The first call mutates the parent process environment or leaks PGSSLCERT/PGSSLKEY into the second call, altering later shells that never configured certificates.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 920,
+      "cached_tokens": 116,
+      "output_tokens": 7915,
+      "reasoning_tokens": 7444,
+      "micro_usd": 161540,
+      "seconds": 52.74728392799989
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 4,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 808.185227959
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "refuted": 3,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 495.23015755899996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

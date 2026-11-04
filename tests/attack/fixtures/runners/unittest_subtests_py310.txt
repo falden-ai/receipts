@@ -1,0 +1,22 @@
+test_a_sub (subtests.tests.T) ... test_b_ok (subtests.tests.T) ... ok
+test_c_sub_error (subtests.tests.T) ... 
+======================================================================
+ERROR: test_c_sub_error (subtests.tests.T) [labeled]
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/testbed/tests/subtests/tests.py", line 15, in test_c_sub_error
+    raise ValueError("boom")
+ValueError: boom
+
+======================================================================
+FAIL: test_a_sub (subtests.tests.T) (i=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/testbed/tests/subtests/tests.py", line 8, in test_a_sub
+    self.assertEqual(i % 2, 0)
+AssertionError: 1 != 0
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1, errors=1)

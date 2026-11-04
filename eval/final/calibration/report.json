@@ -1,0 +1,447 @@
+{
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "efficiency": {
+        "catches": 43,
+        "catches_final": true,
+        "catches_with_fv": 60,
+        "catches_with_fv_final": true,
+        "cost_by_stage_micro_usd": {
+          "at2_runs": 0,
+          "at2_stage1": 25811538,
+          "at3_intent": 139463,
+          "at3_suite": 0,
+          "attack.correctness.explore": 36366558,
+          "attack.correctness.sandbox": 0,
+          "attack.correctness.write": 4765205,
+          "refuter": 20187675,
+          "skeptic": 0,
+          "surrogate": 43327804
+        },
+        "cost_micro_usd": 130598243,
+        "cost_per_catch_micro_usd": 3037168,
+        "cost_per_catch_with_fv_micro_usd": 2176637,
+        "cost_per_target_p50_micro_usd": 869104,
+        "cost_per_target_p95_micro_usd": 1351768,
+        "time_to_catch_final": true,
+        "time_to_catch_p50_s": 866.8770937959998,
+        "time_to_catch_p95_s": 1271.2129986969999,
+        "timed_catches": 43
+      },
+      "excluded": 0,
+      "negatives": 60,
+      "positives": 90,
+      "rates": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.7143050946511744,
+          "k": 36,
+          "low": 0.4736605349204075,
+          "n": 60,
+          "small_n": false,
+          "value": 0.6
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.5263394650795924,
+          "k": 24,
+          "low": 0.2856949053488255,
+          "n": 60,
+          "small_n": false,
+          "value": 0.4
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-7454",
+          "20260217_mini-v2.0.0_claude-4-6-opus~pydata__xarray-4687",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13590",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-16950",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-13590",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-12125",
+          "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711",
+          "20250807_openhands_gpt5~sympy__sympy-12096",
+          "20250807_openhands_gpt5~pydata__xarray-6461"
+        ],
+        "invalid_repro": {
+          "high": 0.4655944161517882,
+          "k": 78,
+          "low": 0.33026446557141376,
+          "n": 197,
+          "small_n": false,
+          "value": 0.39593908629441626
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.0657951694959769,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.22356926905259614,
+          "low": -0.09451149393350639
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.4705882352941177,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.1818181818181818,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.023714534067354624,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.7552412593807046,
+          "k": 43,
+          "low": 0.5311216021303434,
+          "n": 66,
+          "small_n": false,
+          "value": 0.6515151515151515
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.7631578947368421,
+          "low": 0.5344827586206896
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.4584982688998792,
+          "k": 32,
+          "low": 0.26443868959648187,
+          "n": 90,
+          "small_n": false,
+          "value": 0.35555555555555557
+        },
+        "wdr_bounds": null
+      },
+      "refutations_by_category": {
+        "intended_change": 104,
+        "out_of_scope": 2,
+        "test_bug": 18,
+        "unsupported_by_quote": 3
+      },
+      "targets": 150,
+      "with_fv": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.7143050946511744,
+          "k": 36,
+          "low": 0.4736605349204075,
+          "n": 60,
+          "small_n": false,
+          "value": 0.6
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.5263394650795924,
+          "k": 24,
+          "low": 0.2856949053488255,
+          "n": 60,
+          "small_n": false,
+          "value": 0.4
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-7454",
+          "20260217_mini-v2.0.0_claude-4-6-opus~pydata__xarray-4687",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13590",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-16950",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-13590",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964",
+          "20260217_mini-v2.0.0_glm-5-high~django__django-12125",
+          "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-14711",
+          "20250807_openhands_gpt5~sympy__sympy-12096",
+          "20250807_openhands_gpt5~pydata__xarray-6461"
+        ],
+        "invalid_repro": {
+          "high": 0.6134838137345964,
+          "k": 221,
+          "low": 0.5156819535896504,
+          "n": 391,
+          "small_n": false,
+          "value": 0.5652173913043478
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.22935415401872886,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.38587162892959426,
+          "low": 0.0705442394936064
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.5764705882352941,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.25388601036269426,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.03586108986457857,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.8237244106541145,
+          "k": 60,
+          "low": 0.6359565111747224,
+          "n": 81,
+          "small_n": false,
+          "value": 0.7407407407407407
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.8333333333333334,
+          "low": 0.6436576354679803
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.6434038309244221,
+          "k": 49,
+          "low": 0.44184633569208204,
+          "n": 90,
+          "small_n": false,
+          "value": 0.5444444444444444
+        },
+        "wdr_bounds": null
+      }
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "efficiency": {
+        "catches": 15,
+        "catches_final": true,
+        "catches_with_fv": 20,
+        "catches_with_fv_final": true,
+        "cost_by_stage_micro_usd": {
+          "at2_runs": 0,
+          "at2_stage1": 0,
+          "at3_intent": 0,
+          "at3_suite": 0,
+          "attack.correctness.explore": 0,
+          "attack.correctness.sandbox": 0,
+          "attack.correctness.write": 0,
+          "refuter": 4366680,
+          "skeptic": 0,
+          "surrogate": 3753566
+        },
+        "cost_micro_usd": 8120246,
+        "cost_per_catch_micro_usd": 541350,
+        "cost_per_catch_with_fv_micro_usd": 406012,
+        "cost_per_target_p50_micro_usd": 0,
+        "cost_per_target_p95_micro_usd": 360849,
+        "time_to_catch_final": true,
+        "time_to_catch_p50_s": 399.4584888850004,
+        "time_to_catch_p95_s": 742.3701570469984,
+        "timed_catches": 15
+      },
+      "excluded": 0,
+      "negatives": 60,
+      "positives": 90,
+      "rates": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.8817149467710251,
+          "k": 48,
+          "low": 0.6821819419437211,
+          "n": 60,
+          "small_n": false,
+          "value": 0.8
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.317818058056279,
+          "k": 12,
+          "low": 0.11828505322897494,
+          "n": 60,
+          "small_n": false,
+          "value": 0.2
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-7454",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13315",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964"
+        ],
+        "invalid_repro": {
+          "high": 0.6443119540413141,
+          "k": 17,
+          "low": 0.32994236002509725,
+          "n": 35,
+          "small_n": false,
+          "value": 0.4857142857142857
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.0,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.1602651150467067,
+          "low": -0.16109539672065118
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.4000000000000001,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.14285714285714288,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.01789197551624403,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.6684587435946623,
+          "k": 15,
+          "low": 0.33154125640533766,
+          "n": 30,
+          "small_n": false,
+          "value": 0.5
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.68,
+          "low": 0.32
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.21873930500697653,
+          "k": 12,
+          "low": 0.07794682040686314,
+          "n": 90,
+          "small_n": false,
+          "value": 0.13333333333333333
+        },
+        "wdr_bounds": null
+      },
+      "refutations_by_category": {
+        "intended_change": 41,
+        "test_bug": 2,
+        "unsupported_by_quote": 1
+      },
+      "targets": 150,
+      "with_fv": {
+        "alarms_final": true,
+        "car": {
+          "high": 0.8817149467710251,
+          "k": 48,
+          "low": 0.6821819419437211,
+          "n": 60,
+          "small_n": false,
+          "value": 0.8
+        },
+        "car_bounds": null,
+        "false_alarm": {
+          "high": 0.317818058056279,
+          "k": 12,
+          "low": 0.11828505322897494,
+          "n": 60,
+          "small_n": false,
+          "value": 0.2
+        },
+        "false_alarm_bounds": null,
+        "good_label_disputed": [
+          "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-7454",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13315",
+          "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964"
+        ],
+        "invalid_repro": {
+          "high": 0.8535400288733277,
+          "k": 108,
+          "low": 0.7185363830480942,
+          "n": 136,
+          "small_n": false,
+          "value": 0.7941176470588235
+        },
+        "invalid_repro_bounds": null,
+        "mcc": 0.0643489452087787,
+        "mcc_bootstrap": {
+          "defined": 10000,
+          "high": 0.21917335362949708,
+          "low": -0.09367745431582682
+        },
+        "pending": [],
+        "ppv": [
+          {
+            "ppv": 0.48571428571428577,
+            "prevalence": 0.5
+          },
+          {
+            "ppv": 0.1910112359550562,
+            "prevalence": 0.2
+          },
+          {
+            "ppv": 0.02515940222773655,
+            "prevalence": 0.0266
+          }
+        ],
+        "ppv_final": true,
+        "precision": {
+          "high": 0.7201543182281931,
+          "k": 20,
+          "low": 0.4085741114397492,
+          "n": 35,
+          "small_n": false,
+          "value": 0.5714285714285714
+        },
+        "precision_bootstrap": {
+          "defined": 10000,
+          "high": 0.7368421052631579,
+          "low": 0.40625
+        },
+        "precision_bounds": null,
+        "wdr": {
+          "high": 0.28183623524314166,
+          "k": 17,
+          "low": 0.12141259844132833,
+          "n": 90,
+          "small_n": false,
+          "value": 0.18888888888888888
+        },
+        "wdr_bounds": null
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "spark",
+      "b": "glimmer",
+      "negatives_alarm": {
+        "a_only": 15,
+        "b_only": 3,
+        "p": 0.007537841796875,
+        "pairs": 60
+      },
+      "positives_caught": {
+        "a_only": 20,
+        "b_only": 0,
+        "p": 1.9073486328125e-06,
+        "pairs": 90
+      },
+      "shared_targets": 150
+    }
+  ],
+  "final": true,
+  "format": "receipts.eval.report/1",
+  "pilot_status": "frozen",
+  "resamples": 10000,
+  "score_format": "receipts.eval.score/3",
+  "seed": 0,
+  "small_n": 10
+}

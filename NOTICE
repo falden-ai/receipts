@@ -1,0 +1,44 @@
+Falden Receipts
+Copyright 2026 Falden, Inc.
+
+This product is licensed under the Apache License, Version 2.0.
+
+The attacker loop's design follows mini-swe-agent (MIT License); no mini-swe-agent code is included.
+
+Receipts builds on published research by Meta and others; the "Prior work and what is new here" section of README.md lists each source. Falden, Inc. is not affiliated with Meta, and Meta has not endorsed Receipts.
+
+The differential attacker's prompt, in src/receipts/attack/differential.py, quotes Testora's five questions verbatim (Pradel, ICSE 2026, arXiv:2503.18597v3, https://arxiv.org/abs/2503.18597v3).
+
+Third-party material
+
+The files below contain material from other sources. Falden, Inc.'s license above does not cover it; it stays under its sources' own terms.
+
+- demo/pandas-64677/patch.diff, fix.diff and target.template.json, and the run and fix records under demo/pandas-64677/evidence/: code and pull-request text from pandas (https://github.com/pandas-dev/pandas), which is licensed under the BSD 3-Clause License. pandas' license text is in demo/pandas-64677/LICENSE.pandas.
+- eval/pilot-run.jsonl, eval/pilot.json, eval/sample.json, eval/sample-provisional.json, eval/manifest.json, eval/test-specs.json, eval/pools/ and tests/attack/fixtures/: issue texts and agent patches from SWE-bench Verified and the SWE-bench experiments repository, which state no license; code from the upstream projects those patches change, under each project's own license (see "Upstream project code" below); and labels and the pool of 251 instances, both derived from SWE-ABS (arXiv:2603.00520v1), whose repository is under the MIT License and whose dataset is under the Apache License 2.0.
+- The final's target summaries in eval/final/targets/: issue texts from SWE-bench Verified, which states no license; each target's template claim that its issue is fixed quotes the issue in full.
+- src/receipts/eval/labelrun.py: apply_files and remove_conflicting_chunks adapt SWE-ABS's get_apply_files and remove_conflicting_chunks (swe-bench/swebench/harness/utils.py in https://github.com/OpenAgentEval/SWE-ABS at revision 26b4c736), under the MIT License (notice below).
+- eval/test-specs.json, and the NON_TEST_EXTS and LOG_PARSERS constants in src/receipts/eval/specs.py: install and test commands for each repository version, and those two constants, from the SWE-bench harness, swebench 4.1.0 (https://github.com/SWE-bench/SWE-bench), under the MIT License (notice below). The harness's logic is also adapted, with credit in comments, in harness_test_files in src/receipts/eval/specs.py, harness_label in src/receipts/attack/runners.py (get_test_directives), answers in src/receipts/contracts.py (the log parsers' id renames), PATCH_CHAIN in src/receipts/eval/runsc_check.py and HARNESS_CHAIN in src/receipts/attack/sandbox.py (GIT_APPLY_CMDS).
+
+Upstream project code
+
+Code from these projects is in the files named, under each project's own license. Each file in LICENSES/ is that project's license file, taken from its repository at the base commit of the newest patch here.
+
+- astropy (BSD 3-Clause License; LICENSES/LICENSE.astropy, at 1a4462d): 2 agent patches in eval/pilot-run.jsonl, and the test report tests/attack/fixtures/swebench/astropy__astropy-13236.xml.
+- Django (BSD 3-Clause License; LICENSES/LICENSE.django, at 96e7ff5): 7 agent patches in eval/pilot-run.jsonl, and the gold and test patches django_11999_gold.diff and django_11999_test.diff and the test-run records django_* in tests/attack/fixtures/runners/.
+- Matplotlib (the Matplotlib License, based on the PSF License; LICENSES/LICENSE.matplotlib, at c6c7ec1): 2 agent patches in eval/pilot-run.jsonl, and the test report tests/attack/fixtures/swebench/matplotlib__matplotlib-25775.xml.
+- pylint (GNU General Public License v2.0; LICENSES/LICENSE.pylint, at 1f8c4d9): 1 agent patch in eval/pilot-run.jsonl, and the test report tests/attack/fixtures/swebench/pylint-dev__pylint-7080.xml.
+- Sphinx (BSD 2-Clause License; LICENSES/LICENSE.sphinx, at 6c38f68): 4 agent patches in eval/pilot-run.jsonl.
+- SymPy (BSD 3-Clause License; LICENSES/LICENSE.sympy, at 1d3327b): 4 agent patches in eval/pilot-run.jsonl, and the gold and test patches sympy_13974_gold.diff and sympy_13974_test.diff, harness_chain_13974.json and the test-run records sympy_* in tests/attack/fixtures/runners/.
+
+The other files in the list above carry SWE-bench instance ids, labels, counts, commands and test-runner output, not project code. The issue texts in eval/pilot-run.jsonl and eval/final/targets/ quote code as their authors wrote it.
+
+MIT License notices
+
+SWE-ABS: Copyright (c) 2026 BoxiYu
+SWE-bench, including SWE-ABS's copy of its harness: Copyright (c) 2023 Carlos E Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, Karthik R Narasimhan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

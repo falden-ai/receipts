@@ -1,0 +1,16 @@
+{
+ "python": "3.11.15",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "brokena.tests",
+  "brokenb.tests.T.test_y",
+  "fine.tests",
+  "fine.tests.Missing",
+  "nosuchapp.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "tests (unittest.loader._FailedTest.tests) ... ERROR\ntests (unittest.loader._FailedTest.tests) ... ERROR\ntest_ok (fine.tests.T.test_ok) ... ok\nMissing (unittest.loader._FailedTest.Missing) ... ERROR\nnosuchapp (unittest.loader._FailedTest.nosuchapp) ... ERROR\n\n======================================================================\nERROR: tests (unittest.loader._FailedTest.tests)\n----------------------------------------------------------------------\nImportError: Failed to import test module: tests\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.11/unittest/loader.py\", line 162, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/testbed/tests/brokena/tests.py\", line 3, in <module>\n    import receipts_nowhere  # noqa: F401\n    ^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'receipts_nowhere'\n\n\n======================================================================\nERROR: tests (unittest.loader._FailedTest.tests)\n----------------------------------------------------------------------\nImportError: Failed to import test module: tests\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.11/unittest/loader.py\", line 162, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/testbed/tests/brokenb/tests.py\", line 2, in <module>\n    from json import receipts_no_such_name  # noqa: F401\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nImportError: cannot import name 'receipts_no_such_name' from 'json' (/usr/local/lib/python3.11/json/__init__.py)\n\n\n======================================================================\nERROR: Missing (unittest.loader._FailedTest.Missing)\n----------------------------------------------------------------------\nAttributeError: module 'fine.tests' has no attribute 'Missing'\n\n======================================================================\nERROR: nosuchapp (unittest.loader._FailedTest.nosuchapp)\n----------------------------------------------------------------------\nImportError: Failed to import test module: nosuchapp\nTraceback (most recent call last):\n  File \"/usr/local/lib/python3.11/unittest/loader.py\", line 162, in loadTestsFromName\n    module = __import__(module_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'nosuchapp'\n\n\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nFAILED (errors=4)\n"
+}

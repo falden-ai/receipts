@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24562",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:50:27Z",
+  "wall_seconds": 3151.506376651001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Rational calc value error\npython 3.11, sympy 1.11.1\r\nwhen calc Rational('0.5', '100'), the value is 1/100100; but Rational(0.5, 100) the value is 1/200, this value is the true value, and the version of sympy 1.8 is normal\n",
+        "start": 0,
+        "end": 222
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24562",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('0.5', '100') still returns 1/100100 instead of 1/200, reproducing the reported string-repetition bug.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(0.3, 0.7) using Python floats returns a different exact Rational than before the change because the denominator is now converted without first being scaled by the numerator's denominator.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('1/2', '3/4') returns a reciprocal or otherwise incorrectly cross-multiplied value instead of 2/3.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(Float('inf'), 2) changes its failure behavior: Rational(inf) is not a Rational instance, so the new int(p) fallback raises a different exception than the previous implementation expected by existing tests.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational(0.5, '100') still treats the string denominator incorrectly and does not return 1/200, showing the fix only handles a string numerator.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational(4, 2) or Rational(12, 18, gcd=6) no longer returns the canonical Integer(2) or reduced 2/3 because the new cross-scaling interferes with downstream gcd and denominator-one handling.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 670,
+      "cached_tokens": 244,
+      "output_tokens": 9211,
+      "reasoning_tokens": 8877,
+      "micro_usd": 185973,
+      "seconds": 64.21902499200041
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 3,
+        "refuted": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24562/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24562/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1018.3640264109999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "unchecked": 3,
+        "refuted": 2,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 2068.08902451
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

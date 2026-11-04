@@ -1,0 +1,1765 @@
+{
+  "images": [
+    {
+      "compressed_bytes": 1010712993,
+      "digest": "sha256:87fda8f3ae644b986737fad17ca1f05cc4ffdf4d9f11acd4ca70bae12674495c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-12907",
+      "instance_id": "astropy__astropy-12907",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010749808,
+      "digest": "sha256:98ecd819c7c599075f8b267aea8b9a4a2df9a558e73e4fb42fd60eb742fe3a7c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-13236",
+      "instance_id": "astropy__astropy-13236",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1011475014,
+      "digest": "sha256:525af1593d9d2bff710bba55f35e743f43956acac0dd98e367bf19dceb37ea7c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-13453",
+      "instance_id": "astropy__astropy-13453",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010792817,
+      "digest": "sha256:797ebf43e26110fa29e4da3a6b12326130a32c3bdff570889739334a9ecfe174",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-13579",
+      "instance_id": "astropy__astropy-13579",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1011180686,
+      "digest": "sha256:07d3fa693b3242d98d806196cce034c0875ae9bb5a5df530bd8df5448130422b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14096",
+      "instance_id": "astropy__astropy-14096",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1009889685,
+      "digest": "sha256:13f8d040d30af633e8f934b292775979ee6dc6f5f2661ff03ee85edf0348e00b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14309",
+      "instance_id": "astropy__astropy-14309",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010134946,
+      "digest": "sha256:d488a8645cf5d6cecff7ede830121544a75819ba64861698c00ef0897fa3712a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14365",
+      "instance_id": "astropy__astropy-14365",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1009907979,
+      "digest": "sha256:a7a8173e7c16b5b5e41b823320edce0be455914b934abe6a302434d1c381f699",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14369",
+      "instance_id": "astropy__astropy-14369",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010125005,
+      "digest": "sha256:3de0d6e48d03b4727d30cf98698977bc4977db98dd3d523294d4fe94a4e4e525",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14508",
+      "instance_id": "astropy__astropy-14508",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010127342,
+      "digest": "sha256:057fa218066fc3a4e4c4e0c0128be077cbf7d2284a97f47227093a6410840e71",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14539",
+      "instance_id": "astropy__astropy-14539",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010136197,
+      "digest": "sha256:b9e472581692ee72d53d2a2931c259b1541dd1c14f45d3a75b2b3406d1281d6e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14598",
+      "instance_id": "astropy__astropy-14598",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1010107573,
+      "digest": "sha256:adca9052706170bc3aeab0cead178e25e5b16693f72fd5bb16a22183deff4dce",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-14995",
+      "instance_id": "astropy__astropy-14995",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1019995884,
+      "digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-7166",
+      "instance_id": "astropy__astropy-7166",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1020079750,
+      "digest": "sha256:65d32c14daba8d47cae4e871ca89c5636ce0c3e9e73eed952287ed60e5421bab",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-7336",
+      "instance_id": "astropy__astropy-7336",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1020795386,
+      "digest": "sha256:71496f412fb1c79c38bead14cba9d434c28dd081370324246733020459161fe9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-7606",
+      "instance_id": "astropy__astropy-7606",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1020661544,
+      "digest": "sha256:70ce3ca9309cc24046159d8fbae96f050369090ac69589bce648b1c978204a21",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-7671",
+      "instance_id": "astropy__astropy-7671",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1052692296,
+      "digest": "sha256:8874331a2ba021ef79407c8d0bae727593dbd520f66f04d1ad667e60ecc77077",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-8707",
+      "instance_id": "astropy__astropy-8707",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1052706174,
+      "digest": "sha256:f74cdd6e9db955f753efdca2a5d011460030fbcca9e477b7016be1efb166e949",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.astropy__astropy-8872",
+      "instance_id": "astropy__astropy-8872",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1135182159,
+      "digest": "sha256:222e91d800a2914c5e996ef854c209911481f6da3d6cad3b2efce3d698526750",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-10097",
+      "instance_id": "django__django-10097",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115445784,
+      "digest": "sha256:abc30e315e5442707234077961e218e663967191b01294531f54a5fa841017c6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-10973",
+      "instance_id": "django__django-10973",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115520411,
+      "digest": "sha256:64a993cf98ecddbfaaf1555827605d8509b7217bfb46e36123f8d56c77090eef",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11138",
+      "instance_id": "django__django-11138",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115623081,
+      "digest": "sha256:cec14a5eaa9a94504a4affecb91cc027c8672039d9eb9df2b6546efd6b8e7875",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11141",
+      "instance_id": "django__django-11141",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115524244,
+      "digest": "sha256:eae2ecace097dbfbeffa1b5a2cfa9a1a3671b489bd88bbc65920c702600df420",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11206",
+      "instance_id": "django__django-11206",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115524727,
+      "digest": "sha256:d3dff6ae7e7ec040784624518e956f464c3fd73d5fa3e86767523f3aeecddba0",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11211",
+      "instance_id": "django__django-11211",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115526134,
+      "digest": "sha256:11da09432b7dab6dd1ef84027a5aec126af08ff10315b810e4ff09112b7053d5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11239",
+      "instance_id": "django__django-11239",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115532166,
+      "digest": "sha256:2a52e8cf32aaae2bb0b5dcb54d4a8a38a0322e3b295ea2930f10430aaafc6f83",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11265",
+      "instance_id": "django__django-11265",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115527556,
+      "digest": "sha256:92fa08a6ce4c52e31878c23a217aa018a4eaea781e18156806de54444e4cad11",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11276",
+      "instance_id": "django__django-11276",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115529504,
+      "digest": "sha256:c75c74327852c905337ecdcccf094048e32444bf1112696774d0d8ee09c3c3d9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11292",
+      "instance_id": "django__django-11292",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115563479,
+      "digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11333",
+      "instance_id": "django__django-11333",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115572164,
+      "digest": "sha256:09082723a8083b714b97941b12d73069b35037305758bab659d1678adfa8ff61",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11551",
+      "instance_id": "django__django-11551",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115580183,
+      "digest": "sha256:87ce10a1f9e7851e8af8b4d30368fe803ee53449ac44ccad49c3935a9ad3010a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11555",
+      "instance_id": "django__django-11555",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115587377,
+      "digest": "sha256:2fe4d3299088c1abc0575332231a87064d64c01f30f301daa80e9d4bc5cabd7d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11603",
+      "instance_id": "django__django-11603",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115606788,
+      "digest": "sha256:600522a9621f4a42419df786199b1c8f12148d62a87d09ad79df27a85e2c5b73",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11728",
+      "instance_id": "django__django-11728",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115607062,
+      "digest": "sha256:51bde15d21afbe70c3685db53a52873e29e230c589c944cf5d1bd9a5b3130805",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11734",
+      "instance_id": "django__django-11734",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115613833,
+      "digest": "sha256:8b92d1415a0daf4313798d90c7f17f22a5182b8fe22ad6a2e3ebacb52e88d6df",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11749",
+      "instance_id": "django__django-11749",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115621847,
+      "digest": "sha256:5d38acac385b0c73bb4cb727d7ed2be8d17fed9f51c32250e5f289a7871b7389",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11815",
+      "instance_id": "django__django-11815",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115618925,
+      "digest": "sha256:59127e575e811c39251a5520f48faf8c6405a35a6e47064b4396ee9c64c84784",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11848",
+      "instance_id": "django__django-11848",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115625174,
+      "digest": "sha256:e36d566a7a1c414708cb3c6f0c58e869a80741d5fb76d9634b65d66727af56e4",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11885",
+      "instance_id": "django__django-11885",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115628302,
+      "digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11964",
+      "instance_id": "django__django-11964",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115638061,
+      "digest": "sha256:6bf502e69a74a0a78a87565117d04369ec89fbbca71e5929110f65e3ee1f5bc6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-11999",
+      "instance_id": "django__django-11999",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115655333,
+      "digest": "sha256:65097623b18daef73ca8e0325b83ab14e09ad48a7c3fac34858e0251ce71887c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12125",
+      "instance_id": "django__django-12125",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115653270,
+      "digest": "sha256:78163d7be202eb170a1476533403e3f7673b35ba6ce6070d3042e970fcda88bb",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12155",
+      "instance_id": "django__django-12155",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115631586,
+      "digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12273",
+      "instance_id": "django__django-12273",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115625163,
+      "digest": "sha256:eb8f6db293283f46061a90aed4fbd49e33362ee5ed8059b0a5b4b721b94d2b34",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12304",
+      "instance_id": "django__django-12304",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115668570,
+      "digest": "sha256:feb13836a99eb60b6cb162986d66522c7b01edce0214827f5028acfe0bd5c291",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12406",
+      "instance_id": "django__django-12406",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115672965,
+      "digest": "sha256:555c51844567a929d8948721031eec7bd09f99d2c8f5961c8a477d5a0e4dc8a5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12663",
+      "instance_id": "django__django-12663",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115707068,
+      "digest": "sha256:16261ad21b7230cde2327c771afd63a9756ca92951f00c8593763d0904227a06",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12708",
+      "instance_id": "django__django-12708",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115675789,
+      "digest": "sha256:de01cb2862f1648cad44d885cbf16352b5681d6aa00c87b22a74cf369462c8cc",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12741",
+      "instance_id": "django__django-12741",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116158985,
+      "digest": "sha256:58a87fe3b0f2abdf76d6aeb5ac59158844bd1ea3caf9c84750a9901962990fbf",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12754",
+      "instance_id": "django__django-12754",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1115713278,
+      "digest": "sha256:73afac77469f57807f73b4b3216ef6aec2f252ebfd52b028d328ff92199e2cb5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-12858",
+      "instance_id": "django__django-12858",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116150980,
+      "digest": "sha256:25ff07c997c95da29e3f3d51acf8cb9a86ec33619b428335435759568966ffc2",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13012",
+      "instance_id": "django__django-13012",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116160930,
+      "digest": "sha256:578dbb3391404b101036bd7a2455361885f5ab8144f10d13a15fed08830183fa",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13028",
+      "instance_id": "django__django-13028",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116174716,
+      "digest": "sha256:d974a8b4f4f253214b47a856e75890bc4547d5914701a9f9b1d0353b19648e37",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13112",
+      "instance_id": "django__django-13112",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116181606,
+      "digest": "sha256:149ebcc77519671db322fd77d4f2b757883cddd31d79f0344c4c433576de0ae7",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13121",
+      "instance_id": "django__django-13121",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116183150,
+      "digest": "sha256:94c66bd09272b8e0a372de4c1719a9185e0197c4220173079640dcfdb5cfd7e5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13128",
+      "instance_id": "django__django-13128",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116187029,
+      "digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13158",
+      "instance_id": "django__django-13158",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116395207,
+      "digest": "sha256:f4e68138d2571c44592e8f8ee630f2a5e99bbe7737dafdce6a2c81415b98e681",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13279",
+      "instance_id": "django__django-13279",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116396416,
+      "digest": "sha256:b3d58737f2834aefa2e8e09a4767bea8e15d67300a33f2fb720b2c2028cec5bf",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13297",
+      "instance_id": "django__django-13297",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116428491,
+      "digest": "sha256:64488830217057ea7dcaae1df5c8378713e67dd17c8e568b823e6ffc11ed16d5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13315",
+      "instance_id": "django__django-13315",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116409457,
+      "digest": "sha256:96837d01d24b0aff40cda72400fbf57e37255ed5c6df4eea3a0a79a36219dbd7",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13343",
+      "instance_id": "django__django-13343",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116407369,
+      "digest": "sha256:99734498646548f3e47c3b8ace94bb674db604e1b63e7da6f27f7be04ceb7cbf",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13346",
+      "instance_id": "django__django-13346",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116411287,
+      "digest": "sha256:46e40e6fece5fb0cc2b8e516534b17461a9f6ab367b26fa00f0fa041df1f6329",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13401",
+      "instance_id": "django__django-13401",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116418056,
+      "digest": "sha256:77df267ccf2cb2945d8d41b81c5fa0e418148345fee28f60f588d06fa265c141",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13410",
+      "instance_id": "django__django-13410",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116416088,
+      "digest": "sha256:cf20dc60905a66b88c1dc45e103797912bd644cbad3a24eb8df35b611782ffc6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13417",
+      "instance_id": "django__django-13417",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116421557,
+      "digest": "sha256:d7181f2ef3233c92416882c1095729eec1e29d9d567c5d5fd3e1e2fdc2adac93",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13449",
+      "instance_id": "django__django-13449",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116423413,
+      "digest": "sha256:8b6cf273f7bc1128470805b781bd98d202f2ebb8b526085aedce5a6382012a1e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13516",
+      "instance_id": "django__django-13516",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116426163,
+      "digest": "sha256:52409397d24b83f74ced707ac16deaca5177a931922af55a8fd94c3a542d2b93",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13568",
+      "instance_id": "django__django-13568",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116427409,
+      "digest": "sha256:9d1a079aa59f5d53e2759779b2e8b5d82b2d838b5b5c8c8293e0b05ed8bad52d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13569",
+      "instance_id": "django__django-13569",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116429332,
+      "digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13590",
+      "instance_id": "django__django-13590",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116448662,
+      "digest": "sha256:1ef3a9c33b3da782a2f3333cc36a93f31b07f7756862feb7231bf48ac1f4afaf",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13741",
+      "instance_id": "django__django-13741",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116455519,
+      "digest": "sha256:e49358d7f7aa9c0c53658ccc73da39205cb077301e6d4c32a68cd1e485511159",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13807",
+      "instance_id": "django__django-13807",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1132890664,
+      "digest": "sha256:b3255aba1cd0d57fdd02ec89c80038f07a6b88ea4e017b67e49ee3280da879c5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13809",
+      "instance_id": "django__django-13809",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1116454695,
+      "digest": "sha256:b54cedc37d560fb6ab3d7970ca3b78d11c59ed2cb6b834cee56e60d91ffe563f",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13837",
+      "instance_id": "django__django-13837",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1132975810,
+      "digest": "sha256:c7fcfa368fe9ae426d540ca83116fb978241e89e4c6182f06696faeffe7a8955",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-13964",
+      "instance_id": "django__django-13964",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133053687,
+      "digest": "sha256:f4dbbfc63007c1cd7dfd24554bf2d93322826cded6cefbc36220742299504efb",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14007",
+      "instance_id": "django__django-14007",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1132998725,
+      "digest": "sha256:9d7dfebc743746d542ad07e23414207fd6dac7617317850ff801b7382bde2815",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14017",
+      "instance_id": "django__django-14017",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133006917,
+      "digest": "sha256:d663903bdfc0ddadaae215e393bf329301ffc47b380a625be9ed5b01953ec66b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14053",
+      "instance_id": "django__django-14053",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133017606,
+      "digest": "sha256:9dfa1742a5cf642d94966440fd232fcc4d11c6c880493a48a559703a39e4f939",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14089",
+      "instance_id": "django__django-14089",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133020307,
+      "digest": "sha256:578f60b2e875f3b87210b103fc8d81d9477b833a09967c10a78cefc6b53bc35f",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14122",
+      "instance_id": "django__django-14122",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133082253,
+      "digest": "sha256:c0667e13bc38468ea8588917bbe8899bb5af4a7bab90de2bfa12f7d136a01834",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14311",
+      "instance_id": "django__django-14311",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133074804,
+      "digest": "sha256:a9df12dfc850f964cb5ce778f0a13e6f44fea5d804d555c1d5ae94ffc5d8740e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14351",
+      "instance_id": "django__django-14351",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133081545,
+      "digest": "sha256:bbfa388cc91557ca614f2e708a0c9073b5d18304455d4f04adb660eb494a9bab",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14376",
+      "instance_id": "django__django-14376",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133115893,
+      "digest": "sha256:aeabfb7e4e57188f33f0c357ed953248502586345d402a38b690a9e7906b2e76",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14631",
+      "instance_id": "django__django-14631",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142235552,
+      "digest": "sha256:c7c6e7e7640efc94f9c6739766895435c2761c0b3b222ec0e2fe041293f9b106",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14771",
+      "instance_id": "django__django-14771",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142253150,
+      "digest": "sha256:764be0bec25c0b0b3e62b507c388400c2fad66f4872c933e515dff525c3e0596",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14787",
+      "instance_id": "django__django-14787",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133155614,
+      "digest": "sha256:e8df9b3dc710d38285fae834790febbfe2f1975a3f5b1d39d12e04d8bd1940a6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14855",
+      "instance_id": "django__django-14855",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142256051,
+      "digest": "sha256:1a08e226c39d494f523041e0e6b2a7cc97385c101cfb774007e1bad3d2453eec",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-14999",
+      "instance_id": "django__django-14999",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142254546,
+      "digest": "sha256:76ea54c305ea65f4c8c50c51438389ccda5ae1ad4646c2a340be87b30fcda4ca",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15037",
+      "instance_id": "django__django-15037",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142271822,
+      "digest": "sha256:db9f2a872180b3aef9cc811565ed4ddbcc4156b12d989f2776e7b79cf2b0ad89",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15098",
+      "instance_id": "django__django-15098",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142266571,
+      "digest": "sha256:518bc62194da3fd8913cb6b9412571d5fe273faa568fafc4741ab1752f9948ad",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15103",
+      "instance_id": "django__django-15103",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142343716,
+      "digest": "sha256:af6cc83fe34f1b8a3cdb8fe4ded2085bac10023e2ac1eb3322f7e9ecdf69b96d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15128",
+      "instance_id": "django__django-15128",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142357764,
+      "digest": "sha256:60d152397625da8183d1c38e26f6572f12f9ea45270a81c78b9ecab9b528e622",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15161",
+      "instance_id": "django__django-15161",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142352675,
+      "digest": "sha256:a0b5f4ded1ae6162e10a2d66a6e4a6b359b27d809c9935ae3675bb8d5d21df6e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15252",
+      "instance_id": "django__django-15252",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142352916,
+      "digest": "sha256:31ce91dbfeaa10241eee44ad4b2814c277d7a45c795e62a23c1467affca63ab3",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15268",
+      "instance_id": "django__django-15268",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142352583,
+      "digest": "sha256:712b9ccb4f3553cbbb3805ee5b0decb96b4e7789cf2620a78f94d4e91076035d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15278",
+      "instance_id": "django__django-15278",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142357122,
+      "digest": "sha256:2a39bc04b7914ee91fb2c5ddd6eeaa916259cf4568245bd8257fd03c1ecc11c0",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15280",
+      "instance_id": "django__django-15280",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142360011,
+      "digest": "sha256:d32b66f54e2c061c26e8004d6f413aba9d88cf80204606e6e149b9d407bc34c1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15315",
+      "instance_id": "django__django-15315",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142378492,
+      "digest": "sha256:16fad302e91ee2f19b181449b26bdf1f2769899cdac4c9c6a6467f19c4e9959b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15375",
+      "instance_id": "django__django-15375",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142380057,
+      "digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15467",
+      "instance_id": "django__django-15467",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142383848,
+      "digest": "sha256:6dcb3267e6caa03db5cd69434d09b008731904d80b073af2853a23abbb0012c8",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15525",
+      "instance_id": "django__django-15525",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142731955,
+      "digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15554",
+      "instance_id": "django__django-15554",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142737926,
+      "digest": "sha256:43e8cca6576228c0c29ece7e6ef362f22da068af078303e54f41fc027afee937",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15563",
+      "instance_id": "django__django-15563",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142737991,
+      "digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15572",
+      "instance_id": "django__django-15572",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142811371,
+      "digest": "sha256:8f5b9c177f8c083a889d050cb6602fa17042f7ebe8f5f2f18f0de86fb8cb08ae",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15741",
+      "instance_id": "django__django-15741",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142818726,
+      "digest": "sha256:12736414a3a446b667e5ff69a0f6b42c65fba7621f7f4c13479c5fcafb371e6a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15814",
+      "instance_id": "django__django-15814",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142609014,
+      "digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15863",
+      "instance_id": "django__django-15863",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142848701,
+      "digest": "sha256:4f7dcd9015d013ec59214a24fd906742acbb4b12265faa2b38b206f2b242adfc",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15916",
+      "instance_id": "django__django-15916",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142849583,
+      "digest": "sha256:cb55eed0c852b2133ca090a105306023bc70dc237e8cb2202151825aa12af70b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-15930",
+      "instance_id": "django__django-15930",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142595142,
+      "digest": "sha256:01b72c9303d9c6a312d75f448d516037f569970ee7f7638e913d50629beeb666",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16032",
+      "instance_id": "django__django-16032",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142602077,
+      "digest": "sha256:a184996d0ba3915f9c55d558a118bda899fc230fe2e1752e07066686b137f82a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16100",
+      "instance_id": "django__django-16100",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1142598841,
+      "digest": "sha256:322cd979beed24b460c58b4f5c09f0b06f7c2cdb1cbfbb3616ae81d7050a03e8",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16116",
+      "instance_id": "django__django-16116",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173641307,
+      "digest": "sha256:6a8ec1671551fab4b6a1c6d6bbe44ad79821669cddfbf55f681feeee706aef63",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16527",
+      "instance_id": "django__django-16527",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173653144,
+      "digest": "sha256:a3b2b9a0a5e75abb89c86500f9390e5dcbdaa87f7efe5ee78a9591127cd3b417",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16560",
+      "instance_id": "django__django-16560",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173663309,
+      "digest": "sha256:c660939e297854fc5efb97789eec3f6a83a823aa3dc4c4bc4c71bed32e0a4511",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16661",
+      "instance_id": "django__django-16661",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173778971,
+      "digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16819",
+      "instance_id": "django__django-16819",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173789281,
+      "digest": "sha256:86e432ccad0969549fe6cf09033e36ca5a7c924dc8289f49ece0ce166b4dfdc8",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16938",
+      "instance_id": "django__django-16938",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173805016,
+      "digest": "sha256:14750c1db1ad3e6412576f57293ee241abc292cad2443528f09b236440f37ef7",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-16950",
+      "instance_id": "django__django-16950",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173803939,
+      "digest": "sha256:4df19af27efb337109e503c41dd53efb1d89073a1cd93a25d49e0e7f4638ef63",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-17084",
+      "instance_id": "django__django-17084",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1173803407,
+      "digest": "sha256:519714092a5824c5b52e97e4f2fe859b66000aa24717a7fd568a409cd1a5b0c1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-17087",
+      "instance_id": "django__django-17087",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1133412217,
+      "digest": "sha256:53920abeaaf9eee5cd7ac3cefdd7b94cb3e600268be0c90de9ed60327c20c987",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.django__django-7530",
+      "instance_id": "django__django-7530",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1915460399,
+      "digest": "sha256:020b4ccb5a958daca5e013551b593693aabb0e49b4363114f156e73d801b0e12",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-14623",
+      "instance_id": "matplotlib__matplotlib-14623",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 2028957042,
+      "digest": "sha256:8501100c6a6c797fb839205edb975f03ca8ff8254e8838c02c104c0b8003050a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-20488",
+      "instance_id": "matplotlib__matplotlib-20488",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 2029453902,
+      "digest": "sha256:dd6c76814bd5a08a51b917ab7dc8a196627d56b2fe28ba000b1c4dfbd173bc50",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-20676",
+      "instance_id": "matplotlib__matplotlib-20676",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 2029483872,
+      "digest": "sha256:fa2ea6b7363b3012d66ca8df349d05ec690535f4f49d22f5270a8f57916cac7a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-20826",
+      "instance_id": "matplotlib__matplotlib-20826",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 2029718965,
+      "digest": "sha256:e12ca64eda80740fe915560956fe2047de82469a9204dc6f8e5a10f15d90750b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-20859",
+      "instance_id": "matplotlib__matplotlib-20859",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3156372141,
+      "digest": "sha256:6d3cebb1980e1d10fc4cca7856fb355a9491f492e572b792416c86f58632243c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-22719",
+      "instance_id": "matplotlib__matplotlib-22719",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3156251615,
+      "digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-22865",
+      "instance_id": "matplotlib__matplotlib-22865",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3156251770,
+      "digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-22871",
+      "instance_id": "matplotlib__matplotlib-22871",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3156020810,
+      "digest": "sha256:cb6f17f82beb70de47ddc76823648fed836d099b2333292093cb7b98e6712ae4",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-23314",
+      "instance_id": "matplotlib__matplotlib-23314",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3156096214,
+      "digest": "sha256:29d5590bd74c1f486a51a8f4a4d2d445f3c97041bad57bac7d7a712d0422fcb9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-23412",
+      "instance_id": "matplotlib__matplotlib-23412",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3191543620,
+      "digest": "sha256:bf48a2137c813ae3793dbedb7785c46d1711d21ef8172c583b71d95e952f7c35",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-24026",
+      "instance_id": "matplotlib__matplotlib-24026",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3185042494,
+      "digest": "sha256:8189bb05219d715ddc430b0e61e472779ea4ac8fa86b95243c2d11917a12428e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-24177",
+      "instance_id": "matplotlib__matplotlib-24177",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3185098205,
+      "digest": "sha256:9531aad7eb689d7fe1d98873fd03fb98d42f8aec6b8067d5e6c639d1af84bde5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-24570",
+      "instance_id": "matplotlib__matplotlib-24570",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3185334711,
+      "digest": "sha256:dda911703de39b4a78b49bae97268cf236d47c8bd0c5811fb4745f3051a39397",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-24637",
+      "instance_id": "matplotlib__matplotlib-24637",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3185426464,
+      "digest": "sha256:2030e6f6b30253794f932a95d302df2853dd22c5aa3f1ef4c643aab7d3929f72",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-24970",
+      "instance_id": "matplotlib__matplotlib-24970",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3185225588,
+      "digest": "sha256:feaaa09cf0ce938396e4296f68009cfb383aadc6619c2a3c6b0e22c658a478cb",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-25122",
+      "instance_id": "matplotlib__matplotlib-25122",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3220225671,
+      "digest": "sha256:a7b4fcc4101b49d1769676a6242246b52efb3860f4e0d445d96d5ca5ba06bfca",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-25287",
+      "instance_id": "matplotlib__matplotlib-25287",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3220224704,
+      "digest": "sha256:d7e0986d72709bb9de2a330021b2e9faf5865d9d0cbf133e0c8aaf507630fbda",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-25332",
+      "instance_id": "matplotlib__matplotlib-25332",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3220580054,
+      "digest": "sha256:aaec9887400b68ca72dde2e75eb90cd9edb9e7f9313773145b6b7981ff784507",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-25775",
+      "instance_id": "matplotlib__matplotlib-25775",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3220467664,
+      "digest": "sha256:464b3270990c5539497b6bedff9f93dd51104468738d5066ea110bcdb195f4b8",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-26113",
+      "instance_id": "matplotlib__matplotlib-26113",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3217991167,
+      "digest": "sha256:7b4901b23ee9859b893a975ca199e4a8e5c6f07302afda372ca84eb9f872fc40",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-26291",
+      "instance_id": "matplotlib__matplotlib-26291",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 3218001414,
+      "digest": "sha256:87b90c7d52050bc3ae312e14e7dfd8232698347d2602c9408d975bf7114af38b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.matplotlib__matplotlib-26342",
+      "instance_id": "matplotlib__matplotlib-26342",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 977967021,
+      "digest": "sha256:293cd30a89ac038f8aaffcc0ac021d3d798f93e552f15b80b86fa0d99cb95879",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.mwaskom__seaborn-3069",
+      "instance_id": "mwaskom__seaborn-3069",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 979942795,
+      "digest": "sha256:26f5dff01216a3f7fcba53e941718419029f0f221bc3879333bf8a82d838b971",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.mwaskom__seaborn-3187",
+      "instance_id": "mwaskom__seaborn-3187",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 887626552,
+      "digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pallets__flask-5014",
+      "instance_id": "pallets__flask-5014",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 813442404,
+      "digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.psf__requests-1142",
+      "instance_id": "psf__requests-1142",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 813725758,
+      "digest": "sha256:6b46b12e0cedb16a105c9819827567319ed4bf93f2f88a60e9280f6212e73cc1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.psf__requests-1921",
+      "instance_id": "psf__requests-1921",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 813803686,
+      "digest": "sha256:79f1c8bc387093efacaf0d56496e51f06ab121b90781176192d4ed276cb623b7",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.psf__requests-2317",
+      "instance_id": "psf__requests-2317",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 813841706,
+      "digest": "sha256:99b2aa0435b2818c2c301cdfb927ce2a348d6647d9a21a3a7942038168e6278a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.psf__requests-2931",
+      "instance_id": "psf__requests-2931",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 816849174,
+      "digest": "sha256:e201b8fb3f02c2744a7866a87fdb49c1b63367a35c57afe7db318e030414dd2e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.psf__requests-5414",
+      "instance_id": "psf__requests-5414",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1771197683,
+      "digest": "sha256:104d3632d769905ae2333b8eabfd84bd4c924043d426cc8b2048fde34fd657c6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-3095",
+      "instance_id": "pydata__xarray-3095",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1771220604,
+      "digest": "sha256:a64bb5274504e311e06be09ad8563b21f022f2e9a031242f37ca57a3575037c2",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-3305",
+      "instance_id": "pydata__xarray-3305",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1770214641,
+      "digest": "sha256:0242dd1e1185d1d23743b81effbbc59f459af3ddef52aade71b13b8e90bff913",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-3677",
+      "instance_id": "pydata__xarray-3677",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1770372550,
+      "digest": "sha256:af17d82d117d51f47345aa118c22cc4862d366514fb51223e869685ccc18afef",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-3993",
+      "instance_id": "pydata__xarray-3993",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1770329207,
+      "digest": "sha256:926696d53ac22becacbc0d346a9ff274ce855e03eae6c73ecd610e2b0dd7d3cd",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-4356",
+      "instance_id": "pydata__xarray-4356",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1771217700,
+      "digest": "sha256:d79b9e641b4c1747e778f719c701740c98386a30ac83d3d768417293f4f2f3a9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-4687",
+      "instance_id": "pydata__xarray-4687",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1770332897,
+      "digest": "sha256:e2901757890185dea044f589adf783fb23b9c977b44d3ba85b7b29a76947cc07",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-4966",
+      "instance_id": "pydata__xarray-4966",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1641929434,
+      "digest": "sha256:e03dda146e139ee399e1d5974ac4986ec370a9c382fe6b426ca1dd96c54de161",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-6461",
+      "instance_id": "pydata__xarray-6461",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1646211448,
+      "digest": "sha256:6fc8d83bad0f743967509fd23222f960038a7c298002a0669a237b07012776e6",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pydata__xarray-6744",
+      "instance_id": "pydata__xarray-6744",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 868043367,
+      "digest": "sha256:a3f8137ab6d759a49ad43726fb51303deb900e29ad150385f890a739118deb40",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pylint-dev__pylint-6386",
+      "instance_id": "pylint-dev__pylint-6386",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 868627135,
+      "digest": "sha256:334ccace656112f0f53c89661e005a60894f5fd1c85dd9142533eecf98b73a06",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pylint-dev__pylint-6903",
+      "instance_id": "pylint-dev__pylint-6903",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 868649420,
+      "digest": "sha256:18a9eebed12958d48055aafe979b35dfecdaada78553dd9293ed71c35d274c56",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pylint-dev__pylint-7080",
+      "instance_id": "pylint-dev__pylint-7080",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 868198734,
+      "digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pylint-dev__pylint-7277",
+      "instance_id": "pylint-dev__pylint-7277",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 847911995,
+      "digest": "sha256:1cbe3e5ab13980f5dd595229b47ce39141371a5ebd43c9d82a226f9f7dcee9b3",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pylint-dev__pylint-8898",
+      "instance_id": "pylint-dev__pylint-8898",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 832094439,
+      "digest": "sha256:591aa3a8f044e1e42f0e93cb9e0754e16b46065d83ade66b77c0bf297c7694dc",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-10051",
+      "instance_id": "pytest-dev__pytest-10051",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 831979256,
+      "digest": "sha256:6f1cba595593660b418918c7b6b73e97005bb2e30226c22f772dcc4532a70d65",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-5631",
+      "instance_id": "pytest-dev__pytest-5631",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 831931475,
+      "digest": "sha256:c196bd575c8d78227db3358adefe26fccc5882db91d3e5b5f84b77ac1e086c0f",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-5787",
+      "instance_id": "pytest-dev__pytest-5787",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 831942194,
+      "digest": "sha256:36ec38ea586440e47b2a5194f09bd172da66a6cc463ad3bddb8052cd63d4d04d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-6197",
+      "instance_id": "pytest-dev__pytest-6197",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 831981024,
+      "digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-7324",
+      "instance_id": "pytest-dev__pytest-7324",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 832032448,
+      "digest": "sha256:dc7f13e539bf9b3029954199ed29094f0472469a95d7ebe3e603d9be529d8c37",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-7432",
+      "instance_id": "pytest-dev__pytest-7432",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 832038147,
+      "digest": "sha256:c45a2ab9017bc1659864ed9e82e9aff772fb596c1790d18280f04cb313bbeb49",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-7490",
+      "instance_id": "pytest-dev__pytest-7490",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 832042839,
+      "digest": "sha256:2f2341e2119a9101320895804f7c4426359365932b4b9261bed759e09e6b3d13",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-7571",
+      "instance_id": "pytest-dev__pytest-7571",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 832033416,
+      "digest": "sha256:cd122add6231f017311a79eac2ba068d5c704d87558f0196fd9d5ab613ca6825",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.pytest-dev__pytest-8399",
+      "instance_id": "pytest-dev__pytest-8399",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1388785961,
+      "digest": "sha256:6b477c05faa1249b4280c2022a334e24f2a7ccede7e4d5bd912be083c3755d30",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-10844",
+      "instance_id": "scikit-learn__scikit-learn-10844",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1388930038,
+      "digest": "sha256:e631d6710a0fc30dcbd6f339f4196ce160f9ba4c1d29b00e1b97ce38afba2e6a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-11310",
+      "instance_id": "scikit-learn__scikit-learn-11310",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1391613798,
+      "digest": "sha256:22a6f6cef16b3787cc34f7c9069bb5facb136d1430973842c7df2ee6ef5c694a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-12585",
+      "instance_id": "scikit-learn__scikit-learn-12585",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1406827833,
+      "digest": "sha256:42e816804bf48e567e8e63eff71d8ee125e507270fa5b4d4ab65844acc2bceee",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-12682",
+      "instance_id": "scikit-learn__scikit-learn-12682",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1398408253,
+      "digest": "sha256:79c8f39bc8c6340d902ca7c48fe6e4c0c54ff3314a533b1bae6e1a699a8e95df",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-13328",
+      "instance_id": "scikit-learn__scikit-learn-13328",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1407020330,
+      "digest": "sha256:40fae5966343c190f38f915563fff1e202d79cc1df3405ea6dd8ce30229195ff",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-14496",
+      "instance_id": "scikit-learn__scikit-learn-14496",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1727096794,
+      "digest": "sha256:adb1d448903ae2251dbd368850bd4a34e586535ca1985e895793cd521b92d706",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-25747",
+      "instance_id": "scikit-learn__scikit-learn-25747",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1728945611,
+      "digest": "sha256:c0a4277d8c693bbcdb9b280428845980357be70b95af52dff3203e80dc58aa13",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-25931",
+      "instance_id": "scikit-learn__scikit-learn-25931",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1728950977,
+      "digest": "sha256:a5a19f0e78444a3a8abf8ce336e71f52ab82265c41e90586900a39de845b90ac",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.scikit-learn__scikit-learn-25973",
+      "instance_id": "scikit-learn__scikit-learn-25973",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935195678,
+      "digest": "sha256:b87910abed9e52593b52d5ae71c81d43fa1fceed65146a785c49145249021780",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-10323",
+      "instance_id": "sphinx-doc__sphinx-10323",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934762681,
+      "digest": "sha256:db124417dfa745de8e9a36499357eb1459396457da72483ec6942312c3cb18dd",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-10449",
+      "instance_id": "sphinx-doc__sphinx-10449",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934764896,
+      "digest": "sha256:9ded73178cc502f508908d2063f3fbcf604ed7b0187d32fcd47e371b1d341711",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-10466",
+      "instance_id": "sphinx-doc__sphinx-10466",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934810272,
+      "digest": "sha256:46405978ae14403b619aefb01a350110e109cab157dbcdbcc60249e1f74f414a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-10673",
+      "instance_id": "sphinx-doc__sphinx-10673",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934767862,
+      "digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-11445",
+      "instance_id": "sphinx-doc__sphinx-11445",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935145354,
+      "digest": "sha256:44a8cc2f2a6ea7b4be9d04171d91bb47071f3ab7e6dc1def5826552a0b9da586",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-7440",
+      "instance_id": "sphinx-doc__sphinx-7440",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935145523,
+      "digest": "sha256:e98fa9aa61bdadb16989eca993fa93da2ec4a6415f8a58fb5013bce59fb2d396",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-7454",
+      "instance_id": "sphinx-doc__sphinx-7454",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935167972,
+      "digest": "sha256:b3fe573bcae2dc901888aa828533c2905b61b66af394bc27fa97739ed9afabad",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-7757",
+      "instance_id": "sphinx-doc__sphinx-7757",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935173450,
+      "digest": "sha256:3a8f203eb08652a72e542b152e76a85cbe260a795cb3e601c8042a926484dbfa",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-7889",
+      "instance_id": "sphinx-doc__sphinx-7889",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935179262,
+      "digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-7910",
+      "instance_id": "sphinx-doc__sphinx-7910",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935214301,
+      "digest": "sha256:7b1d256a32894419f0701347a4e9b744da45332c34ed332c97b2258993291d19",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8035",
+      "instance_id": "sphinx-doc__sphinx-8035",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935215129,
+      "digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8056",
+      "instance_id": "sphinx-doc__sphinx-8056",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935215524,
+      "digest": "sha256:11b298b67a6b1ab259adbb4f510e7aec1d8818d35cf95a93fed4b67a9601dd76",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8120",
+      "instance_id": "sphinx-doc__sphinx-8120",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935215515,
+      "digest": "sha256:77c829972f12994a7e0e289985c9dd6586aca4627f5ebc4f9c0eba8e7ad5fdea",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8265",
+      "instance_id": "sphinx-doc__sphinx-8265",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935214942,
+      "digest": "sha256:e90e5176b6e0ecdf797dca8f9c808f041de25a680b52c55b97c63d0bd10f2f84",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8269",
+      "instance_id": "sphinx-doc__sphinx-8269",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935233007,
+      "digest": "sha256:613f3c290f0bc48035ebfcc5ffb64eb978da7312c4a6a10e922f7ab020cac94b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8459",
+      "instance_id": "sphinx-doc__sphinx-8459",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935234883,
+      "digest": "sha256:1b413a44e1a24a1e671a45c72755e1fa5290c396a7e9c790cf4657e7a470e3e0",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8475",
+      "instance_id": "sphinx-doc__sphinx-8475",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934395674,
+      "digest": "sha256:2741082210bec885b9e2c4315b46a616b7078c75e1c96c112ec29a204ab14c7e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8548",
+      "instance_id": "sphinx-doc__sphinx-8548",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934397234,
+      "digest": "sha256:13a792107451e9b23fcccafbc9c8418adbfb4cbb1f49ed1ad130a72c3a563cf1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8551",
+      "instance_id": "sphinx-doc__sphinx-8551",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934399586,
+      "digest": "sha256:e4108adca22abf5cf3180933020e15231c305676c85a6cc4ba36f217f213efec",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8593",
+      "instance_id": "sphinx-doc__sphinx-8593",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934400416,
+      "digest": "sha256:a9acd43f02011ca3674a89c35de28d083116e52f2d36be27b5c4b992eda7810a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8595",
+      "instance_id": "sphinx-doc__sphinx-8595",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934402056,
+      "digest": "sha256:57fb8acd12f29d08ddee9ec15cf8b3158ea181a1c0ed04f26611616cf7b46d6c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8621",
+      "instance_id": "sphinx-doc__sphinx-8621",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934385726,
+      "digest": "sha256:c4adf42300d810afeb3322a06bc8c5f878f47b4d1aa31e9716bb55a111e0e19e",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-8638",
+      "instance_id": "sphinx-doc__sphinx-8638",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934572418,
+      "digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9230",
+      "instance_id": "sphinx-doc__sphinx-9230",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934573082,
+      "digest": "sha256:a7a147e997b56b8722fa852036518ca8b496fb033005582005e32500f3f925bf",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9258",
+      "instance_id": "sphinx-doc__sphinx-9258",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934573023,
+      "digest": "sha256:8dcf7b055e0224a1dbc68da02c7cc100023e8d1d520ab78c8ca0ec0be3ccf32a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9281",
+      "instance_id": "sphinx-doc__sphinx-9281",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934592693,
+      "digest": "sha256:9ec1fac4f3544e4abcf637d5af4e5fe71ea7b1e993a5ea3933d485a0ec87f289",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9320",
+      "instance_id": "sphinx-doc__sphinx-9320",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934649905,
+      "digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9367",
+      "instance_id": "sphinx-doc__sphinx-9367",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934777593,
+      "digest": "sha256:dab4608834b5c2c02175d3c28baedae62670a6f6a9426594753c0b14c21185ce",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9461",
+      "instance_id": "sphinx-doc__sphinx-9461",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934889853,
+      "digest": "sha256:cc9ecac312f7b3f137d10db558f4d367a8c37130d6a1473c6af201771e124acd",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9591",
+      "instance_id": "sphinx-doc__sphinx-9591",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934889780,
+      "digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9602",
+      "instance_id": "sphinx-doc__sphinx-9602",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934907645,
+      "digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9658",
+      "instance_id": "sphinx-doc__sphinx-9658",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 934907315,
+      "digest": "sha256:506c06636145f5752827a4f9b21c5dc74f963917a335faa92f0086c68805079c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9673",
+      "instance_id": "sphinx-doc__sphinx-9673",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935045284,
+      "digest": "sha256:0d43c00c294ab70068279346b14f3a2906e94c4fabc7bc8e684d2d6ddfe8f54a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9698",
+      "instance_id": "sphinx-doc__sphinx-9698",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 935045621,
+      "digest": "sha256:7101296e6a8b8e5f8235b3a297df22f386a58227cbf7e53d141043089efe01c9",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sphinx-doc__sphinx-9711",
+      "instance_id": "sphinx-doc__sphinx-9711",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006335993,
+      "digest": "sha256:9f8cf9cf263301d0a70570ee2e8d4cb36cf0f49f36178617fe6784aa7cbbb0ab",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-11618",
+      "instance_id": "sympy__sympy-11618",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006375542,
+      "digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-12096",
+      "instance_id": "sympy__sympy-12096",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006389445,
+      "digest": "sha256:b21cd62027f97b18c4887ff4323146001dfdffcdd75dc45d20c053b6a2bd31f8",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-12419",
+      "instance_id": "sympy__sympy-12419",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006394954,
+      "digest": "sha256:46963c9c7a9cd5119565b9c77a853b1c0ca38775491a9281ebc3e92021f6e963",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-12481",
+      "instance_id": "sympy__sympy-12481",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006400702,
+      "digest": "sha256:2011b47a82b6692c2b93eb5253cb277238c7abe9489d202348c78ace61f28931",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-12489",
+      "instance_id": "sympy__sympy-12489",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1006472418,
+      "digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13031",
+      "instance_id": "sympy__sympy-13031",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007127353,
+      "digest": "sha256:f3964fc6f2de7a181b2c8b85bae1d64aa8adf64f15d9fdb44ec9f6796c1caa9f",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13551",
+      "instance_id": "sympy__sympy-13551",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007147312,
+      "digest": "sha256:f1f29ac61e72cd5ac8a3da39c12774c3040b28f3c3a751e9a5503715bd2ae252",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13615",
+      "instance_id": "sympy__sympy-13615",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007148906,
+      "digest": "sha256:8124e2e6e078b0e8c9715de5b87e6c661f2dc9962128686ef5735c33d1979a65",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13647",
+      "instance_id": "sympy__sympy-13647",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007150795,
+      "digest": "sha256:2f9535e079b079ec6416e98f41f2fc8c92bbb5ea515476907f19481aef2ac596",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13757",
+      "instance_id": "sympy__sympy-13757",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007155530,
+      "digest": "sha256:83f95af962c352e1b78e2e0f384e9f30df806de5777b606c973e992643e997f4",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13798",
+      "instance_id": "sympy__sympy-13798",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007221464,
+      "digest": "sha256:5be07a78eab4453c6cf910e1639794242065795f98c7074d378f5ab63841a1a4",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13877",
+      "instance_id": "sympy__sympy-13877",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007173569,
+      "digest": "sha256:698a438f4a9eb7d70ca0b96747fa15b46825ed19bde36ee21a8f6b60dfe3032a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13878",
+      "instance_id": "sympy__sympy-13878",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007176197,
+      "digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-13974",
+      "instance_id": "sympy__sympy-13974",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007244703,
+      "digest": "sha256:bb5267285c1939248ad2e65f54d023d1086592b194f81b254b6e0aadc463e15c",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-14248",
+      "instance_id": "sympy__sympy-14248",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007372727,
+      "digest": "sha256:0537c2ceb11735efc535da347b05f73b805d36995d75f40309bc3734b2c73370",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-14711",
+      "instance_id": "sympy__sympy-14711",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007973966,
+      "digest": "sha256:484d5303fd42a3a2a01fa55e49380f32e08470bca33514966265798bba61c063",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-15599",
+      "instance_id": "sympy__sympy-15599",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1007991833,
+      "digest": "sha256:4e37c66c3698feec4564961d69ab78299d06dbe50b22383fdfbd117953161560",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-15875",
+      "instance_id": "sympy__sympy-15875",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008000914,
+      "digest": "sha256:413e202032581dfdd518d3c4ec1f19268f442d45267b4e1c4dc12b533dd0c919",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-15976",
+      "instance_id": "sympy__sympy-15976",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008048310,
+      "digest": "sha256:b61889605d35dcdb88ad1d68ae037e13e2a095a3f9e67961020268603b36d212",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-16450",
+      "instance_id": "sympy__sympy-16450",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008150866,
+      "digest": "sha256:902cb3d7b8cc34af674aeca222c6aefdb2f73ccea4bc169525fa06fa620ea6e2",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-17139",
+      "instance_id": "sympy__sympy-17139",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008370829,
+      "digest": "sha256:9ecd29f4a7c7e7a1f459fd8ae8f0ece52aebb99193f36ec6451373cd5e33cfd0",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-18211",
+      "instance_id": "sympy__sympy-18211",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008425065,
+      "digest": "sha256:922cd0fcc1dbd6349560f1c42c6319ea59d19ab7d7a44f8d8fbd0dbb143a8c11",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-18698",
+      "instance_id": "sympy__sympy-18698",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008332784,
+      "digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-18763",
+      "instance_id": "sympy__sympy-18763",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008336880,
+      "digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-19346",
+      "instance_id": "sympy__sympy-19346",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008590427,
+      "digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-20801",
+      "instance_id": "sympy__sympy-20801",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008706114,
+      "digest": "sha256:85a0a47a407e5a40793dddd68d23d07de9df7ce0117f4ba0d767bf53f7803602",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-21379",
+      "instance_id": "sympy__sympy-21379",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008749888,
+      "digest": "sha256:58c0cae0b84682b84a36d2069c6c65e8853bf19540cfbdc1257adba8a404fb0a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-21612",
+      "instance_id": "sympy__sympy-21612",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1009150499,
+      "digest": "sha256:0a5c6aeddc200087268967e99fee450e7971848b58687abc3c92a7bdea1c8bc7",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-22714",
+      "instance_id": "sympy__sympy-22714",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1009286236,
+      "digest": "sha256:328f69dee51995b4fbd712b3ea1b15c0ca138b73529055d59f316ba40005e38b",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-23413",
+      "instance_id": "sympy__sympy-23413",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1009576140,
+      "digest": "sha256:01cc372a2288435d1cd3c2d3e5aca29fc2b91c953e6f847dae16cc45bdc9d112",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-24066",
+      "instance_id": "sympy__sympy-24066",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008757424,
+      "digest": "sha256:04d8df8b082d571edd21b528dcf7c49af7987efaa977b73f36178a0a0f18638d",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-24443",
+      "instance_id": "sympy__sympy-24443",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008759697,
+      "digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-24562",
+      "instance_id": "sympy__sympy-24562",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    },
+    {
+      "compressed_bytes": 1008776312,
+      "digest": "sha256:548e8fff8b2022fab8691fbc87687b1105c9a798894a7c49536aebce0f3bf22a",
+      "image": "ghcr.io/epoch-research/swe-bench.eval.x86_64.sympy__sympy-24661",
+      "instance_id": "sympy__sympy-24661",
+      "media_type": "application/vnd.docker.distribution.manifest.v2+json"
+    }
+  ],
+  "registry": "ghcr.io",
+  "resolved_at": "2026-10-27T07:16:02Z",
+  "source": "https://epoch.ai/blog/swebench-docker",
+  "unique_compressed_bytes": 26659976016
+}

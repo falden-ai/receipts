@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-14017",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:37:00Z",
+  "wall_seconds": 1836.3085965050013,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Q(...) & Exists(...) raises a TypeError\nDescription\n\t\nExists(...) & Q(...) works, but Q(...) & Exists(...) raise a TypeError\nHere's a minimal example:\nIn [3]: Exists(Product.objects.all()) & Q()\nOut[3]: <Q: (AND: <django.db.models.expressions.Exists object at 0x7fc18dd0ed90>, (AND: ))>\nIn [4]: Q() & Exists(Product.objects.all())\n---------------------------------------------------------------------------\nTypeError\t\t\t\t\t\t\t\t Traceback (most recent call last)\n<ipython-input-4-21d3dea0fcb9> in <module>\n----> 1 Q() & Exists(Product.objects.all())\n~/Code/venv/ecom/lib/python3.8/site-packages/django/db/models/query_utils.py in __and__(self, other)\n\t 90 \n\t 91\t def __and__(self, other):\n---> 92\t\t return self._combine(other, self.AND)\n\t 93 \n\t 94\t def __invert__(self):\n~/Code/venv/ecom/lib/python3.8/site-packages/django/db/models/query_utils.py in _combine(self, other, conn)\n\t 71\t def _combine(self, other, conn):\n\t 72\t\t if not isinstance(other, Q):\n---> 73\t\t\t raise TypeError(other)\n\t 74 \n\t 75\t\t # If the other Q() is empty, ignore it and just use `self`.\nTypeError: <django.db.models.expressions.Exists object at 0x7fc18dd21400>\nThe & (and |) operators should be commutative on Q-Exists pairs, but it's not\nI think there's a missing definition of __rand__ somewhere.\n",
+        "start": 0,
+        "end": 1269
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-14017",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Filter a queryset with a non-empty Q combined on the left, e.g. Product.objects.filter(Q(name='x') & Exists(subquery)) and the same with |, and check the returned rows. Construction may succeed but resolving the wrapped Exists child during query compilation may raise or return wrong rows.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Combine Q() with a conditional expression that is not a standalone boolean filter, such as Q() & When(Q(name='x'), then=True) or Q() & Case(...), which previously raised TypeError immediately. The change now accepts it and may generate invalid SQL or a confusing later error instead.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test the originally reported empty-Q forms Q() & Exists(...) and Q() | Exists(...), including chaining the result with another Q or Exists and negating it, then use each in filter(). A chained or negated combination may raise TypeError, drop the Exists condition, or produce wrong SQL.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Combine Q() with a duck-typed non-expression object that merely has conditional=True and a resolve_expression attribute, such as a Mock. Previously this raised TypeError at the operator; now it is silently wrapped in a Q and fails later or is treated as a filter condition.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Take Q() & Exists(...) and round-trip it through deconstruct()/reconstruction as done for check constraints and migrations. The single non-tuple Exists child may be deconstructed into an unusable nested tuple, so the reconstructed Q differs or cannot be used in a query.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Deconstruct a Q whose single child is a non-tuple two-element sequence, e.g. a Q built by adding the list ['name__exact', 'x'] as its only child. Before, deconstruct turned it into kwargs {'name__exact': 'x'}; now it is emitted as a positional child, changing the deconstructed form and reconstructed Q behavior.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 947,
+      "cached_tokens": 116,
+      "output_tokens": 8568,
+      "reasoning_tokens": 8093,
+      "micro_usd": 174708,
+      "seconds": 98.34763954899972
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "blocker": 2,
+        "suspected": 2
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~django__django-14017/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~django__django-14017/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 691.4098732480015
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 6,
+        "refuted": 1,
+        "s_sat_inconclusive": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~django__django-14017/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1045.5872604549986
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9d7dfebc743746d542ad07e23414207fd6dac7617317850ff801b7382bde2815"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9d7dfebc743746d542ad07e23414207fd6dac7617317850ff801b7382bde2815"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:16:54Z",
+  "wall_seconds": 1625.645097052,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Incorrect parenthesizing of Subs\nHere is an example.\r\n```python\r\n>>> from sympy import Subs\r\n>>> from sympy.abc import x,y\r\n>>> 3*Subs(-x+y, (x,),(1,))\r\n```\r\nLaTeX printing of this gives:  \r\n```python\r\n'3 \\\\left. - x + y \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/76/ql_9672fd7e62c909ff3d9ac8543c2e2576_l3.png)\r\n\r\n\r\nIt would be better to be parenthesized to:  \r\n```python\r\n'3 \\\\left. \\\\left(- x + y\\\\right) \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/bf/ql_936ffdb876e784206d4c54bb93d28dbf_l3.png)\r\n\n",
+        "start": 0,
+        "end": 567
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(3*Subs(-x+y, (x,), (1,))). It still returns the unparenthesized body as '3 \\left. - x + y \\right|_{\\substack{ x=1 }}' instead of '3 \\left. \\left(- x + y\\right) \\right|_{\\substack{ x=1 }}'.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs(x*y, (x, y), (1, 2))), which previously printed '\\left. x y \\right|_{...}' and is covered by existing LaTeX Subs expectations. The strict Mul-level check now inserts redundant '\\left(x y\\right)', breaking that prior output.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(3*Subs(-x, (x,), (1,))) where the body is a Mul at exactly the chosen precedence boundary. It leaves '- x' bare inside the evaluation bar, so the result still reads as though only -x, rather than the whole substituted body, is being multiplied/evaluated.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs(x+y, (x,), (1,))) with no surrounding multiplication. It now prints '\\left. \\left(x + y\\right) \\right|_{...}' even though the standalone evaluation bar already delimited x+y, changing behavior beyond the issue's multiplied example.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(Subs(-x+y, (x,), (1,))**2). The Subs base is not parenthesized as a whole in the power context, so the printed exponent attaches ambiguously to the evaluation bar/subscript expression rather than clearly to the entire Subs value.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs((x+y)*z, (x,), (1,))), whose Mul printer already parenthesizes the x+y factor. The change adds another outer '\\left( \\left(x + y\\right) z \\right)' layer, producing double parenthesization and breaking the previous cleaner LaTeX output.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 699,
+      "cached_tokens": 244,
+      "output_tokens": 9514,
+      "reasoning_tokens": 9016,
+      "micro_usd": 192149,
+      "seconds": 72.79603089699958
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 3,
+        "blocker": 4
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18763/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1125.3859565879993
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 1,
+        "suspected": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 426.6529779579996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

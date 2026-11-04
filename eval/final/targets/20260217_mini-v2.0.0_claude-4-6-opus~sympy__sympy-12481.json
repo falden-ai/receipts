@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12481",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:09:40Z",
+  "wall_seconds": 1499.784982572999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`Permutation` constructor fails with non-disjoint cycles\nCalling `Permutation([[0,1],[0,1]])` raises a `ValueError` instead of constructing the identity permutation.  If the cycles passed in are non-disjoint, they should be applied in left-to-right order and the resulting permutation should be returned.\r\n\r\nThis should be easy to compute.  I don't see a reason why non-disjoint cycles should be forbidden.\n",
+        "start": 0,
+        "end": 407
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12481",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Permutation([[0, 1], [0, 1]]) should be the identity [0, 1], but the change merely reapplies the same cycle assignment and returns the transposition [1, 0].",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Permutation([[0, 1, 2, 1]]) repeats an element inside one cycle rather than composing separate cycles and previously raised ValueError, but now silently returns the non-bijective array [1, 0, 1].",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Permutation([[0, 1], [1, 2]]) applied left-to-right should give [2, 0, 1], but overwriting assignments produce the non-bijective array [1, 2, 1].",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Permutation([[0, 1], [1, 1]]) contains a malformed second cycle and previously raised ValueError, but now silently returns the invalid array [1, 1].",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Permutation([[0, 1, 2], [0, 1, 2], [0, 1, 2]], size=5) should be the size-5 identity because a 3-cycle applied three times cancels, but it returns [1, 2, 0, 3, 4].",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Permutation([[2, 2]]) is a malformed single cycle that previously raised ValueError, but now is silently accepted as the identity [0, 1, 2], masking invalid cycle notation.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 608,
+      "cached_tokens": 116,
+      "output_tokens": 7778,
+      "reasoning_tokens": 7354,
+      "micro_usd": 157552,
+      "seconds": 51.68334872500054
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "suspected": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 758.4182127290005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "unchecked": 7,
+        "not_reproduced": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-12481/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 689.1370637649998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:46963c9c7a9cd5119565b9c77a853b1c0ca38775491a9281ebc3e92021f6e963"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:46963c9c7a9cd5119565b9c77a853b1c0ca38775491a9281ebc3e92021f6e963"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

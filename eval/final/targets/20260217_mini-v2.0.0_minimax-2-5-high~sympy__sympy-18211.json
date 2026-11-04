@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18211",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:40:46Z",
+  "wall_seconds": 1184.1149964859997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`solveset` raises `NotImplementedError` instead of returning `ConditionSet`\nThe problem is\r\n```julia\r\nIn [10]: Eq(n*cos(n) - 3*sin(n), 0).as_set()                                                                                                                  \r\n---------------------------------------------------------------------------\r\nNotImplementedError\r\n```\r\nHere `solveset` raises `NotImplementedError` but probably a `ConditionSet` should be returned by `solveset` instead. The obvious result of `as_set()` here is\r\n```julia\r\nIn [11]: ConditionSet(n, Eq(n*cos(n) - 3*sin(n), 0), Reals)                                                                                                   \r\nOut[11]: {n | n ∊ ℝ ∧ n⋅cos(n) - 3⋅sin(n) = 0}\r\n```\r\n\r\n_Originally posted by @oscarbenjamin in https://github.com/sympy/sympy/pull/17771_\n",
+        "start": 0,
+        "end": 832
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18211",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling Eq(n*cos(n) - 3*sin(n), 0).as_set() or solveset(Eq(n*cos(n) - 3*sin(n), 0), n, S.Reals) still raises NotImplementedError or RecursionError because the inner solveset(lhs-rhs) re-enters the failing Eq path, instead of returning ConditionSet(n, Eq(n*cos(n) - 3*sin(n), 0), S.Reals).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling solve_univariate_inequality(Eq(n*cos(n) - 3*sin(n), 0), n, relational=True) returns a ConditionSet set instead of a Boolean relational result, breaking the function's relational=True contract for callers expecting a Boolean.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling solveset(Eq(n*cos(n), 3*sin(n)), n, S.Reals) returns a ConditionSet conditioned on Eq(n*cos(n) - 3*sin(n), 0) rather than the original Eq(n*cos(n), 3*sin(n)), so it fails equality with ConditionSet(n, Eq(n*cos(n), 3*sin(n)), S.Reals).",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling solveset(Eq(sin(n)/n, 0), n, S.Reals) now returns an explicit set from the inner solveset call that incorrectly includes n=0, where the original expression is undefined, instead of the previously safe NotImplementedError/ConditionSet behavior.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling solveset(Eq(n*cos(n) - 3*sin(n) + floor(n), 0), n, S.Reals) still raises NotImplementedError instead of returning a ConditionSet, because solve raises ValueError or returns None for this equation and the new Eq handling only intercepts NotImplementedError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling solveset(Eq((n*cos(n) - 3*sin(n))/(n - 1), 0), n, S.Reals) leaks a PolynomialError or ValueError from the inner solveset(lhs-rhs) call instead of NotImplementedError, breaking upstream callers that catch NotImplementedError to fall back to a ConditionSet.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 897,
+      "cached_tokens": 372,
+      "output_tokens": 12233,
+      "reasoning_tokens": 11711,
+      "micro_usd": 246835,
+      "seconds": 74.33917661800115
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "s_sat_inconclusive": 1,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 738.4842644660002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 7
+      },
+      "blockers": [],
+      "wall_seconds": 370.5921332029993
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9ecd29f4a7c7e7a1f459fd8ae8f0ece52aebb99193f36ec6451373cd5e33cfd0"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9ecd29f4a7c7e7a1f459fd8ae8f0ece52aebb99193f36ec6451373cd5e33cfd0"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

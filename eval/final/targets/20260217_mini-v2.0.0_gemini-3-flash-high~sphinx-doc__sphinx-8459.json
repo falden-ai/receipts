@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8459",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:17:14Z",
+  "wall_seconds": 1301.9152736920005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc_type_aliases doesn't work when autodoc_typehints is set to \"description\"\n**Describe the bug**\r\nautodoc_type_aliases doesn't work when autodoc_typehints is set to \"description\".\r\n\r\n**To Reproduce**\r\n\r\ntypes.py\r\n```python\r\nfrom __future__ import annotations\r\n\r\nfrom typing import Any, Dict\r\n\r\nJSONObject = Dict[str, Any]\r\n\r\n\r\ndef sphinx_doc(data: JSONObject) -> JSONObject:\r\n    \"\"\"Does it work.\r\n\r\n    Args:\r\n        data: Does it args.\r\n\r\n    Returns:\r\n        Does it work in return.\r\n    \"\"\"\r\n    return {}\r\n\r\n```\r\n\r\nconf.py\r\n```python\r\nautodoc_typehints = 'description'\r\nautodoc_type_aliases = {\r\n    'JSONObject': 'types.JSONObject',\r\n}\r\n```\r\n\r\nI get,\r\n```\r\ntypes.sphinx_doc(data)\r\nDoes it work.\r\n\r\nParameters\r\ndata (Dict[str, Any]) – Does it args.\r\n\r\nReturns\r\nDoes it work in return.\r\n\r\nReturn type\r\nDict[str, Any]\r\n```\r\n\r\nThen if I remove `autodoc_typehints = 'description'`\r\nI get,\r\n```\r\ntypes.sphinx_doc(data: types.JSONObject) → types.JSONObject\r\nDoes it work.\r\n\r\nParameters\r\ndata – Does it args.\r\n\r\nReturns\r\nDoes it work in return.\r\n```\r\n\r\n**Expected behavior**\r\n\r\n`types.JSONObject` instead of `Dict[str, Any]` in both cases.\r\n\r\n\r\n**Environment info**\r\n- OS: Mac Catalina 10.15.7\r\n- Python version: 3.7.9\r\n- Sphinx version: 3.3.1\r\n- Sphinx extensions:      sphinx.ext.autodoc, sphinx.ext.napoleon, sphinxarg.ext\r\n\r\n\n",
+        "start": 0,
+        "end": 1335
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8459",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the issue's exact example with `from __future__ import annotations`, `JSONObject = Dict[str, Any]`, `autodoc_typehints = 'description'`, and the alias to `types.JSONObject`; the parameter may show the alias while the Return type field still shows `Dict[str, Any]`.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With an unrelated alias configured, document a description-mode function whose other annotations use a forward reference to a locally-defined or otherwise non-globally-resolvable class; previously those types were recorded verbatim, but now signature evaluation through the alias namespace drops or rewrites the whole function's type fields.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a function annotated as `Dict[str, JSONObject]` or `Optional[JSONObject]` in description mode with the same alias; the nested alias is not replaced and still renders as the expanded `Dict[str, Any]` (or a ForwardRef) instead of containing `types.JSONObject`.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Document two modules that each define a different local `Node` type while `autodoc_type_aliases = {'Node': 'a.Node'}` is intended only for the first; the second module's description-mode type is incorrectly rewritten to `a.Node` instead of its own previously correct type.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a class whose `__init__` takes `data: JSONObject` via autoclass in description mode with the alias configured; the constructor parameter type still shows `Dict[str, Any]` because type hints are not recorded from `__init__` for the class object.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In description mode, document a `functools.partial` or callable-class instance wrapping an annotated function, which previously rendered its call signature types; passing type aliases into signature evaluation now fails or loses those annotations, leaving the type fields missing or raw.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 870,
+      "cached_tokens": 244,
+      "output_tokens": 11941,
+      "reasoning_tokens": 11486,
+      "micro_usd": 241373,
+      "seconds": 104.42299215299863
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 2,
+        "refuted": 4,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 843.9636198180015
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 8,
+        "refuted": 1,
+        "s_sat_inconclusive": 1
+      },
+      "blockers": [],
+      "wall_seconds": 353.0670187240012
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:613f3c290f0bc48035ebfcc5ffb64eb978da7312c4a6a10e922f7ab020cac94b"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:613f3c290f0bc48035ebfcc5ffb64eb978da7312c4a6a10e922f7ab020cac94b"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

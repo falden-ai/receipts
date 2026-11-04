@@ -1,0 +1,174 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-11445",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:05:46Z",
+  "wall_seconds": 1752.360557772001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Using rst_prolog removes top level headings containing a domain directive\n### Describe the bug\r\n\r\nIf `rst_prolog` is set, then any documents that contain a domain directive as the first heading (eg `:mod:`) do not render the heading correctly or include the heading in the toctree.\r\n\r\nIn the example below, if the heading of `docs/mypackage.rst` were `mypackage2` instead of `:mod:mypackage2` then the heading displays correctly.\r\nSimilarly, if you do not set `rst_prolog` then the heading will display correctly.\r\n\r\nThis appears to have been broken for some time because I can reproduce it in v4.0.0 of Sphinx\r\n\r\n### How to Reproduce\r\n\r\n```bash\r\n$ sphinx-quickstart --no-sep --project mypackage --author me -v 0.1.0 --release 0.1.0 --language en docs\r\n$ echo -e 'Welcome\\n=======\\n\\n.. toctree::\\n\\n   mypackage\\n' > docs/index.rst\r\n$ echo -e ':mod:`mypackage2`\\n=================\\n\\nContent\\n\\nSubheading\\n----------\\n' > docs/mypackage.rst\r\n$ echo -e 'rst_prolog = \"\"\"\\n.. |psf| replace:: Python Software Foundation\\n\"\"\"\\n' >> docs/conf.py\r\n$ sphinx-build -b html . _build\r\n$ grep 'mypackage2' docs/_build/index.html\r\n```\r\n\r\n`docs/index.rst`:\r\n\r\n```rst\r\nWelcome\r\n=======\r\n\r\n.. toctree::\r\n\r\n   mypackage\r\n```\r\n\r\n`docs/mypackage.rst`:\r\n\r\n```rst\r\n:mod:`mypackage2`\r\n=================\r\n\r\nContent\r\n\r\nSubheading\r\n----------\r\n```\r\n\r\n### Environment Information\r\n\r\n```text\r\nPlatform:              linux; (Linux-6.3.2-arch1-1-x86_64-with-glibc2.37)\r\nPython version:        3.11.3 (main, Apr  5 2023, 15:52:25) [GCC 12.2.1 20230201])\r\nPython implementation: CPython\r\nSphinx version:        7.1.0+/d3c91f951\r\nDocutils version:      0.20.1\r\nJinja2 version:        3.1.2\r\nPygments version:      2.15.1\r\n```\r\n\r\n\r\n### Sphinx extensions\r\n\r\n```python\r\n[]\r\n```\r\n\r\n\r\n### Additional context\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 1791
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-11445",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the issue reproduction but write the first heading as ':mod: `mypackage2`' with a space between the role name and its interpreted text, followed by its '=' underline and rst_prolog set. The new regex still matches ':mod:' followed by whitespace, so the prolog is inserted between the title and underline and the heading is lost from the page and toctree.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a document starting with a no-space docinfo line such as ':author:John Doe', followed by a title and rst_prolog. Previously the prolog was inserted after the docinfo, but now it is inserted before it, so the field is no longer recognised as docinfo and author metadata is lost or rendered as body text.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a first heading whose text begins with a colon-word-colon followed by a space, such as ':Version: 2.0 Release Notes' over an '=' underline, with rst_prolog set. It is still classified as docinfo, the prolog splits the title from its underline, and the section heading does not render.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a document starting with compact numeric docinfo such as ':version:1.2.3' or ':date:2024-06-01', followed by content and rst_prolog. The prolog now precedes the docinfo block, changing the extracted version/date metadata compared with before the change.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a wrapped first section title whose first line is exactly ':mod:' and whose second line is '`mypackage2`', followed by the '=' underline, with rst_prolog set. The end-of-line lookahead still matches the first line as docinfo, so the prolog is inserted inside the title and the heading is broken.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a document starting with a docinfo field whose value begins immediately with markup, such as ':related::doc:`guide`', followed by content and rst_prolog. Previously this line was skipped over when inserting the prolog, but now the prolog is placed before it, breaking the docinfo/field-list rendering.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 990,
+      "cached_tokens": 244,
+      "output_tokens": 8444,
+      "reasoning_tokens": 7928,
+      "micro_usd": 171913,
+      "seconds": 65.40822010099873
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "suspected": 4,
+        "blocker": 1,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sphinx-doc__sphinx-11445/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 1216.8569171630006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 469.1040920409978
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

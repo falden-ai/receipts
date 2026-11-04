@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sympy__sympy-15976",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:49:52Z",
+  "wall_seconds": 1230.3784733580032,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "A symbol ending with a number is made invisible when printing with MathML\nA variable with a number, such as x1, is made invisible when printing in a MathML format.\r\n`import sympy\r\nfrom sympy.printing.mathml import mathml\r\n\r\nx2, y, z = sympy.symbols('x2 y z')\r\ny = x2*z+x2**3\r\nf = open('sympy_test.html', 'w')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write(sympy.mathml(y, printer='presentation')+'\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.close()`\r\n\r\nViewing the output in Safari 12.0.2:\r\n<img width=\"93\" alt=\"screen shot 2018-12-31 at 12 21 00 pm\" src=\"https://user-images.githubusercontent.com/46286768/50567565-48d8c080-0cfb-11e9-84d2-5738f1c2e2ba.png\">\r\n\r\nIf 'x' is used instead of 'x2', it works as expected:\r\nx, y, z = sympy.symbols('x y z')\r\ny = x*z+x**3\r\n<img width=\"78\" alt=\"screen shot 2018-12-31 at 12 26 24 pm\" src=\"https://user-images.githubusercontent.com/46286768/50567570-542bec00-0cfb-11e9-986d-015e0023a2a1.png\">\r\n\r\nBTW, I'm on a MacBook Pro, OS 10.14.2, Sympy 1.3, in Eclipse 2018-19, and Python 3.7.\n",
+        "start": 0,
+        "end": 1053
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sympy__sympy-15976",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling mathml(x2*z + x2**3, printer='content') still emits a script element nested inside the token element ci, because the content printer branch retains ci.appendChild(msub), so the invalid MathML from the issue remains.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Printing a scripted MatrixSymbol such as MatrixSymbol('A1', 2, 2) with the presentation printer loses bold styling on the subscript: mathvariant='bold' moves from the outer mi to only the base mi, whereas before the whole scripted symbol was wrapped in the bold mi.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling mathml(x2*z + x2**3, printer='presentation') for the exact issue expression, rather than an isolated Symbol, still contains '<mi><msub>' or an equivalent nested-token construction through the Pow/Mul printing paths, so x2 remains invisible.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing exact-output behavior for scripted plain symbols such as Symbol('x_1'), Symbol('x^1'), and Symbol('x_1^2') changes top-level tag from mi to msub/msup/msubsup, breaking consumers and existing tests that expect an mi wrapper even though the issue was only about trailing-number symbols.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Printing Symbol('x_2^3') or Symbol('x^3') with printer='presentation' does not return a correct top-level msubsup/msup for the combined super/subscript case, leaving the scripted symbol nested, malformed, or invisible.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Printing a MatrixElement of a scripted matrix symbol, e.g. MatrixSymbol('A1', 2, 2)[0, 1] with printer='presentation', now nests the returned msub directly as the base of another msub for the element indices, producing nested-script markup that renders differently from the pre-change mi-wrapped base.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 2185,
+      "cached_tokens": 628,
+      "output_tokens": 8284,
+      "reasoning_tokens": 7813,
+      "micro_usd": 172034,
+      "seconds": 68.72327284199855
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 3,
+        "suspected": 3,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 824.2258705189997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 3,
+        "suspected": 2,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 337.08704221800144
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:413e202032581dfdd518d3c4ec1f19268f442d45267b4e1c4dc12b533dd0c919"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:413e202032581dfdd518d3c4ec1f19268f442d45267b4e1c4dc12b533dd0c919"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

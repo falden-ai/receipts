@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sympy__sympy-12096",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 1866.490133856,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "evalf does not call _imp_ recursively\nExample from https://stackoverflow.com/questions/41818842/why-cant-i-evaluate-a-composition-of-implemented-functions-in-sympy-at-a-point:\r\n\r\n```\r\n>>> from sympy.utilities.lambdify import implemented_function\r\n>>> f = implemented_function('f', lambda x: x ** 2)\r\n>>> g = implemented_function('g', lambda x: 2 * x)\r\n>>> print(f(  2 ).evalf())\r\n4.00000000000000\r\n>>> print(  g(2) .evalf())\r\n4.00000000000000\r\n>>> print(f(g(2)).evalf())\r\nf(g(2))\r\n```\r\n\r\nThe code for this is in `Function._eval_evalf`. It isn't calling evalf recursively on the return of `_imp_`. \n",
+        "start": 0,
+        "end": 598
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sympy__sympy-12096",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With f implemented as lambda x: x**2 and g implemented as lambda x: 2*x + I, f(g(2)).evalf() remains unevaluated because the inner result evalfs to the Add 4.0 + 1.0*I, whose is_Number is False, so the new gate returns None.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An implemented function taking a Matrix, e.g. lambda M: M[0, 0] + M[1, 1] applied to Matrix([[1, 2], [3, 4]]), previously evalf'd to 5.00000000000000 but now stays unevaluated because the evalf'd Matrix has no true is_Number and hits the new gate.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling f(g(2)).evalf(10) for the issue's f and g returns a Float with far more than 10 significant digits, or otherwise not Float(16, 10), because a.evalf(prec) and sympify(res).evalf(prec) pass the binary prec as a decimal-digit count.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For a plain non-composed implemented function such as lambda x: x**2, f(2).evalf() previously printed 4.00000000000000 with 15 digits but now returns a Float with many more digits because prec is passed to evalf as a digit count.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With g implemented as lambda x: 2*x and f implemented with an integer-only operation such as lambda n: [10, 20, 30][n], f(g(1)).evalf() remains unevaluated because the inner result is converted to Float(2.0) before _imp_ runs and list indexing raises TypeError, which is swallowed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An implemented function whose _imp_ returns a partially symbolic result, e.g. lambda x: x**2 + Symbol('y'), previously left f(2).evalf() as unevaluated f(2) since Float of the result failed, but now returns the non-numeric expression 4.00000000000000 + y from _eval_evalf.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 739,
+      "cached_tokens": 0,
+      "output_tokens": 14198,
+      "reasoning_tokens": 13662,
+      "micro_usd": 286916,
+      "seconds": 112.639814492
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 1,
+        "not_reproduced": 1,
+        "blocker": 5
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sympy__sympy-12096/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~sympy__sympy-12096/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~sympy__sympy-12096/nothing_else_changed/regression-3.1",
+        "20250807_openhands_gpt5~sympy__sympy-12096/nothing_else_changed/regression-3.2",
+        "20250807_openhands_gpt5~sympy__sympy-12096/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1423.541103599
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "refuted": 2,
+        "unchecked": 7,
+        "not_reproduced": 1,
+        "s_sat_inconclusive": 2
+      },
+      "blockers": [],
+      "wall_seconds": 330.0389417839999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ae0ccc3b2f7e85a1567307d7a79fa1c6661b5985f0d9913925550e65fa70efe1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

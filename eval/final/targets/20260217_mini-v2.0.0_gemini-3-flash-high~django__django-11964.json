@@ -1,0 +1,180 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:16:06Z",
+  "wall_seconds": 1602.908791152,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "The value of a TextChoices/IntegerChoices field has a differing type\nDescription\n\t\nIf we create an instance of a model having a CharField or IntegerField with the keyword choices pointing to IntegerChoices or TextChoices, the value returned by the getter of the field will be of the same type as the one created by enum.Enum (enum value).\nFor example, this model:\nfrom django.db import models\nfrom django.utils.translation import gettext_lazy as _\nclass MyChoice(models.TextChoices):\n\tFIRST_CHOICE = \"first\", _(\"The first choice, it is\")\n\tSECOND_CHOICE = \"second\", _(\"The second choice, it is\")\nclass MyObject(models.Model):\n\tmy_str_value = models.CharField(max_length=10, choices=MyChoice.choices)\nThen this test:\nfrom django.test import TestCase\nfrom testing.pkg.models import MyObject, MyChoice\nclass EnumTest(TestCase):\n\tdef setUp(self) -> None:\n\t\tself.my_object = MyObject.objects.create(my_str_value=MyChoice.FIRST_CHOICE)\n\tdef test_created_object_is_str(self):\n\t\tmy_object = self.my_object\n\t\tself.assertIsInstance(my_object.my_str_value, str)\n\t\tself.assertEqual(str(my_object.my_str_value), \"first\")\n\tdef test_retrieved_object_is_str(self):\n\t\tmy_object = MyObject.objects.last()\n\t\tself.assertIsInstance(my_object.my_str_value, str)\n\t\tself.assertEqual(str(my_object.my_str_value), \"first\")\nAnd then the results:\n(django30-venv) ➜ django30 ./manage.py test\nCreating test database for alias 'default'...\nSystem check identified no issues (0 silenced).\nF.\n======================================================================\nFAIL: test_created_object_is_str (testing.tests.EnumTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n File \"/Users/mikailkocak/Development/django30/testing/tests.py\", line 14, in test_created_object_is_str\n\tself.assertEqual(str(my_object.my_str_value), \"first\")\nAssertionError: 'MyChoice.FIRST_CHOICE' != 'first'\n- MyChoice.FIRST_CHOICE\n+ first\n----------------------------------------------------------------------\nRan 2 tests in 0.002s\nFAILED (failures=1)\nWe notice when invoking __str__(...) we don't actually get the value property of the enum value which can lead to some unexpected issues, especially when communicating to an external API with a freshly created instance that will send MyEnum.MyValue, and the one that was retrieved would send my_value.\n",
+        "start": 0,
+        "end": 2353
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create via MyObject.objects.create(my_str_value=MyChoice.FIRST_CHOICE) as in the issue and assert the in-memory instance's my_str_value is a plain str equal to 'first' via str(); model construction may bypass DeferredAttribute.__set__ or retain the enum member, so the assertion still fails.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define a TextChoices subclass with its own __str__ method and call str() on a member; ChoicesMeta unconditionally replaces cls.__str__ after class creation, so the custom __str__ that worked before is silently lost.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Write the enum through a queryset path that bypasses instance descriptors, e.g. MyObject.objects.update(my_str_value=MyChoice.FIRST_CHOICE) or bulk_update, then fetch the row and assert plain str/int type and str() value; the stored or reloaded value may remain/be converted from the enum representation instead of its .value.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Assign any non-Choices enum (e.g. an IntEnum or a plain Enum wrapping a date/int) to a model field and read it back in memory; DeferredAttribute.__set__ now unwraps every Enum to .value, stripping .name/.label and the enum type that assignment previously preserved.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Assign a TextChoices/IntegerChoices member to a deferred instance (MyObject.objects.defer('my_str_value').get()) or to a FileField/ForeignKey-attname field whose descriptor overrides DeferredAttribute.__set__, then assert plain type and str() value; the alternative descriptor may bypass enum unwrapping and leave the enum member in place.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Delete a not-yet-loaded deferred field with del obj.my_str_value (or delete a field absent from instance __dict__) and then access it; the new data-descriptor __delete__ raises KeyError instead of the previous AttributeError/reload-from-database behavior.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1516,
+      "cached_tokens": 116,
+      "output_tokens": 10203,
+      "reasoning_tokens": 9730,
+      "micro_usd": 209684,
+      "seconds": 78.28625888100032
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 3,
+        "blocker": 5,
+        "possibly_toxic": 3,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1072.3883052729998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 2,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11964/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 450.5821137310013
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,153 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-24443",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:00:09Z",
+  "wall_seconds": 1188.1594231239997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`_check_homomorphism` is broken on PermutationGroups\n```python\r\nIn [1]: from sympy.combinatorics import *\r\n   ...: from sympy.combinatorics.homomorphisms import homomorphism\r\n   ...: D3 = DihedralGroup(3)\r\n   ...: T = homomorphism(D3, D3, D3.generators, D3.generators)\r\n\r\nValueError: The given images do not define a homomorphism\r\n```\r\n\r\nThe issue is in the internal `_image()` function, where it handles the case of a `PermutationGroup`:\r\n\r\nhttps://github.com/sympy/sympy/blob/809c53c077485ca48a206cee78340389cb83b7f1/sympy/combinatorics/homomorphisms.py#L336-L337\r\n\r\nWhen `r[i]` is an inverted generator, the `in gens` test fails.\r\n\r\nI think the whole thing can be greatly simplified.\n",
+        "start": 0,
+        "end": 687
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-24443",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call homomorphism(G, G, G.generators, G.generators) where r=Permutation([1,2,0]), s=Permutation([0,2,1]), and G=PermutationGroup(r*s, r, s) has a redundant first generator. If presentation generator elimination shifts r.group.symbols relative to domain.generators, the positional lookup maps relators to the wrong generators and the valid identity homomorphism raises ValueError, KeyError, or IndexError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] With F, a, b = free_group('a, b') and G=FpGroup(F, [a**3, b**2, (a*b)**2]), call homomorphism(G, G, G.generators, G.generators), which worked before for an FpGroup domain. The new r.group.symbols/domain.generators indexing may raise AttributeError or KeyError for FpGroup relators instead of returning the identity homomorphism.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] For D3=DihedralGroup(3), call homomorphism(D3, D3, D3.generators, [g**-1 for g in D3.generators]), a valid automorphism inverting the rotation and fixing the reflection. The new _image may still mishandle relators containing inverted generators and reject it with ValueError or crash with KeyError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call homomorphism(D3, D3, [g**-1 for g in D3.generators], [g**-1 for g in D3.generators]) for D3=DihedralGroup(3), using inverted generators as the generating set as the old s**-1 fallback in _image allowed. The new direct images[g] lookup keyed by domain.generators may raise KeyError where the old code checked the homomorphism successfully.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] For D3=DihedralGroup(3), call homomorphism(D3, D3, D3.generators, [D3.generators[0], D3.generators[0]]), mapping both generators to the rotation so the reflection order relator is not preserved. The fixed check should raise ValueError, but wrong positional image evaluation may instead accept the invalid homomorphism or raise KeyError/IndexError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call homomorphism(S3, S3, [Permutation(0,1), Permutation(1,2)], [Permutation(0,1), Permutation(1,2)]) for S3=SymmetricGroup(3), using a non-default generating set of two transpositions. The old _image skipped presentation generators absent from images and returned the homomorphism, while the new images[domain.generators[...]] lookup may raise KeyError for generators not among the supplied keys.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 974,
+      "cached_tokens": 244,
+      "output_tokens": 9827,
+      "reasoning_tokens": 9175,
+      "micro_usd": 199509,
+      "seconds": 64.8333018379999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 546.0329665470008
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 576.9510604739999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:04d8df8b082d571edd21b528dcf7c49af7987efaa977b73f36178a0a0f18638d"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:04d8df8b082d571edd21b528dcf7c49af7987efaa977b73f36178a0a0f18638d"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

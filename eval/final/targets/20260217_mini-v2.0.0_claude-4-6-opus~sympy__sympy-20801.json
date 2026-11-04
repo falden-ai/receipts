@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-20801",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:00:42Z",
+  "wall_seconds": 1571.0644779649992,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "S(0.0) == S.false returns True\nThis issue is related to those listed in #20033. \r\n\r\nAs shown by @sayandip18, comparing `S.false` to `S(0.0)` returns 2 different results depending on the order in which they are compared:\r\n\r\n```pycon\r\n>>> from sympy import *\r\n>>> S(0.0) == S.false\r\nTrue\r\n>>> S.false == S(0.0)\r\nFalse\r\n```\r\nBased on the results of comparison to `S(0)`:\r\n\r\n```pycon\r\n>>> S(0) == S.false\r\nFalse\r\n>>> S.false == S(0)\r\nFalse\r\n```\r\nI assume we would want `S(0.0) == S.false` to return True as well?\n",
+        "start": 0,
+        "end": 509
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-20801",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test both orders for Boolean atoms and Python bools, e.g. S.false == S(0.0), False == Float(0.0), and S.true == Float(1.0); the reflected Boolean-side comparison may still return True or otherwise disagree with Float(0.0) == S.false returning False.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test Float(0.0) == False and Float(0.0) != False with Python bool literals, which passed/returned True/False respectively before the change because False sympifies to S.false; existing Python-numeric equality expectations may now fail.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test other zero/one-valued numeric objects against S.false/S.true, including Float(-0.0), Float(0.0, 50), S(0j), N(0), Integer(0), and Rational(1, 1); a type that does not use Float.__eq__ may still compare equal to a Boolean.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test Float(0.0) in containers and sentinel checks, e.g. Float(0.0) in [S.false], {S.false: 1}[Float(0.0)], and code using result == S.false to detect a zero/false result; deduplication or lookup behavior that worked before may change beyond the direct equality fix.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test Float(0.0) against non-atomic Booleans such as Not(S.true), And(S.true, S.false), Eq(1, 2), and a symbolic Boolean in both orders; a generic Boolean expression may still return True, raise, or bypass the isinstance check in Float.__eq__.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test unchanged neighboring comparisons such as Float(0.0) == 0, Float(0.0) == S.Zero, Float(1.0) == 1, Float(1.0) == S.true, and Float('nan')/Float('inf') against S.true/S.false; reordering the Boolean and zero checks may alter a case that previously behaved as a plain numeric or special-float comparison.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 639,
+      "cached_tokens": 244,
+      "output_tokens": 7568,
+      "reasoning_tokens": 7042,
+      "micro_usd": 152989,
+      "seconds": 48.14491563699994
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 3,
+        "suspected": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 718.3729360010002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "unchecked": 7,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 804.1556731730016
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a8389930aee223df7572b4b3523fff16e217b250e74874fb9450144e993f7f15"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

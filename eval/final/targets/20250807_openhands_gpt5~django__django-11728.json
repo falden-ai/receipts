@@ -1,0 +1,153 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-11728",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:31:48Z",
+  "wall_seconds": 922.5351527660023,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "simplify_regexp() doesn't replace trailing groups.\nDescription\n\t\nreplace_named_groups() fails to replace the final named group if the urlpattern passed in is missing a trailing '/'.\nFor example, with input r'entries/(?P<pk>[^/.]+)/relationships/(?P<related_field>\\w+)' the \"related_field\" does not get properly replaced. A workaround is to tack on a '/' at the end and then it works.\nCode that reproduces this is attached. \nThis function is used downstream in Django REST Framework. See issue ​6888\n",
+        "start": 0,
+        "end": 499
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-11728",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call replace_named_groups(r'entries/(?P<pk>[^/.]+)/relationships/(?P<related_field>\\w+)') expecting 'entries/<pk>/relationships/<related_field>'; the trailing related_field group remains unreplaced or loses its closing parenthesis.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call replace_named_groups(r'^(?P<name>\\w+)/(?P<slug>\\d+)/$'), which passed before; the new idx + 1 slice consumes the '/' after the first group, producing a result missing that separator.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call simplify_regexp() on a pattern ending in an unnamed group, such as r'entries/(\\w+)', expecting the trailing group to become '*'; it remains as '(\\w+)' because only the named-group path was changed.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call replace_named_groups(r'^(?P<a>(x|y))/b/$'), which passed before; breaking immediately when brackets balance truncates the nested group and leaves an extra ')' or removes part of '/b/'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call replace_named_groups(r'articles/(?P<author>(alice|bob))') expecting 'articles/<author>'; bracket counting stops at the inner ')' and leaves a truncated replacement or stray trailing ')'.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call replace_named_groups(r'^(?P<a>\\(\\w+\\))/(?P<b>\\w+)?$'), which passed before; an escaped ')' is treated as the group terminator or the following '?' is consumed, corrupting the previously correct output.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 804,
+      "cached_tokens": 116,
+      "output_tokens": 5755,
+      "reasoning_tokens": 5344,
+      "micro_usd": 117876,
+      "seconds": 44.778372116001265
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 535.505381351999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 341.68323758300176
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:600522a9621f4a42419df786199b1c8f12148d62a87d09ad79df27a85e2c5b73"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:600522a9621f4a42419df786199b1c8f12148d62a87d09ad79df27a85e2c5b73"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

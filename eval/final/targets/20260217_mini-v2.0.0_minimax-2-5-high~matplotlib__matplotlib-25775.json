@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~matplotlib__matplotlib-25775",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:09:25Z",
+  "wall_seconds": 2350.1768277599986,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[ENH]: Add get/set_antialiased to Text objects\n### Problem\n\nCurrently, Text objects always retrieve their antialiasing state via the global rcParams[\"text.antialias\"], unlike other artists for which this can be configured on a per-artist basis via `set_antialiased` (and read via `set_antialiased`).\n\n### Proposed solution\n\nAdd similar getters/setters on Text objects (also adjusting Annotations accordingly, if needed) and use that info in the drawing stage.\r\n\r\nShould be relatively easy to implement, except that the slight fiddling needed with backends requires some understanding of backend code (I think we need to replace the access to `rcParams[\"text.antialiased\"]` by going through the GraphicsContext state).\n",
+        "start": 0,
+        "end": 718
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~matplotlib__matplotlib-25775",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On Agg, a Text containing mathtext such as Text('$x^2$', antialiased=False) still renders with gray antialiased edge pixels identical to antialiased=True, because the mathtext rendering path does not use the Text's GraphicsContext antialiased value.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Changing mpl.rcParams['text.antialiased'] to False after a figure/axes and its tick labels have been created, then drawing on Agg, still renders those pre-existing texts antialiased, whereas before the change the draw-time rcParams lookup made them non-antialiased.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "plt.annotate('note', xy=(0, 0), antialiased=False) does not honor the setting: the resulting Annotation's get_antialiased() returns True or its drawn text remains antialiased, because Annotation was not adjusted to forward/use it.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling renderer.draw_text(gc, ...) with a fresh renderer.new_gc() under rcParams['text.antialiased']=False now produces antialiased text on Agg/Cairo, because the backends read the gc default True instead of the global rcParams as before.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Copying text properties loses the setting: dest.update_from(src) where src = Text(antialiased=False) leaves dest.get_antialiased() as True, so tick/label-style copied texts are drawn antialiased despite the source.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "After t = Text(antialiased=False), an unrelated property update such as t.set(color='red') resets t.get_antialiased() to the rcParams default True, because the new antialiased=None parameter in the set/update path resolves to rcParams when unspecified.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1434,
+      "cached_tokens": 116,
+      "output_tokens": 16036,
+      "reasoning_tokens": 15598,
+      "micro_usd": 326016,
+      "seconds": 136.62927054600004
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 1,
+        "suspected": 2,
+        "refuted": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1434.7471719940004
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 3,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 778.3125153559995
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:aaec9887400b68ca72dde2e75eb90cd9edb9e7f9313773145b6b7981ff784507"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:aaec9887400b68ca72dde2e75eb90cd9edb9e7f9313773145b6b7981ff784507"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

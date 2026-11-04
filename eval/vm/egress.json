@@ -1,0 +1,24 @@
+[
+  {
+    "FromPort": 443,
+    "IpProtocol": "tcp",
+    "IpRanges": [
+      {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "receipts eval VM egress"
+      }
+    ],
+    "ToPort": 443
+  },
+  {
+    "FromPort": 80,
+    "IpProtocol": "tcp",
+    "IpRanges": [
+      {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "receipts eval VM egress"
+      }
+    ],
+    "ToPort": 80
+  }
+]

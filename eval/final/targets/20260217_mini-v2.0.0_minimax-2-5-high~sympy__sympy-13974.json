@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13974",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1807.152940161,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Evaluating powers of `TensorProduct`\nPowers of tensor product expressions are not possible to evaluate with either `expand(tensorproduct=True)` method nor the `tensor_product_simp`function.\r\n\r\nThis is an example session showing the issue\r\n```\r\nIn [1]: from sympy import *\r\n        from sympy.physics.quantum import TensorProduct as tp\r\n        from sympy.physics.quantum import tensor_product_simp as tps\r\n        from sympy.physics.paulialgebra import Pauli\r\n        a = Symbol('a', commutative=False)\r\n\r\nIn [2]: t1 = tp(1,1)*tp(1,1)\r\n        t1\r\nOut[2]: 1x1**2\r\n\r\nIn [3]: tps(t1)\r\nOut[3]: 1x1**2\r\n\r\nIn [4]: t1.expand(tensorproduct=True)\r\nOut[4]: 1x1**2\r\n\r\nIn [5]: tps(tp(1,1)*tp(1,a)).subs(a, 1)\r\nOut[5]: 1x1\r\n\r\nIn [6]: t2 = tp(1,Pauli(3))*tp(1,Pauli(3))\r\n        t2\r\nOut[6]: 1xsigma3**2\r\n\r\nIn [7]: tps(t2)\r\nOut[7]: 1xsigma3**2\r\n\r\nIn [8]: t2.expand(tensorproduct=True)\r\nOut[8]: 1xsigma3**2\r\n\r\nIn [9]: tps(tp(1,Pauli(3))*tp(1,a)).subs(a, Pauli(3))\r\nOut[9]: 1x1\r\n```\r\nwhere `[5]` and `[9]` shows expected result for `t1` and `t2` respectively.\n",
+        "start": 0,
+        "end": 1044
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13974",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call tensor_product_simp(TensorProduct(1, Pauli(3))**-2) or the same expression's expand(tensorproduct=True); it should give TensorProduct(1, 1) since Pauli(3)**-2 == 1, but only positive exponents are handled so the power remains unevaluated.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call (TensorProduct(1, 2)*TensorProduct(3, 4))**2.expand(tensorproduct=True); before the change the inherited Pow expansion delegated to tensor_product_simp and simplified the base product toward TensorProduct(3, 8), but the monkey-patched Pow method returns self for a Mul base so that simplification is lost.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With n = Symbol('n', integer=True), call tensor_product_simp(TensorProduct(a, b)**n) or its expand(tensorproduct=True); evaluating exp > 0 raises TypeError on the undecidable relational instead of leaving or expanding the symbolic power.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call tensor_product_simp(TensorProduct(TensorProduct(1, 1)*TensorProduct(2, 2), 3)**2); the old Pow branch first simplified the base and its inner TensorProduct product, while the new branch merely squares that inner Mul, leaving an unsimplified product of TensorProducts in the first slot.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call tensor_product_simp(TensorProduct(TensorProduct(1, Pauli(3))**2, 2)**2); the inner TensorProduct power should also resolve, but the code raises each outer argument to the power without recursing, leaving TensorProduct(1, Pauli(3))**4 in the result.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call TensorProduct(TensorProduct(1, 1)*TensorProduct(2, 2), 3)**-1.expand(tensorproduct=True); before the change the base's inner TensorProduct product would be simplified even for a non-positive exponent, but the patched Pow method returns self whenever the exponent is not a positive integer.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1120,
+      "cached_tokens": 116,
+      "output_tokens": 12040,
+      "reasoning_tokens": 11541,
+      "micro_usd": 244840,
+      "seconds": 83.58692270100005
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "not_reproduced": 2,
+        "refuted": 3,
+        "suspected": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1256.594881044
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 2,
+        "refuted": 3,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 466.6220905769999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-16527",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:10:16Z",
+  "wall_seconds": 873.4600054019993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "\"show_save_as_new\" in admin can add without this permission\nDescription\n\t \n\t\t(last modified by Mariusz Felisiak)\n\t \nAt \"django/contrib/admin/templatetags/admin_modify.py\" file, line 102, I think you must put one more verification for this tag: \"and has_add_permission\", because \"save_as_new\" is a add modification.\nI rewrite this for my project:\n\t\t\t\"show_save_as_new\": not is_popup\n\t\t\tand has_add_permission # This line that I put!!!\n\t\t\tand has_change_permission\n\t\t\tand change\n\t\t\tand save_as,\n",
+        "start": 0,
+        "end": 493
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-16527",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A staff user with only change permission POSTs valid data with _saveasnew directly to an existing object's admin change URL; a new object is created despite the missing add permission, showing the tag-only fix does not enforce the permission.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "GET the admin change page for a save_as=True model as a superuser or a user with both add and change permissions; the 'Save as new' button that appeared before the change is now missing.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "GET the admin change page for a save_as=True model as a user with change but not add permission; the rendered submit line still contains the _saveasnew 'Save as new' button.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Render submit_row across add/change/view-only permission combinations and compare all other flags; show_save, show_save_and_continue, show_save_and_add_another, show_delete_link, or show_close differ from before for a combination not involving save-as-new without add permission.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call submit_row with has_add_permission=False, has_change_permission=True, change=True, save_as=True, and is_popup=False; show_save_as_new is still True (or raises instead of returning False).",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A change-only user opens and normally saves (without _saveasnew) an existing object, or opens the add/popup change form; saving or rendering now fails or loses its usual submit buttons instead of behaving as before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 578,
+      "cached_tokens": 116,
+      "output_tokens": 5528,
+      "reasoning_tokens": 5149,
+      "micro_usd": 112432,
+      "seconds": 33.9914528700001
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 6
+      },
+      "blockers": [],
+      "wall_seconds": 486.3428794300007
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 1,
+        "refuted": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 351.3337055999991
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:6a8ec1671551fab4b6a1c6d6bbe44ad79821669cddfbf55f681feeee706aef63"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:6a8ec1671551fab4b6a1c6d6bbe44ad79821669cddfbf55f681feeee706aef63"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "tests/runtests.py",
+  "--verbosity",
+  "2",
+  "--parallel",
+  "1",
+  "--settings=test_sqlite",
+  "receipts_imitates"
+ ],
+ "exit_code": 0,
+ "seconds": 0.4,
+ "stdout": "Testing against Django installed in '/testbed/django'\nImporting application receipts_imitates\nSkipping setup of unused database(s): default, other.\nSystem check identified no issues (0 silenced).\n",
+ "stderr": "test_after (receipts_imitates.tests.Imitates) ... ok\ntest_prints_a_status_then_passes (receipts_imitates.tests.Imitates) ... expected failure\nok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n"
+}

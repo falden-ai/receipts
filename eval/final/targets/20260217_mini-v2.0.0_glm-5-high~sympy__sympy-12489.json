@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-12489",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:02:59Z",
+  "wall_seconds": 1409.8721059710006,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "combinatorics.Permutation can't be subclassed properly\nI stumbled across a subclassing issue with `combinatorics.Permutation`:\r\nThe object creation is done in `Permutation.__new__`, but internally the function `_af_new` is used (which itself is a reference to the static method `Permutation._af_new`). This method eventually creates the object calling `Basic.__new__(Perm, perm)` (`Perm` is a reference to `Permutation`).\r\nIn the end, this makes subclassing `Permutation` impossible (besides overriding `Permutation._af_new` as always instances of `Permutation` are returned.\r\n\r\nAn elegant solution would be to stick to Python's instance creation mechanisms, i.e. use classmethods where appropriate (`__new__` is one) and use the mandatory reference to the class (the first argument of a classmethod) the method is called on for instance creation.\r\n\r\nI'm completely new to sympy development and encountered this issue whilst trying to subclass `Permutation`. Therefore I'm not aware of any side effects changing the instance creation probably has. (I monkeypatched it locally and ran the tests, all succeeded.)\r\n\r\nMaybe there is a coherent explanation why the implementation is as it is and should not be changed?\n",
+        "start": 0,
+        "end": 1214
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-12489",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define class S(Permutation): pass and call S(Permutation([2, 1, 0]), size=5) or S(S([2, 1, 0]), size=5). The unchanged resize branch in __new__ returns Perm(...) so the result is a plain Permutation, not S; the same-size copy branch also returns the original base-class object.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Permutation.rmul_with_af(a, b) with duck-typed arguments that only provide _array_form, as its docstring allows. Before, the global _af_new always built a Permutation; now args[0].__class__._af_new raises AttributeError (or builds the wrong type) for such non-Permutation arguments.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call the factory S.from_sequence([3, 1, 2]) (and similar Permutation-returning factories not routed through _af_new). If it still constructs Permutation(...) explicitly, the result is a plain Permutation instead of S, so subclass creation through that public path remains broken.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use an existing subclass that sets state in __init__, e.g. class S(Permutation) with self.marker set in __init__, then compute S([1, 0]) * S([0, 1]) or ~S([1, 0]). Previously this returned a usable plain Permutation; now _af_new builds S via Basic.__new__ without ever calling S.__init__, so accessing .marker on the result raises AttributeError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call S([2, 0, 1]).rmul(S([1, 0, 2])) and related product helpers not converted in the diff. If they still use the module-level _af_new/Permutation constructor, the product is a plain Permutation rather than S, unlike __mul__ which was fixed.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Mix base and subclass elements in group-style operations, e.g. put an S generator in a PermutationGroup or compare S([1, 0]) * Permutation([0, 1]) with Permutation([0, 1]) * S([1, 0]) in sets/dicts. Products now take the left/first operand's class instead of always Permutation, so exact-type equality/hash behaviour changes and membership or identity lookups that passed before can fail.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 2312,
+      "cached_tokens": 244,
+      "output_tokens": 11854,
+      "reasoning_tokens": 11278,
+      "micro_usd": 245401,
+      "seconds": 79.64337451199981
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 5,
+        "suspected": 3,
+        "refuted": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-12489/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1024.3735616390004
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "refuted": 5,
+        "unchecked": 8
+      },
+      "blockers": [],
+      "wall_seconds": 305.2560619730002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2011b47a82b6692c2b93eb5253cb277238c7abe9489d202348c78ace61f28931"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2011b47a82b6692c2b93eb5253cb277238c7abe9489d202348c78ace61f28931"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,12 @@
+{
+ "python": "3.11.15",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "expected.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "test_a_fails_as_expected (expected.tests.ExpectedFailures.test_a_fails_as_expected) ... expected failure\ntest_b_with_a_docstring (expected.tests.ExpectedFailures.test_b_with_a_docstring)\nA docstring's first line shows in the verbose output. ... expected failure\ntest_c_writes_then_fails_as_expected (expected.tests.ExpectedFailures.test_c_writes_then_fails_as_expected) ... xexpected failure\ntest_d_passes_unexpectedly (expected.tests.ExpectedFailures.test_d_passes_unexpectedly) ... unexpected success\ntest_e_skipped (expected.tests.ExpectedFailures.test_e_skipped) ... skipped 'not here'\ntest_f_ok (expected.tests.ExpectedFailures.test_f_ok) ... ok\ntest_g_fails_as_expected (expected.tests.WholeClassExpected.test_g_fails_as_expected) ... expected failure\n\n======================================================================\nUNEXPECTED SUCCESS: test_d_passes_unexpectedly (expected.tests.ExpectedFailures.test_d_passes_unexpectedly)\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nFAILED (skipped=1, expected failures=4, unexpected successes=1)\n"
+}

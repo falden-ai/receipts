@@ -1,0 +1,12 @@
+{
+ "python": "3.11.15",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "nonewline.tests"
+ ],
+ "exit_code": 1,
+ "stderr": "test_a_writes_then_passes (nonewline.tests.NoNewline.test_a_writes_then_passes) ... xok\ntest_b_writes_then_fails (nonewline.tests.NoNewline.test_b_writes_then_fails) ... xFAIL\ntest_c_ends_its_output_in_ok_then_skips (nonewline.tests.NoNewline.test_c_ends_its_output_in_ok_then_skips) ... it is ok\nskipped 'skipped after its own output'\ntest_d_after (nonewline.tests.NoNewline.test_d_after) ... ok\n\n======================================================================\nFAIL: test_b_writes_then_fails (nonewline.tests.NoNewline.test_b_writes_then_fails)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/nonewline/tests.py\", line 11, in test_b_writes_then_fails\n    self.assertEqual(1, 2)\nAssertionError: 1 != 2\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=1, skipped=1)\n"
+}

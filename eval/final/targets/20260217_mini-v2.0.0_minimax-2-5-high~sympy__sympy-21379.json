@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-21379",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:36:42Z",
+  "wall_seconds": 1134.6166783439999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Unexpected `PolynomialError` when using simple `subs()` for particular expressions\nI am seeing weird behavior with `subs` for particular expressions with hyperbolic sinusoids with piecewise arguments. When applying `subs`, I obtain an unexpected `PolynomialError`. For context, I was umbrella-applying a casting from int to float of all int atoms for a bunch of random expressions before using a tensorflow lambdify to avoid potential tensorflow type errors. You can pretend the expression below has a `+ 1` at the end, but below is the MWE that I could produce.\r\n\r\nSee the expression below, and the conditions in which the exception arises.\r\n\r\nSympy version: 1.8.dev\r\n\r\n```python\r\nfrom sympy import *\r\nfrom sympy.core.cache import clear_cache\r\n\r\nx, y, z = symbols('x y z')\r\n\r\nclear_cache()\r\nexpr = exp(sinh(Piecewise((x, y > x), (y, True)) / z))\r\n# This works fine\r\nexpr.subs({1: 1.0})\r\n\r\nclear_cache()\r\nx, y, z = symbols('x y z', real=True)\r\nexpr = exp(sinh(Piecewise((x, y > x), (y, True)) / z))\r\n# This fails with \"PolynomialError: Piecewise generators do not make sense\"\r\nexpr.subs({1: 1.0})  # error\r\n# Now run it again (isympy...) w/o clearing cache and everything works as expected without error\r\nexpr.subs({1: 1.0})\r\n```\r\n\r\nI am not really sure where the issue is, but I think it has something to do with the order of assumptions in this specific type of expression. Here is what I found-\r\n\r\n- The error only (AFAIK) happens with `cosh` or `tanh` in place of `sinh`, otherwise it succeeds\r\n- The error goes away if removing the division by `z`\r\n- The error goes away if removing `exp` (but stays for most unary functions, `sin`, `log`, etc.)\r\n- The error only happens with real symbols for `x` and `y` (`z` does not have to be real)\r\n\r\nNot too sure how to debug this one.\n",
+        "start": 0,
+        "end": 1781
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-21379",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With clear_cache() and real x, y, z, exp(coth(Piecewise((x, y > x), (y, True))/z)).subs({1: 1.0}) still raises PolynomialError because coth's unpatched _eval_is_real evaluates im % (pi/2) on the Piecewise imaginary part.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With clear_cache() and real x, y, z, sinh(Piecewise((x, y > x), (y, True))/z).is_real returns None instead of True even though the argument is real, losing the definite result the pre-change code produced once its cache was warm.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With clear_cache() and real x, y, z, sinh(Piecewise((x + I*y, y > x), (y, True))/z).is_real raises PolynomialError from as_real_imag() before the patched modulo lines are reached.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "cosh(I*Piecewise((2*pi, y > x), (0, True))).is_positive returns None instead of True, because the patched cosh handler returns None when y % (2*pi) raises rather than determining that cosh equals cos of a multiple of 2*pi.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Repeating the exact issue MWE cold-cache-first, exp(sinh(Piecewise((x, y > x), (y, True))/z)).subs({1: 1.0}) with real symbols, still raises PolynomialError through an assumption query during subs reconstruction other than the five patched modulo sites.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A cold-cache-first query such as sinh(Piecewise((x, y > x), (y, True))/z).is_real poisons later behavior: a subsequent conjugate(sinh(Piecewise((x, y > x), (y, True))/z)) fails to simplify to itself for the real argument, whereas the pre-change warm-cache second run simplified it.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1555,
+      "cached_tokens": 244,
+      "output_tokens": 9534,
+      "reasoning_tokens": 9048,
+      "micro_usd": 195973,
+      "seconds": 71.36858468299988
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "s_sat_inconclusive": 1,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 707.3903047879999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 4,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 355.414188748
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:85a0a47a407e5a40793dddd68d23d07de9df7ce0117f4ba0d767bf53f7803602"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:85a0a47a407e5a40793dddd68d23d07de9df7ce0117f4ba0d767bf53f7803602"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13031",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:50:34Z",
+  "wall_seconds": 911.2456353140005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Behavior of Matrix hstack and vstack changed in sympy 1.1\nIn sympy 1.0:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(0, 0)\r\nM2 = sy.Matrix.zeros(0, 1)\r\nM3 = sy.Matrix.zeros(0, 2)\r\nM4 = sy.Matrix.zeros(0, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns \r\n`(0, 6)`\r\n\r\nNow, same in sympy 1.1:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(0, 0)\r\nM2 = sy.Matrix.zeros(0, 1)\r\nM3 = sy.Matrix.zeros(0, 2)\r\nM4 = sy.Matrix.zeros(0, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns\r\n`(0, 3)\r\n`\r\nwhereas:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(1, 0)\r\nM2 = sy.Matrix.zeros(1, 1)\r\nM3 = sy.Matrix.zeros(1, 2)\r\nM4 = sy.Matrix.zeros(1, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns\r\n`(1, 6)\r\n`\n",
+        "start": 0,
+        "end": 717
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13031",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Matrix.hstack(Matrix.zeros(0, 0), Matrix.zeros(0, 1), Matrix.zeros(0, 2), Matrix.zeros(0, 3)).shape still returns (0, 3) instead of (0, 6), because the dense hstack/row_join path does not go through the patched col_insert/row_insert code.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Matrix.zeros(0, 2).row_insert(1, Matrix([[1, 2]])) previously returned the inserted 1x2 matrix, but now raises IndexError because position 1 exceeds the zero row count.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Matrix.vstack(Matrix.zeros(0, 0), Matrix.zeros(1, 0), Matrix.zeros(2, 0), Matrix.zeros(3, 0)).shape still returns (3, 0) instead of (6, 0), because the dense vstack/col_join path is not fixed by the sparse-only col_join change.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Matrix.zeros(2, 0).col_insert(0, Matrix.zeros(3, 1)) previously returned the inserted 3x1 matrix, but now raises ShapeError because the placeholder has 2 rows and the inserted matrix has 3 rows.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "SparseMatrix.hstack(SparseMatrix.zeros(0, 0), SparseMatrix.zeros(0, 1), SparseMatrix.zeros(0, 2), SparseMatrix.zeros(0, 3)).shape still returns (0, 3) instead of (0, 6), because sparse stacking uses an unpatched insert/join path that still discards an empty operand.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "SparseMatrix.zeros(0, 3).col_join(SparseMatrix.zeros(1, 2)) previously returned the other 1x2 sparse matrix, but now raises ShapeError because the column counts 3 and 2 differ.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1048,
+      "cached_tokens": 244,
+      "output_tokens": 7038,
+      "reasoning_tokens": 6561,
+      "micro_usd": 144025,
+      "seconds": 43.73303144400052
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 3,
+        "refuted": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 520.8464351119983
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 346.3435307799991
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

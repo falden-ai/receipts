@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9591",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:37:02Z",
+  "wall_seconds": 1058.496569767,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Cross-references don't work in property's type annotations\n### Describe the bug\r\n\r\nA documented type in property's type annotation does not get cross-referenced:\r\n```py\r\nfrom typing import Optional\r\n\r\n\r\nclass Point:\r\n    \"\"\"\r\n    A class representing a point.\r\n\r\n    Attributes:\r\n        x: Position X.\r\n        y: Position Y.\r\n    \"\"\"\r\n    x: int\r\n    y: int\r\n\r\n\r\nclass Square:\r\n    \"\"\"A class representing a square figure.\"\"\"\r\n    #: Square's start position (top-left corner).\r\n    start: Point\r\n    #: Square width.\r\n    width: int\r\n    #: Square height.\r\n    height: int\r\n\r\n    @property\r\n    def end(self) -> Point:\r\n        \"\"\"Square's end position (bottom-right corner).\"\"\"\r\n        return Point(self.start.x + self.width, self.start.y + self.height)\r\n\r\n\r\nclass Rectangle:\r\n    \"\"\"\r\n    A class representing a square figure.\r\n\r\n    Attributes:\r\n        start: Rectangle's start position (top-left corner).\r\n        width: Rectangle width.\r\n        height: Rectangle width.\r\n    \"\"\"\r\n    start: Point\r\n    width: int\r\n    height: int\r\n\r\n    @property\r\n    def end(self) -> Point:\r\n        \"\"\"Rectangle's end position (bottom-right corner).\"\"\"\r\n        return Point(self.start.x + self.width, self.start.y + self.height)\r\n```\r\n\r\n### How to Reproduce\r\n\r\n```\r\n$ git clone https://github.com/jack1142/sphinx-issue-9585\r\n$ cd sphinx-issue-9585\r\n$ pip install sphinx\r\n$ cd docs\r\n$ make html\r\n$ # open _build/html/index.html and see the issue\r\n```\r\n\r\n\r\n### Expected behavior\r\n\r\nI expected the documented type in property's type annotation to be cross-referenced.\r\n\r\n### Your project\r\n\r\nhttps://github.com/jack1142/sphinx-issue-9585\r\n\r\n### Screenshots\r\n\r\nHere's a link to the generated docs:\r\nhttps://sphinx-issue-9585.readthedocs.io/en/latest/\r\n\r\n### OS\r\n\r\nWindows 10, Ubuntu 18.04\r\n\r\n### Python version\r\n\r\n3.7, 3.8, 3.9\r\n\r\n### Sphinx version\r\n\r\n4.1.2\r\n\r\n### Sphinx extensions\r\n\r\nsphinx.ext.autodoc\r\n\r\n### Extra tools\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 1977
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9591",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the issue's autodoc example with `Square.end` and `Rectangle.end` both annotated `-> Point` and inspect the HTML: at least one property signature still renders `Point` as plain text without a link to the documented `Point` class.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use `.. py:property:: x` with a free-form `:type:` value that is not valid Python syntax, e.g. `:type: list of Point, optional`: previously rendered verbatim, it now fails to parse, is mangled/dropped, or emits a new warning/error.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a property annotated `-> Optional[Point]` (or `-> list[Point]`): the nested `Point` inside the subscript is not turned into a resolved cross-reference, or the annotation is rendered incorrectly.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use `:type: int` for a property with no documented target for `int`: previously plain text, the signature now gains a pending cross-reference that changes the HTML (link attempt) or triggers unresolved-reference warnings.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a property with a stringized annotation (`from __future__ import annotations` or `-> \"Point\"`): the quoted name is parsed as a string literal rather than a type name, so no cross-reference to `Point` is created.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use `:type: ~typing.Optional[Point]` or `:type: dict[str,int]`: previously shown exactly as written, the parsed rendering now strips the `~`, normalizes spacing, or reorders punctuation, changing signature text beyond adding a cross-reference.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 948,
+      "cached_tokens": 244,
+      "output_tokens": 3124,
+      "reasoning_tokens": 2715,
+      "micro_usd": 65345,
+      "seconds": 24.80199026800028
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 2,
+        "unchecked": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 673.1729620010001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "suspected": 1,
+        "not_reproduced": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 360.1890121209999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:cc9ecac312f7b3f137d10db558f4d367a8c37130d6a1473c6af201771e124acd"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:cc9ecac312f7b3f137d10db558f4d367a8c37130d6a1473c6af201771e124acd"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

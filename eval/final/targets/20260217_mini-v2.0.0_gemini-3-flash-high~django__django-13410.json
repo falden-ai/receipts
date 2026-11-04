@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13410",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:19:54Z",
+  "wall_seconds": 1026.5668339570002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Bug in posix implementation of django/core/files/locks.py\nDescription\n\t\nThe posix version of locks (the version which supports import fcntl) has a bug. The code attempts to return True to indicate success or failure acquiring a lock, but instead it always returns False. The reason is that cpython fcntl module returns None if successful, and raises an OSError to indicate failure (see ​https://docs.python.org/3/library/fcntl.html#fcntl.flock).\nAnyone interested in using the non-blocking (i.e. locks.LOCKS_NB) requires a valid return value to know if they have successfully acquired the lock.\nI believe the correct implementation should be the following:\ndiff --git a/django/core/files/locks.py b/django/core/files/locks.py\nindex c46b00b905..4938347ea7 100644\n--- a/django/core/files/locks.py\n+++ b/django/core/files/locks.py\n@@ -107,9 +107,15 @@ else:\n\t\t\t return True\n\t else:\n\t\t def lock(f, flags):\n-\t\t\tret = fcntl.flock(_fd(f), flags)\n-\t\t\treturn ret == 0\n+\t\t\ttry:\n+\t\t\t\tfcntl.flock(_fd(f), flags)\n+\t\t\t\treturn True\n+\t\t\texcept OSError:\n+\t\t\t\treturn False\n\t\t def unlock(f):\n-\t\t\tret = fcntl.flock(_fd(f), fcntl.LOCK_UN)\n-\t\t\treturn ret == 0\n+\t\t\ttry:\n+\t\t\t\tfcntl.flock(_fd(f), fcntl.LOCK_UN)\n+\t\t\t\treturn True\n+\t\t\texcept OSError:\n+\t\t\t\treturn False\n",
+        "start": 0,
+        "end": 1242
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13410",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling lock() with LOCK_EX|LOCK_NB on a closed real file raises ValueError from fileno() instead of returning False, so non-blocking callers still receive an exception rather than a valid success/failure value.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling blocking lock() without LOCK_NB on an invalid integer file descriptor previously raised OSError but now silently returns False, allowing existing callers that ignore the return value to proceed without a lock.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With one open file holding LOCK_EX, lock() with LOCK_EX|LOCK_NB on a second open of the same file raises BlockingIOError or returns True instead of returning False, and does not return True after the first file is unlocked.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling unlock() on an invalid integer file descriptor previously raised OSError but now silently returns False, hiding a failure to release a lock from existing callers.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "An uncontended lock() call with LOCK_EX or LOCK_SH, followed by unlock(), does not return True for both operations, leaving the originally reported always-False behavior on at least one path.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "After lock() returns True for LOCK_EX, the file is not actually exclusively locked, or after unlock() returns True it is not actually released, changing locking behavior beyond the return value.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 871,
+      "cached_tokens": 116,
+      "output_tokens": 4444,
+      "reasoning_tokens": 4093,
+      "micro_usd": 91924,
+      "seconds": 43.51419619199805
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 8,
+        "not_reproduced": 2,
+        "suspected": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13410/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 517.179071726001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "refuted": 1,
+        "unchecked": 3,
+        "not_reproduced": 3,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 465.1394064420019
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:77df267ccf2cb2945d8d41b81c5fa0e418148345fee28f60f588d06fa265c141"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:77df267ccf2cb2945d8d41b81c5fa0e418148345fee28f60f588d06fa265c141"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

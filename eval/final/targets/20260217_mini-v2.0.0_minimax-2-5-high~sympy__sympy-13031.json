@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:24:38Z",
+  "wall_seconds": 1594.3624990119988,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Behavior of Matrix hstack and vstack changed in sympy 1.1\nIn sympy 1.0:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(0, 0)\r\nM2 = sy.Matrix.zeros(0, 1)\r\nM3 = sy.Matrix.zeros(0, 2)\r\nM4 = sy.Matrix.zeros(0, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns \r\n`(0, 6)`\r\n\r\nNow, same in sympy 1.1:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(0, 0)\r\nM2 = sy.Matrix.zeros(0, 1)\r\nM3 = sy.Matrix.zeros(0, 2)\r\nM4 = sy.Matrix.zeros(0, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns\r\n`(0, 3)\r\n`\r\nwhereas:\r\n```\r\nimport sympy as sy\r\nM1 = sy.Matrix.zeros(1, 0)\r\nM2 = sy.Matrix.zeros(1, 1)\r\nM3 = sy.Matrix.zeros(1, 2)\r\nM4 = sy.Matrix.zeros(1, 3)\r\nsy.Matrix.hstack(M1, M2, M3, M4).shape\r\n```\r\nreturns\r\n`(1, 6)\r\n`\n",
+        "start": 0,
+        "end": 717
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling Matrix.hstack(Matrix.zeros(0, 0), Matrix.zeros(0, 1), Matrix.zeros(0, 2), Matrix.zeros(0, 3)) still returns shape (0, 3) instead of the expected (0, 6).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling Matrix.zeros(0, 3).row_join(Matrix.zeros(2, 3)) previously returned the 2x3 other matrix for a null placeholder, but now raises ShapeError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling Matrix.vstack(Matrix.zeros(0, 0), Matrix.zeros(1, 0), Matrix.zeros(2, 0), Matrix.zeros(3, 0)) returns shape (3, 0) instead of the expected (6, 0), showing the symmetric vstack case is not fixed.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling Matrix.zeros(3, 0).col_join(Matrix.zeros(2, 0)) previously returned a 2x0 copy of the other matrix, but now returns shape (5, 0).",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling Matrix.hstack(Matrix.zeros(1, 0), Matrix.zeros(0, 0)) returns shape (0, 0) instead of preserving the non-zero row dimension as (1, 0), because an empty matrix appearing as the later argument is not handled.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling Matrix.zeros(0, 0).col_join([[1, 2], [3, 4]]) previously converted the list and returned Matrix([[1, 2], [3, 4]]), but now raises AttributeError because the list has no cols attribute.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1140,
+      "cached_tokens": 244,
+      "output_tokens": 12868,
+      "reasoning_tokens": 12445,
+      "micro_usd": 260993,
+      "seconds": 74.22917883400078
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "blocker": 3,
+        "unchecked": 2,
+        "not_reproduced": 1,
+        "possibly_toxic": 2,
+        "refuted": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/nothing_else_changed/regression-1.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/fixed_x/correctness-2.1"
+      ],
+      "wall_seconds": 1030.238923261999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 14,
+      "statuses": {
+        "refuted": 6,
+        "blocker": 4,
+        "unchecked": 4
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/fixed_x/correctness-1.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13031/fixed_x/correctness-3.2"
+      ],
+      "wall_seconds": 489.163151408
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c9089a13510cd7dad7d83fc6514be952c686deb66abf8a91dccf3667a1dce59a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

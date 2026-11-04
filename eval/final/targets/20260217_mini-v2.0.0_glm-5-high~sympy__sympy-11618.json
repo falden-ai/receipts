@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:37:35Z",
+  "wall_seconds": 798.3585613539981,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "distance calculation wrong\n``` python\n>>> Point(2,0).distance(Point(1,0,2))\n1\n```\n\nThe 3rd dimension is being ignored when the Points are zipped together to calculate the distance so `sqrt((2-1)**2 + (0-0)**2)` is being computed instead of `sqrt(5)`.\n\n",
+        "start": 0,
+        "end": 252
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Point(2, 0).distance((1, 0, 2)) and Point(2, 0).distance([1, 0, 2]) should return sqrt(5), but converting the non-Point sequence through Point(p) may fail or truncate it, returning 1 or raising an error.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Point(1, 1).distance(2) previously raised TypeError because an int is not iterable, but Point(2) now creates a valid 1D point that gets zero-padded, silently returning sqrt(2) for invalid input.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Point(1, 0, 2).distance(Point(2, 0)), with the longer point as self rather than as the argument, should return sqrt(5) but may still ignore the third coordinate or pad the wrong operand.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Point(2, 0).distance(iter([1, 0, 2])) previously worked via zip over the iterator, but Point(iter(...)) cannot sympify a generator, so a previously accepted argument type now raises an error.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Point(x, 0).distance(Point(0, 0, y)) with symbolic coordinates should return sqrt(x**2 + y**2), but the zero-padding may produce an incorrect or unsimplified expression instead.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Point(2, 0).taxicab_distance(Point(1, 0, 2)) changes from 1 to 3 and Point(2, 0).midpoint(Point(1, 0, 2)) changes from Point2D(3/2, 0) to Point3D(3/2, 0, 1), altering methods and return types beyond the reported distance bug.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1021,
+      "cached_tokens": 244,
+      "output_tokens": 6459,
+      "reasoning_tokens": 6003,
+      "micro_usd": 132337,
+      "seconds": 44.39603588099999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 1,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 370.3815610870006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 3,
+        "suspected": 1,
+        "refuted": 2,
+        "unchecked": 4,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-11618/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 383.20751102600116
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9f8cf9cf263301d0a70570ee2e8d4cb36cf0f49f36178617fe6784aa7cbbb0ab"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9f8cf9cf263301d0a70570ee2e8d4cb36cf0f49f36178617fe6784aa7cbbb0ab"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

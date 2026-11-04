@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~pydata__xarray-3993",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:31:50Z",
+  "wall_seconds": 1021.0548039680034,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "DataArray.integrate has a 'dim' arg, but Dataset.integrate has a 'coord' arg\nThis is just a minor gripe but I think it should be fixed.\r\n\r\nThe API syntax is inconsistent:\r\n```python\r\nds.differentiate(coord='x')\r\nda.differentiate(coord='x')\r\nds.integrate(coord='x')\r\nda.integrate(dim='x')   # why dim??\r\n```\r\nIt should definitely be `coord` - IMO it doesn't make sense to integrate or differentiate over a dim because a dim by definition has no information about the distance between grid points. I think because the distinction between dims and coords is one of the things that new users have to learn about, we should be strict to not confuse up the meanings in the documentation/API.\r\n\r\nThe discussion on the original PR [seems to agree](https://github.com/pydata/xarray/pull/2653#discussion_r246164990), so I think this was just an small oversight.\r\n\r\nThe only question is whether it requires a deprecation cycle?\r\n\n",
+        "start": 0,
+        "end": 919
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~pydata__xarray-3993",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call xr.DataArray([1.0, 2.0, 3.0], dims='x', coords={'x': [0, 1, 2]}).integrate(coord='x'); it errors or returns a value other than the trapezoidal result 4.0 that Dataset.integrate(coord='x') gives.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing code calling da.integrate(dim='x') that previously returned silently now emits FutureWarning, so under warnings-as-errors (e.g. pytest -W error) it fails despite returning the same numbers.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call DataArray.integrate(coord=['x', 'y']) on a 2-D array with x and y coordinates; it fails or integrates only one coordinate instead of matching successive Dataset.integrate calls over both coordinates.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call da.integrate() with no arguments; before it raised TypeError for the missing required dim argument, but now coord=None is forwarded into Dataset.integrate and raises a different downstream error (or behaves differently), changing the failure mode.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call DataArray.integrate(coord='time', datetime_unit='D') on a datetime64 coordinate; datetime_unit is dropped or mis-forwarded, producing wrong units/values or an error instead of matching Dataset.integrate(coord='time', datetime_unit='D').",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Old positional call da.integrate('time', 's') on a datetime coordinate changes meaning/result because the first two parameters were renamed/reordered in forwarding, instead of preserving the exact pre-change trapezoidal value with no warning.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1125,
+      "cached_tokens": 116,
+      "output_tokens": 5715,
+      "reasoning_tokens": 5300,
+      "micro_usd": 118360,
+      "seconds": 41.16573736600185
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 1,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 667.9958466190001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 311.4962766539975
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:af17d82d117d51f47345aa118c22cc4862d366514fb51223e869685ccc18afef"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:af17d82d117d51f47345aa118c22cc4862d366514fb51223e869685ccc18afef"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

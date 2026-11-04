@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8056",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:37:50Z",
+  "wall_seconds": 1371.928848118001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Render error when combining multiple input parameters in docstring\n**Describe the bug & Reproduce**\r\n\r\nMy team is writing a function in Python, which contains 3 inputs that are similar, so we want to put them in the same line in the docstring. \r\n\r\nAs described in 4. Parameters in [numpydoc docstring guide](https://numpydoc.readthedocs.io/en/latest/format.html#sections), this is possible if you write something like this:\r\n\r\n```\r\nx1, x2 : array_like\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\nHowever, this produces:\r\n\r\n<img width=\"406\" alt=\"图片\" src=\"https://user-images.githubusercontent.com/20618587/83668496-566d3680-a5d0-11ea-8a15-5596f77b6c20.png\">\r\n\r\nEven worse, when added \"optional\", the rendered HTML stays the same as the screenshot above, so there is no way to tell whether it is optional:\r\n\r\n```\r\nx1, x2 : array_like, optional\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\n**Expected behavior**\r\nSomething like \r\n\r\n- x1, x2 (_array_like, optional_)  -  Input arrays, description of x1, x2.\r\n\r\n**Environment info**\r\n- OS: macOS 10.15.5 (19F101)\r\n- Python version: 3.7.7\r\n- Sphinx version: 3.0.3.\r\n- Extra tools: browser: Firefox 79.0a1 or Safari 13.1.1\r\n- Sphinx extensions:  \r\n\r\n```\r\nextensions = [\r\n    \"sphinx.ext.autodoc\",\r\n    \"sphinx.ext.todo\",\r\n    \"sphinx.ext.coverage\",\r\n    \"sphinx.ext.extlinks\",\r\n    \"sphinx.ext.intersphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinx.ext.viewcode\",\r\n    \"sphinx.ext.napoleon\",\r\n    \"nbsphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinxcontrib.bibtex\",\r\n    \"sphinx.ext.doctest\",\r\n]\r\n```\r\n\r\n\n",
+        "start": 0,
+        "end": 1565
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8056",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Build a Napoleon NumPy docstring containing 'x1, x2 : array_like, optional' and inspect the Python-domain doctree: the parameters remain one item named 'x1, x2' rather than separate x1 and x2 entries, so per-parameter typing/linking for x1 and x2 still fails.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Parse the previously working typed shorthand ':param int x, y: values.': before, int was extracted as the type for 'x, y', but after, the whole 'int x, y' becomes the parameter name and the type disappears.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Document combined parameters with the typed RST shorthand ':param array_like, optional x1, x2: Input arrays.': the comma suppresses the type/name split, rendering 'array_like, optional x1, x2' as the parameter name with no type instead of 'x1, x2 (array_like, optional)'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Parse a single typed parameter whose type contains a comma, ':param dict[str,int] data: mapping.': before, dict[str,int] was extracted as the type, but after, 'dict[str,int] data' is treated as the parameter name with no type.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Use Napoleon with three combined inputs, 'x1, x2, x3 : array_like, optional', followed by a single 'y : int' parameter: the combined entry is not expanded or correctly grouped with its type while later parameters are processed, so x1/x2/x3 do not each receive the array_like, optional type in the rendered field list.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Parse a non-parameter typed field such as ':ivar int counter, total: counts.' through the Python info-field transformer: before, int was shown as the type, but after, the ivar is named 'int counter, total' and loses its type, changing unrelated variable documentation.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 925,
+      "cached_tokens": 244,
+      "output_tokens": 8183,
+      "reasoning_tokens": 7686,
+      "micro_usd": 166433,
+      "seconds": 57.50193536699953
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 4,
+        "possibly_toxic": 3,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 940.1938981530002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "unchecked": 4,
+        "refuted": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 373.70304740900247
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

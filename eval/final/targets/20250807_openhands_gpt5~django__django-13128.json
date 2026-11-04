@@ -1,0 +1,162 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-13128",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:11:58Z",
+  "wall_seconds": 1492.7679477030006,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "make temporal subtraction work without ExpressionWrapper\nDescription\n\t\nclass Experiment(models.Model):\n\tstart = models.DateTimeField()\n\tend = models.DateTimeField()\nExperiment.objects.annotate(\n\tdelta=F('end') - F('start') + Value(datetime.timedelta(), output_field=DurationField())\n)\nThis gives:\ndjango.core.exceptions.FieldError: Expression contains mixed types: DateTimeField, DurationField. You must set output_field.\n",
+        "start": 0,
+        "end": 422
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-13128",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Annotate Experiment with F('end') - Value(datetime.timedelta(days=1), output_field=DurationField()) to subtract a duration from a datetime without ExpressionWrapper. It still raises FieldError about mixed DateTimeField/DurationField types because the new code only handles subtraction when both operands have the same temporal type.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a previously working date lookup/transform on a plain subtraction result, e.g. annotate(diff=F('end') - F('start')) then ExtractYear('diff') or filter diff__year. This worked when the subtraction resolved as DateTimeField but now fails or changes semantics because it silently resolves as DurationField.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the exact issue query, Experiment.objects.annotate(delta=F('end') - F('start') + Value(datetime.timedelta(), output_field=DurationField())), and fetch a row from the database. It either still raises FieldError during resolution or returns a datetime/wrong value instead of the expected timedelta, showing only type inference was patched.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Execute annotate(diff=F('end_date') - F('start_date')) or the TimeField equivalent and fetch results that previously came back as date/time-derived values. The result type/value changes to a timedelta or raises a conversion error on backends where date/time subtraction is not an interval.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Repeat the issue pattern with DateField or TimeField start/end fields plus a DurationField timedelta value and fetch a row. The query fails during SQL generation/conversion or returns an int/date/time instead of a timedelta, despite the code claiming those field types in its temporal set.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a CombinedExpression with an unresolved operand such as RawSQL('x', [], output_field=None) - F('start') and access output_field expecting FieldError. The new code raises AttributeError from None.get_internal_type() instead, breaking callers that catch FieldError for unresolvable expressions.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 663,
+      "cached_tokens": 116,
+      "output_tokens": 9669,
+      "reasoning_tokens": 9192,
+      "micro_usd": 195592,
+      "seconds": 77.26258140600021
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "possibly_toxic": 1,
+        "unchecked": 2,
+        "not_reproduced": 2,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 967.0287330470001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 1,
+        "unchecked": 3,
+        "not_reproduced": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 446.41862485
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:94c66bd09272b8e0a372de4c1719a9185e0197c4220173079640dcfdb5cfd7e5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:94c66bd09272b8e0a372de4c1719a9185e0197c4220173079640dcfdb5cfd7e5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:94c66bd09272b8e0a372de4c1719a9185e0197c4220173079640dcfdb5cfd7e5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

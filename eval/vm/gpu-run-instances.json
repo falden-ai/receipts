@@ -1,0 +1,87 @@
+{
+  "BlockDeviceMappings": [
+    {
+      "DeviceName": "/dev/sda1",
+      "Ebs": {
+        "DeleteOnTermination": true,
+        "Encrypted": true,
+        "VolumeSize": 200,
+        "VolumeType": "gp3"
+      }
+    }
+  ],
+  "DisableApiTermination": true,
+  "InstanceInitiatedShutdownBehavior": "stop",
+  "InstanceType": "g7e.2xlarge",
+  "MaxCount": 1,
+  "MetadataOptions": {
+    "HttpEndpoint": "enabled",
+    "HttpPutResponseHopLimit": 1,
+    "HttpTokens": "required",
+    "InstanceMetadataTags": "disabled"
+  },
+  "MinCount": 1,
+  "Monitoring": {
+    "Enabled": false
+  },
+  "TagSpecifications": [
+    {
+      "ResourceType": "instance",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "receipts-glimmer"
+        },
+        {
+          "Key": "Project",
+          "Value": "falden-receipts"
+        },
+        {
+          "Key": "Lane",
+          "Value": "eval"
+        },
+        {
+          "Key": "Purpose",
+          "Value": "glimmer-arm"
+        },
+        {
+          "Key": "StopAfterPilot",
+          "Value": "true"
+        },
+        {
+          "Key": "DeleteAfter",
+          "Value": "2026-11-04"
+        }
+      ]
+    },
+    {
+      "ResourceType": "volume",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "receipts-glimmer"
+        },
+        {
+          "Key": "Project",
+          "Value": "falden-receipts"
+        },
+        {
+          "Key": "Lane",
+          "Value": "eval"
+        },
+        {
+          "Key": "Purpose",
+          "Value": "glimmer-arm"
+        },
+        {
+          "Key": "StopAfterPilot",
+          "Value": "true"
+        },
+        {
+          "Key": "DeleteAfter",
+          "Value": "2026-11-04"
+        }
+      ]
+    }
+  ]
+}

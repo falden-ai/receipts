@@ -1,0 +1,48 @@
+uid=65534(nobody) gid=65534(nogroup) groups=65534(nogroup)
+PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+/opt/miniconda3/envs/testbed/bin/python
+Python 3.9.20
+testbed
+total 144
+drwxr-xr-x 10 nobody nogroup   560 Oct 27 19:23 .
+drwxr-xr-x  1 root   root       12 Oct 27 19:23 ..
+drwxr-xr-x  2 nobody nogroup   100 Oct 31  2024 .ci
+-rw-r--r--  1 nobody nogroup   497 Oct 31  2024 .editorconfig
+-rw-r--r--  1 nobody nogroup    20 Oct 31  2024 .gitattributes
+-rw-r--r--  1 nobody nogroup  1595 Oct 31  2024 .gitignore
+-rw-r--r--  1 nobody nogroup 18352 Oct 31  2024 .mailmap
+-rw-r--r--  1 nobody nogroup  7678 Oct 31  2024 .travis.yml
+-rw-r--r--  1 nobody nogroup 27470 Oct 31  2024 AUTHORS
+-rw-r--r--  1 nobody nogroup  3268 Oct 31  2024 CODE_OF_CONDUCT.md
+-rw-r--r--  1 nobody nogroup   625 Oct 31  2024 CONTRIBUTING.md
+-rw-r--r--  1 nobody nogroup  3241 Oct 31  2024 LICENSE
+-rw-r--r--  1 nobody nogroup   213 Oct 31  2024 MANIFEST.in
+-rw-r--r--  1 nobody nogroup   413 Oct 31  2024 PULL_REQUEST_TEMPLATE.md
+-rw-r--r--  1 nobody nogroup  9786 Oct 31  2024 README.rst
+drwxr-xr-x  2 nobody nogroup   460 Oct 31  2024 bin
+-rw-r--r--  1 nobody nogroup  1892 Oct 31  2024 conftest.py
+drwxr-xr-x  3 nobody nogroup    60 Oct 30  2024 data
+drwxr-xr-x  7 nobody nogroup   220 Oct 31  2024 doc
+drwxr-xr-x  6 nobody nogroup   160 Oct 31  2024 examples
+-rw-r--r--  1 nobody nogroup  4408 Oct 31  2024 github_deploy_key.enc
+-rw-r--r--  1 nobody nogroup 11435 Oct 31  2024 isympy.py
+drwxr-xr-x  2 nobody nogroup   180 Oct 31  2024 release
+-rwxr-xr-x  1 nobody nogroup 12065 Oct 31  2024 setup.py
+-rw-r--r--  1 nobody nogroup    49 Oct 31  2024 setupegg.py
+drwxr-xr-x 41 nobody nogroup   940 Oct 27 19:23 sympy
+drwxr-xr-x  2 nobody nogroup   180 Oct 31  2024 sympy.egg-info
+-rw-r--r--  1 nobody nogroup  2200 Oct 31  2024 tox.ini.sample
+36M	/testbed
+/opt/miniconda3/envs/testbed/bin/python 3.9.20
+['', '/opt/miniconda3/envs/testbed/lib/python39.zip', '/opt/miniconda3/envs/testbed/lib/python3.9', '/opt/miniconda3/envs/testbed/lib/python3.9/lib-dynload', '/opt/miniconda3/envs/testbed/lib/python3.9/site-packages', '/testbed']
+django not importable ModuleNotFoundError
+sympy /testbed/sympy/__init__.py
+pytest not importable ModuleNotFoundError
+/testbed/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Mapping, defaultdict
+/testbed/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  class OrderedSet(collections.MutableSet):
+/testbed/sympy/solvers/diophantine.py:3188: SyntaxWarning: "is" with a literal. Did you mean "=="?
+  if feasible is 1:  # it's prime and k == 2
+/testbed/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Callable

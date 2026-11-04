@@ -1,0 +1,169 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~pytest-dev__pytest-7324",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:05:29Z",
+  "wall_seconds": 1749.3581962559983,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Pytest crashes the interpreter on debug build for 3.8+\nShort reproducer\r\n```py\r\n>>> Expression.compile(\"False\")\r\npython: Python/compile.c:3559: compiler_nameop: Assertion `!_PyUnicode_EqualToASCIIString(name, \"None\") && !_PyUnicode_EqualToASCIIString(name, \"True\") && !_PyUnicode_EqualToASCIIString(name, \"False\")' failed.\r\n[1]    29440 abort (core dumped)  python\r\n```\r\n\r\nRelated issue for improvement of this behavior: [bpo-40870](https://bugs.python.org/issue40870)\n",
+        "start": 0,
+        "end": 469
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~pytest-dev__pytest-7324",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On a CPython 3.8+ debug build, Expression.compile(\"False\"), Expression.compile(\"True\"), and Expression.compile(\"None\") still abort the interpreter, or on a release build evaluate with a matcher returning the opposite value instead of the Python constant.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Expression.compile(\"True\").evaluate(lambda name: False) previously returned False by matching the name \"True\" (e.g. for -k selection of tests named *True*), but now returns True for every test; symmetrically \"False\" with a matcher returning True now returns False.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Compound forms such as Expression.compile(\"not False and (True or not None)\") still abort on a debug build or invoke the matcher for a reserved name, because a nested leaf bypasses the special-casing.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Mixed expressions change selection results: Expression.compile(\"False or foo\").evaluate(matcher) with matcher(\"False\")=True and matcher(\"foo\")=False previously returned True but now returns False, altering -k/-m filtering beyond the crash fix.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On supported Python 3.6/3.7 interpreters, Expression.compile(\"False\") raises AttributeError/TypeError from ast.Constant instead of producing a compilable expression returning False.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Boundary identifiers are mishandled: Expression.compile(\"TrueValue and not false\") no longer calls the matcher with exactly \"TrueValue\" and \"false\" and returns the matcher-based result, or Expression.compile(\"\").evaluate(matcher) no longer returns False without calling the matcher.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 720,
+      "cached_tokens": 116,
+      "output_tokens": 7378,
+      "reasoning_tokens": 6968,
+      "micro_usd": 150000,
+      "seconds": 63.66869639900324
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 594.2160401250003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 2,
+        "refuted": 5
+      },
+      "blockers": [],
+      "wall_seconds": 1090.3683644919984
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

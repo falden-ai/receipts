@@ -1,0 +1,143 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-14311",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:10:45Z",
+  "wall_seconds": 1163.2362606300003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Allow autoreloading of `python -m custom_module runserver`\nDescription\n\t \n\t\t(last modified by Mariusz Felisiak)\n\t \nThe original fix [1] only attempted to deal with -m foo.bar where bar is a package and __main__.py exists under foo/bar.\nWhen a dotted name for a module (for example, foo.bar.baz where baz.py resides under foo/bar) is specified like -m foo.bar.baz, the resulting arguments end up being -m foo.bar, which is uncalled for.\n[1] ​https://github.com/django/django/commit/ec6d2531c59466924b645f314ac33f54470d7ac3 \nFixed detection when started non-django modules with \"python -m\" in autoreloader.\n",
+        "start": 0,
+        "end": 605
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-14311",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run a real subprocess `python -m foo.bar.baz runserver` where baz.py lives under foo/bar and baz prints get_child_arguments(); if CPython sets __main__.__spec__.name to '__main__' with parent 'foo.bar', the result is ['-m', 'foo.bar'] instead of ['-m', 'foo.bar.baz'], reproducing the original bug despite mocked-spec unit tests passing.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call get_child_arguments() for a direct script invocation such as `python manage.py runserver` with __main__.__spec__.name == '__main__' and empty parent; it may now return a '-m' argument or crash instead of the pre-change [sys.executable, manage.py, 'runserver'].",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run a real subprocess `python -m custom_module runserver` for a top-level custom_module.py (the issue title case) that prints get_child_arguments(); if its spec has name '__main__' and empty parent, the code falls through to the script path instead of returning ['-m', 'custom_module', 'runserver'].",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Simulate a non--m wrapper launch (debugger/coverage/runpy) by setting __main__.__spec__ to a spec whose name is a non-'__main__' wrapper module while sys.argv[0] is an existing manage.py; the new code returns ['-m', wrapper] whereas before it returned the manage.py script path, so the child loses the intended entry point.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run `python -m foo.bar.bazpkg runserver` where bazpkg is a package containing __main__.py; get_child_arguments() may return '-m foo.bar' or '-m foo.bar.bazpkg.__main__' instead of '-m foo.bar.bazpkg', breaking the previously supported package form while fixing the module form.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call get_child_arguments() with __main__.__spec__.name set to None (as can occur with unusual loaders/Conda/frozen mains) and a valid script in sys.argv[0]; the new spec.name.endswith() check raises AttributeError instead of falling back to the previous script/exe-entrypoint handling.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 906,
+      "cached_tokens": 116,
+      "output_tokens": 8606,
+      "reasoning_tokens": 8067,
+      "micro_usd": 175304,
+      "seconds": 65.14895269299996
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "not_reproduced": 3,
+        "refuted": 11
+      },
+      "blockers": [],
+      "wall_seconds": 716.4737362120004
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "refuted": 2,
+        "not_reproduced": 2,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 381.61189434100015
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

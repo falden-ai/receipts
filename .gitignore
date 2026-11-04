@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+.env
+.env.*
+runs/
+.receipts/
+# Lane eval: raw downloads and anything over 1 MB. eval/manifest.json records their hashes.
+eval/data/

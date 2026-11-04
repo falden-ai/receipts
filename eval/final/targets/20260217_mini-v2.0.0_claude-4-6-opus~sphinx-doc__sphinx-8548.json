@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8548",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:32:43Z",
+  "wall_seconds": 1204.6746398120013,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc inherited-members won't work for inherited attributes (data members).\nautodoc searches for a cached docstring using (namespace, attrname) as search-key, but doesn't check for baseclass-namespace.\n\n---\n- Bitbucket: https://bitbucket.org/birkenfeld/sphinx/issue/741\n- Originally reported by: Anonymous\n- Originally created at: 2011-08-02T17:05:58.754\n\n",
+        "start": 0,
+        "end": 358
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8548",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) With Base defining a class-level data member `x = 1 #: base doc` and Derived(Base) documented using inherited-members, x is listed but rendered without 'base doc' because the child DataDocumenter's own (Derived, x) source lookup was not patched, only the parent's member filtering was.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Base.__init__ documents `self.x`, while Derived overrides x with its own property or class attribute; documenting Derived without inherited-members previously rendered Derived's x correctly, but now the base ClassAttribute inserted before the dir() scan pre-empts it, so x is misrendered as a base instance attribute or dropped by the class filter.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) With Base created inside a factory function and exported at module level, so Base.__qualname__ contains '<locals>', and Base.__init__ documenting `self.attr`, documenting Derived with inherited-members still omits attr because ModuleAnalyzer records its namespace as plain 'Base' while the new code compares it to the full qualname.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Documenting Derived with an explicit `:members: inherited_instance_attr` list but without `:inherited-members:` previously did not produce that base-only instance attribute, but get_class_members now returns it unconditionally and the explicit-members path selects it, so it appears anyway.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) With Derived defined dynamically or in a module whose own source analyzer is unavailable, inheriting a documented instance attribute from a Base in an importable Python module, the inherited attribute is still missing because the new base-class scan in get_class_members only runs when the subject's analyzer already exists.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Derived defines its own class attribute `x = 2` with no comment while Base defines `x = 1 #: base doc`; documenting Derived's own members previously showed x undocumented, but now the parent filter lookup maps Base's doc onto Derived's namespace and shows 'base doc' even without inherited-members or docstring inheritance being requested.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1109,
+      "cached_tokens": 116,
+      "output_tokens": 16033,
+      "reasoning_tokens": 15529,
+      "micro_usd": 324656,
+      "seconds": 120.26478521099853
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 2,
+        "suspected": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 714.1091624369983
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 2,
+        "refuted": 2,
+        "unchecked": 4
+      },
+      "blockers": [],
+      "wall_seconds": 368.5358383670027
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2741082210bec885b9e2c4315b46a616b7078c75e1c96c112ec29a204ab14c7e"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2741082210bec885b9e2c4315b46a616b7078c75e1c96c112ec29a204ab14c7e"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

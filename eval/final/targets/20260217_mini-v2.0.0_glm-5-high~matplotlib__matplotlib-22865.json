@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22865",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:15:26Z",
+  "wall_seconds": 2502.12935536,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: Colorbar with drawedges=True and extend='both' does not draw edges at extremities\n### Bug summary\n\nWhen creating a matplotlib colorbar, it is possible to set drawedges to True which separates the colors of the colorbar with black lines. However, when the colorbar is extended using extend='both', the black lines at the extremities do not show up.\n\n### Code for reproduction\n\n```python\nimport matplotlib as mpl\r\nimport numpy as np\r\nimport matplotlib.pyplot as plt  \r\nfrom matplotlib.colors import from_levels_and_colors\r\n\r\nmy_cmap = mpl.cm.viridis\r\nbounds = np.arange(10)\r\nnb_colors = len(bounds) + 1\r\ncolors = my_cmap(np.linspace(100, 255, nb_colors).astype(int))\r\nmy_cmap, my_norm = from_levels_and_colors(bounds, colors, extend='both')\r\n\r\nplt.figure(figsize=(5, 1))\r\nax = plt.subplot(111)\r\ncbar = mpl.colorbar.ColorbarBase(ax, cmap=my_cmap, norm=my_norm, orientation='horizontal', drawedges=True)\r\nplt.subplots_adjust(left=0.05, bottom=0.4, right=0.95, top=0.9)\r\nplt.show()\n```\n\n\n### Actual outcome\n\n![image](https://user-images.githubusercontent.com/34058459/164254401-7516988d-1efb-4887-a631-de9a68357685.png)\r\n\n\n### Expected outcome\n\n![image](https://user-images.githubusercontent.com/34058459/164254881-92c167b7-aa13-4972-9955-48221b38b866.png)\r\n\n\n### Additional information\n\n_No response_\n\n### Operating system\n\n_No response_\n\n### Matplotlib Version\n\n3.5.1\n\n### Matplotlib Backend\n\n_No response_\n\n### Python version\n\n_No response_\n\n### Jupyter version\n\n_No response_\n\n### Installation\n\n_No response_\n",
+        "start": 0,
+        "end": 1515
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22865",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a hatched contourf (or other mappable using the patch-based solids path) with extend='both' and fig.colorbar(drawedges=True), draw it, and inspect cbar.dividers: the segments separating the extension triangles from the first/last colors are still missing because only the pcolormesh solids path was changed.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw a continuous (non-discrete, no BoundaryNorm) colorbar with extend='both' and drawedges=True: the change now adds full-width divider lines at the bases of the gradient extension triangles where there is no discrete color separation, altering appearance beyond the reported discrete-colorbar bug.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Repeat the issue's horizontal ColorbarBase example with single-sided extension (from_levels_and_colors(..., extend='min') or extend='min' on the colorbar) and drawedges=True: the divider at the extended min extremity is still absent, or is kept at the wrong (max) end, due to the slice/orientation mapping.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw a discrete colorbar with extend='min' only and drawedges=True and compare cbar.dividers.get_segments() to the pre-change set: a spurious segment appears at the non-extended max end (or the max-end internal segment is dropped), instead of only adding the min-end segment.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a vertical colorbar with extend='max' and an inverted axis (ax.invert_yaxis() or a reversed norm): after draw, the divider at the visually extended end is missing while the non-extended end gains one, because the kept segment is chosen by array order rather than the actual lower/upper end.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Draw the issue-style discrete colorbar with extend='neither' (and separately with drawedges=False) and extend='both': the no-extension and no-edges cases gain outer divider segments that coincide with the colorbar frame, making the end borders thicker/darker than before the change.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 985,
+      "cached_tokens": 116,
+      "output_tokens": 10114,
+      "reasoning_tokens": 9623,
+      "micro_usd": 205780,
+      "seconds": 82.32733593800003
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "possibly_toxic": 3,
+        "not_reproduced": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1749.2314432310004
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 1,
+        "possibly_toxic": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 665.2987486810007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5584cd0738d156e787e2c08bcdd0fde9f45776b62ec1babdc6088f5ba4f1c9c0"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

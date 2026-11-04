@@ -1,0 +1,181 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~pallets__flask-5014",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:37:15Z",
+  "wall_seconds": 827.580262171,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Require a non-empty name for Blueprints\nThings do not work correctly if a Blueprint is given an empty name (e.g. #4944).\r\nIt would be helpful if a `ValueError` was raised when trying to do that.\n",
+        "start": 0,
+        "end": 195
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~pallets__flask-5014",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a valid Blueprint, then call app.register_blueprint(bp, name='.') or name='..'. The registration check passes, but lstrip('.') makes the final registered name empty and app.blueprints[''] is created without ValueError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call app.register_blueprint(bp, name='', name_prefix='api') where the combined registration name is non-empty. Previously this registered under the prefix-derived name, but the new check on self_name alone raises ValueError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create Blueprint('ok', __name__), then mutate bp.name = '.' before app.register_blueprint(bp). This bypasses the constructor dot check, and registration again collapses the final name to empty without ValueError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Nest a child with parent.register_blueprint(child, name='') intending the child to be flattened under the parent's name/prefix. Previously the deferred registration succeeded, but now registering the parent raises ValueError even though the final nested name is non-empty.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create Blueprint('\\u200b', __name__) using only a zero-width space as the name. It passes strip() and is registered with an effectively invisible/empty name instead of raising ValueError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call app.register_blueprint(bp, name=12345) using a non-string alternate registration name. Previously the f-string converted it to '12345' and registration worked, but now self_name.strip() raises AttributeError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 569,
+      "cached_tokens": 116,
+      "output_tokens": 11608,
+      "reasoning_tokens": 11220,
+      "micro_usd": 233996,
+      "seconds": 89.05830459699973
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "blocker": 3,
+        "unchecked": 4,
+        "suspected": 2
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pallets__flask-5014/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~pallets__flask-5014/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~pallets__flask-5014/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 500.5963254999997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "suspected": 2,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pallets__flask-5014/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 236.9730946589998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d595721a84348773c69c336baa954a95aae3844b6ef8105e9dc025e705c29417"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

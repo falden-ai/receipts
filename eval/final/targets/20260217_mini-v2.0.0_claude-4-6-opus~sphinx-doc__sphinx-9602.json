@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-9602",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:23:22Z",
+  "wall_seconds": 1380.0000241160014,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Nitpick flags Literal annotation values as missing py:class\n### Describe the bug\n\nWhen a value is present in a type annotation as `Literal`, sphinx will treat the value as a `py:class`. With nitpick enabled, values like `Literal[True]` end up failing, because `True` is not a class.\r\n\r\nThis is a problem for builds which want to use `-n -W` to catch doc errors.\n\n### How to Reproduce\n\nSetup a simple function which uses Literal, then attempt to autodoc it. e.g.\r\n```python\r\nimport typing\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[True]\") -> int: ...\r\n@typing.overload\r\ndef foo(x: \"typing.Literal[False]\") -> str: ...\r\ndef foo(x: bool):\r\n    \"\"\"a func\"\"\"\r\n    return 1 if x else \"foo\"\r\n```\r\n\r\nI've pushed an example [failing project](https://github.com/sirosen/repro/tree/master/sphinxdoc/literal) to [my repro repo](https://github.com/sirosen/repro). Just run `./doc.sh` with `sphinx-build` available to see the failing build.\n\n### Expected behavior\n\n`Literal[True]` (or whatever literal value) should be present in the type annotation but should not trigger the nitpick warning.\n\n### Your project\n\nhttps://github.com/sirosen/repro/tree/master/sphinxdoc/literal\n\n### Screenshots\n\n_No response_\n\n### OS\n\nLinux\n\n### Python version\n\n3.8, 3.9\n\n### Sphinx version\n\n4.1.2\n\n### Sphinx extensions\n\nautodoc\n\n### Extra tools\n\n_No response_\n\n### Additional context\n\n_No response_\n",
+        "start": 0,
+        "end": 1373
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-9602",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Building a nitpick project with `def f(x: Literal[-1])` still fails: the negative value is a UnaryOp rather than an ast.Constant, so annotation parsing falls back to a pending xref and -n -W warns about it.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling _parse_annotation on a non-Literal string constant such as `Annotated[str, 'metadata']` now renders it as the quoted literal `'metadata'` instead of the previous plain text metadata, changing signatures that worked before.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With `autodoc_typehints = \"description\"`, a function annotated `x: Literal[True]` still emits a py:class reference for True in the generated type description, because that restify/stringify path is untouched by the signature-parser change, so nitpick still warns.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling _parse_annotation on non-Literal numeric or boolean constants such as `Annotated[int, 42]` or `Annotated[int, True]` now produces desc_sig_literal_number/desc_sig_keyword nodes instead of plain Text nodes, changing the doctree and HTML markup for annotations unrelated to Literal.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A literal enum value such as `def f(x: Literal[Color.RED])` still creates a pending py:class xref for Color from the attribute value, so a nitpick build without Color documented as a class still warns despite the value being a Literal member.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A string literal value containing quotes or escapes, such as `Literal[\"it's\"]` or `Literal['a\\nb']`, is now rendered via repr() with switched quote delimiters and backslash escapes instead of its previous raw contents, altering existing rendered output beyond removing the xref.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1074,
+      "cached_tokens": 628,
+      "output_tokens": 11406,
+      "reasoning_tokens": 10974,
+      "micro_usd": 230030,
+      "seconds": 102.22411548899981
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 1,
+        "refuted": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1037.2868619539986
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 2,
+        "unchecked": 4,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 239.9847407420002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:21649e22895ddfd07fe3a078e022e6c75c840c8f1db3788ae8642dce9f320096"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

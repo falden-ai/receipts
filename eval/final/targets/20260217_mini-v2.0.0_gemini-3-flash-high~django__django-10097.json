@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:13:47Z",
+  "wall_seconds": 1882.6776873530034,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Make URLValidator reject invalid characters in the username and password\nDescription\n\t \n\t\t(last modified by Tim Bell)\n\t \nSince #20003, core.validators.URLValidator accepts URLs with usernames and passwords. RFC 1738 section 3.1 requires \"Within the user and password field, any \":\", \"@\", or \"/\" must be encoded\"; however, those characters are currently accepted without being %-encoded. That allows certain invalid URLs to pass validation incorrectly. (The issue originates in Diego Perini's ​gist, from which the implementation in #20003 was derived.)\nAn example URL that should be invalid is http://foo/bar@example.com; furthermore, many of the test cases in tests/validators/invalid_urls.txt would be rendered valid under the current implementation by appending a query string of the form ?m=foo@example.com to them.\nI note Tim Graham's concern about adding complexity to the validation regex. However, I take the opposite position to Danilo Bargen about invalid URL edge cases: it's not fine if invalid URLs (even so-called \"edge cases\") are accepted when the regex could be fixed simply to reject them correctly. I also note that a URL of the form above was encountered in a production setting, so that this is a genuine use case, not merely an academic exercise.\nPull request: ​https://github.com/django/django/pull/10097\nMake URLValidator reject invalid characters in the username and password\nDescription\n\t \n\t\t(last modified by Tim Bell)\n\t \nSince #20003, core.validators.URLValidator accepts URLs with usernames and passwords. RFC 1738 section 3.1 requires \"Within the user and password field, any \":\", \"@\", or \"/\" must be encoded\"; however, those characters are currently accepted without being %-encoded. That allows certain invalid URLs to pass validation incorrectly. (The issue originates in Diego Perini's ​gist, from which the implementation in #20003 was derived.)\nAn example URL that should be invalid is http://foo/bar@example.com; furthermore, many of the test cases in tests/validators/invalid_urls.txt would be rendered valid under the current implementation by appending a query string of the form ?m=foo@example.com to them.\nI note Tim Graham's concern about adding complexity to the validation regex. However, I take the opposite position to Danilo Bargen about invalid URL edge cases: it's not fine if invalid URLs (even so-called \"edge cases\") are accepted when the regex could be fixed simply to reject them correctly. I also note that a URL of the form above was encountered in a production setting, so that this is a genuine use case, not merely an academic exercise.\nPull request: ​https://github.com/django/django/pull/10097\n",
+        "start": 0,
+        "end": 2656
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: URLValidator()('http://foo.com/bar@example.com') is accepted as host foo.com with path /bar@example.com, even though the @ after a slash in the would-be username should make it invalid like the issue's http://foo/bar@example.com example.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: URLValidator()('http://user:pass:word@example.com') passed before because RFC 3986 allows ':' in the password after the first user/password separator, but the new password class rejects the second colon.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: URLValidator()('http://user:pa<>ss@example.com') is accepted, although '<' and '>' are invalid characters in a password and should be rejected.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: URLValidator()('http://:pass@example.com') passed before with an empty username and a password, but the new requirement for a non-colon username before ':' now rejects it.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: URLValidator()('http://user:pa%zzss@example.com') is accepted, although '%zz' is malformed percent-encoding in the password and should be rejected.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: URLValidator()('http://user:p@ss@example.com') passed before under last-'@' userinfo parsing used by urlsplit/browsers, but the new class forbidding '@' in the password now rejects it.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 950,
+      "cached_tokens": 116,
+      "output_tokens": 14544,
+      "reasoning_tokens": 14171,
+      "micro_usd": 294240,
+      "seconds": 122.26275645500209
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 3,
+        "s_sat_inconclusive": 5,
+        "blocker": 3,
+        "suspected": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1365.6917178199983
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "refuted": 3,
+        "unchecked": 7,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-10097/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 393.7278450510021
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:222e91d800a2914c5e996ef854c209911481f6da3d6cad3b2efce3d698526750"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:222e91d800a2914c5e996ef854c209911481f6da3d6cad3b2efce3d698526750"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

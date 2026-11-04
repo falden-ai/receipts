@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:48:31Z",
+  "wall_seconds": 977.6291924149991,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Render error when combining multiple input parameters in docstring\n**Describe the bug & Reproduce**\r\n\r\nMy team is writing a function in Python, which contains 3 inputs that are similar, so we want to put them in the same line in the docstring. \r\n\r\nAs described in 4. Parameters in [numpydoc docstring guide](https://numpydoc.readthedocs.io/en/latest/format.html#sections), this is possible if you write something like this:\r\n\r\n```\r\nx1, x2 : array_like\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\nHowever, this produces:\r\n\r\n<img width=\"406\" alt=\"图片\" src=\"https://user-images.githubusercontent.com/20618587/83668496-566d3680-a5d0-11ea-8a15-5596f77b6c20.png\">\r\n\r\nEven worse, when added \"optional\", the rendered HTML stays the same as the screenshot above, so there is no way to tell whether it is optional:\r\n\r\n```\r\nx1, x2 : array_like, optional\r\n    Input arrays, description of `x1`, `x2`.\r\n```\r\n\r\n**Expected behavior**\r\nSomething like \r\n\r\n- x1, x2 (_array_like, optional_)  -  Input arrays, description of x1, x2.\r\n\r\n**Environment info**\r\n- OS: macOS 10.15.5 (19F101)\r\n- Python version: 3.7.7\r\n- Sphinx version: 3.0.3.\r\n- Extra tools: browser: Firefox 79.0a1 or Safari 13.1.1\r\n- Sphinx extensions:  \r\n\r\n```\r\nextensions = [\r\n    \"sphinx.ext.autodoc\",\r\n    \"sphinx.ext.todo\",\r\n    \"sphinx.ext.coverage\",\r\n    \"sphinx.ext.extlinks\",\r\n    \"sphinx.ext.intersphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinx.ext.viewcode\",\r\n    \"sphinx.ext.napoleon\",\r\n    \"nbsphinx\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinxcontrib.bibtex\",\r\n    \"sphinx.ext.doctest\",\r\n]\r\n```\r\n\r\n\n",
+        "start": 0,
+        "end": 1565
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting the issue's NumpyDocstring 'x1, x2 : array_like, optional' with a shared description gives x2 an empty :param: entry with only its type, so the rendered x2 entry lacks the shared description and does not match the expected combined x1, x2 entry.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A Google-style docstring with 'Args: x, y: A pair of coordinates.' that previously rendered as one ':param x, y:' entry now renders as separate x and y entries, although the issue only concerns Numpy-style docstrings.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting a NumpyDocstring written as 'x1,x2 : array_like, optional' without a space after the comma still emits the single field ':param x1,x2:', so the original rendering problem persists for this comma-separated form.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A NumpyDocstring Attributes section with 'width, height : int' and a shared description now emits two :attr: entries with the description only on width, changing attribute rendering beyond the Parameters fix required by the issue.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Converting a NumpyDocstring written as 'x1, x2 : array_like' with two spaces after the comma splits into 'x1' and ' x2', producing a malformed ':param x2:' field whose name has a leading space and is not recognized as parameter x2.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A single field whose name legitimately contains ', ', such as a callable parameter documented as 'transform(a, b) : callable', is split into malformed ':param transform(a:' and ':param b):' entries instead of the previous single intact field.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1178,
+      "cached_tokens": 244,
+      "output_tokens": 6174,
+      "reasoning_tokens": 5750,
+      "micro_usd": 127265,
+      "seconds": 43.15711903299962
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "not_reproduced": 1,
+        "blocker": 5,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sphinx-doc__sphinx-8056/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 647.5060584730018
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 5,
+        "not_reproduced": 3
+      },
+      "blockers": [],
+      "wall_seconds": 286.58539033499983
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:5bb7ba26f98683b74c6bd7486cc5e4a88b904f6470a7321dbb8963f3c659fb8b"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

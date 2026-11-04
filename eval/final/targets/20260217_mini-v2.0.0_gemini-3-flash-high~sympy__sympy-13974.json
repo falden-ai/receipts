@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:04:35Z",
+  "wall_seconds": 1877.150507167,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Evaluating powers of `TensorProduct`\nPowers of tensor product expressions are not possible to evaluate with either `expand(tensorproduct=True)` method nor the `tensor_product_simp`function.\r\n\r\nThis is an example session showing the issue\r\n```\r\nIn [1]: from sympy import *\r\n        from sympy.physics.quantum import TensorProduct as tp\r\n        from sympy.physics.quantum import tensor_product_simp as tps\r\n        from sympy.physics.paulialgebra import Pauli\r\n        a = Symbol('a', commutative=False)\r\n\r\nIn [2]: t1 = tp(1,1)*tp(1,1)\r\n        t1\r\nOut[2]: 1x1**2\r\n\r\nIn [3]: tps(t1)\r\nOut[3]: 1x1**2\r\n\r\nIn [4]: t1.expand(tensorproduct=True)\r\nOut[4]: 1x1**2\r\n\r\nIn [5]: tps(tp(1,1)*tp(1,a)).subs(a, 1)\r\nOut[5]: 1x1\r\n\r\nIn [6]: t2 = tp(1,Pauli(3))*tp(1,Pauli(3))\r\n        t2\r\nOut[6]: 1xsigma3**2\r\n\r\nIn [7]: tps(t2)\r\nOut[7]: 1xsigma3**2\r\n\r\nIn [8]: t2.expand(tensorproduct=True)\r\nOut[8]: 1xsigma3**2\r\n\r\nIn [9]: tps(tp(1,Pauli(3))*tp(1,a)).subs(a, Pauli(3))\r\nOut[9]: 1x1\r\n```\r\nwhere `[5]` and `[9]` shows expected result for `t1` and `t2` respectively.\n",
+        "start": 0,
+        "end": 1044
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling t1.expand(tensorproduct=True) and t2.expand(tensorproduct=True) for the issue's t1=TensorProduct(1,1)*TensorProduct(1,1) and t2=TensorProduct(1,Pauli(3))*TensorProduct(1,Pauli(3)) still returns the unevaluated **2 form, because only tensor_product_simp paths were changed.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling tensor_product_simp(TensorProduct(Matrix([[-1,0],[0,1]]), Matrix([[-1,0],[0,1]]))**Rational(1,2)) either raises on fractional matrix powers or gives factor-wise square roots whose tensor product differs from the principal square root of the whole tensor product, whereas before it stayed as an unevaluated Pow.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling tensor_product_simp(t2) for t2=TensorProduct(1,Pauli(3))**2 does not reduce to TensorProduct(1,1), because Pauli(3)**2 created by distributing the exponent is left unevaluated inside the new TensorProduct.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling tensor_product_simp(TensorProduct(MatrixSymbol('A',2,2), MatrixSymbol('B',2,2))**n) with a symbolic exponent n now tries to form MatrixSymbol**n factor-wise and raises or changes the previously preserved unevaluated Pow form.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Calling tensor_product_simp(TensorProduct(a,b)**2 * TensorProduct(c,d)**2) with ordinary commutative symbols a,b,c,d returns the product unchanged, because the Mul handler only pre-simplifies noncommutative parts and returns early when there are none.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Calling tensor_product_simp(TensorProduct(A,B)**2 * TensorProduct(C,D,E)) with mismatched tensor lengths, or with an extra plain noncommutative factor, now expands the inner TensorProduct power before the TypeError/ValueError path, changing the error and partially simplified result compared with before.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1055,
+      "cached_tokens": 244,
+      "output_tokens": 11333,
+      "reasoning_tokens": 10820,
+      "micro_usd": 229953,
+      "seconds": 76.0577222310003
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 2,
+        "blocker": 4,
+        "suspected": 1,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1377.5468784229997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 3,
+        "blocker": 1,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13974/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 423.03842098899986
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

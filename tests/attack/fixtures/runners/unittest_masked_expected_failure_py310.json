@@ -1,0 +1,12 @@
+{
+ "python": "3.10.19",
+ "argv": [
+  "python",
+  "-m",
+  "unittest",
+  "-v",
+  "masked.tests"
+ ],
+ "exit_code": 0,
+ "stderr": "test_a_says_ok_then_fails_as_expected (masked.tests.Masked) ... ok\nexpected failure\ntest_b_after (masked.tests.Masked) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK (expected failures=1)\n"
+}

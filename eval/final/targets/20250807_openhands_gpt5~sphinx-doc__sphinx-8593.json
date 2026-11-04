@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8593",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:35:10Z",
+  "wall_seconds": 1290.0802901820002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc: `:meta public:` does not effect to variables\n**Describe the bug**\r\nautodoc: `:meta public:` does not effect to variables.\r\n\r\n**To Reproduce**\r\n\r\n```\r\n# example.py\r\n_foo = None  #: :meta public:\r\n```\r\n```\r\n# index.rst\r\n.. automodule:: example\r\n   :members:\r\n```\r\n\r\nI expect `_foo` is shown on the built document, but not shown.\r\n\r\n**Expected behavior**\r\n`_foo` should be shown on the built document.\r\n\r\n**Your project**\r\nNo\r\n\r\n**Screenshots**\r\nNo\r\n\r\n**Environment info**\r\n- OS: Mac\r\n- Python version: 3.9.1\r\n- Sphinx version: HEAD of 3.x\r\n- Sphinx extensions: sphinx.ext.autodoc\r\n- Extra tools: No\r\n\r\n**Additional context**\r\nNo\r\n\n",
+        "start": 0,
+        "end": 638
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-8593",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Building a module containing `_foo = None #: :meta public:` under `automodule` with `:members:` still omits `_foo`, because the analyzer key or docstring form for the exact issue example is not matched by the `(namespace, membername)` lookup in filter_members.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A private attribute with an ordinary doc comment and no meta marker, such as `_secret = 1 #: documented secret`, newly appears under `automodule` with `:members:` even without `:private-members:`, because replacing its empty docstring with the comment flips has_doc and therefore the keep decision.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A class-level private attribute such as `class C: _x = 1 #: :meta public:` documented with `autoclass` and `:members:` is still omitted, because the class namespace used for filtering does not match the analyzer's attribute-doc key or the injected ObjectMember docstring path interferes.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An attribute whose real or ObjectMember-injected docstring contains `:meta private:` but whose source assignment also has a plain `#:` comment without that marker is newly shown, because the patch overwrites the genuine docstring with the analyzer comment before metadata extraction.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "An instance attribute assigned in `__init__`, such as `self._x = None #: :meta public:`, documented with `autoclass` and `:members:` is still omitted, because the analyzer records it under the `__init__` scope rather than the class scope used during member filtering.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A documented attribute that also has an empty `#:` marker in source, such as an instance attribute followed by a separate string docstring, disappears from `:members:` output, because joining the empty analyzer entry replaces its truthy docstring with an empty string and clears has_doc.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 698,
+      "cached_tokens": 116,
+      "output_tokens": 14327,
+      "reasoning_tokens": 13865,
+      "micro_usd": 288892,
+      "seconds": 102.52511685599984
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sphinx-doc__sphinx-8593/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 518.3986319299997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 4,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 668.4269853709998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e4108adca22abf5cf3180933020e15231c305676c85a6cc4ba36f217f213efec"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:e4108adca22abf5cf3180933020e15231c305676c85a6cc4ba36f217f213efec"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e4108adca22abf5cf3180933020e15231c305676c85a6cc4ba36f217f213efec"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

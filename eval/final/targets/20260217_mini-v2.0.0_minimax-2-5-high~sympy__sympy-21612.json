@@ -1,0 +1,142 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-21612",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:50:54Z",
+  "wall_seconds": 949.7308781690008,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Latex parsing of fractions yields wrong expression due to missing brackets\nProblematic latex expression: `\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\"`\r\n\r\nis parsed to: `((a**3 + b)/c)/1/(c**2)`.\r\n\r\nExpected is: `((a**3 + b)/c)/(1/(c**2))`. \r\n\r\nThe missing brackets in the denominator result in a wrong expression.\r\n\r\n## Tested on\r\n\r\n- 1.8\r\n- 1.6.2\r\n\r\n## Reproduce:\r\n\r\n```\r\nroot@d31ef1c26093:/# python3\r\nPython 3.6.9 (default, Jan 26 2021, 15:33:00)\r\n[GCC 8.4.0] on linux\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> from sympy.parsing.latex import parse_latex\r\n>>> parse_latex(\"\\\\frac{\\\\frac{a^3+b}{c}}{\\\\frac{1}{c^2}}\")\r\n((a**3 + b)/c)/1/(c**2)\r\n\r\n\n",
+        "start": 0,
+        "end": 681
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-21612",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] parse_latex(r\"\\frac{x}{c^{-2}}\") returns x*c instead of x*c**2, because the denominator is a Pow with exponent -2 but the fix returns only its base.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] parse_latex(r\"\\frac{1}{x^{-2}}\") previously represented 1/x**-2 (equal to x**2) but now returns x, because any negative exponent is treated as -1.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] parse_latex(r\"\\frac{\\frac{a^3+b}{c}}{\\frac{2}{c^2}}\") still yields the wrongly-bracketed result instead of ((a**3+b)/c)/(2/c**2), because the denominator fraction is a Mul rather than a Pow so the fix does not trigger.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] parse_latex(r\"\\frac{a}{(a+b)^{-3}}\") previously gave a*(a+b)**3 on evaluation but now returns a*(a+b), dropping the exponent magnitude for a non-atomic base.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] parse_latex(r\"\\frac{x}{(\\frac{1}{c})^2}\") still produces the nested-inverse misparse instead of x*c**2, because the denominator is a Pow with positive exponent 2 whose inverse remains a nested Pow.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] parse_latex(r\"\\frac{1}{x^{-1}}\") previously preserved the unevaluated nested inverse Pow(Pow(x,-1),-1,evaluate=False) but now returns bare x, changing structure/repr for reciprocal-of-reciprocal inputs beyond the reported nested-fraction case.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 787,
+      "cached_tokens": 244,
+      "output_tokens": 9515,
+      "reasoning_tokens": 9075,
+      "micro_usd": 192521,
+      "seconds": 61.41775998999947
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 558.6781985510024
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 329.633242762
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

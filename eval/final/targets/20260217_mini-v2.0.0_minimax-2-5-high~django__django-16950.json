@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-16950",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:50:55Z",
+  "wall_seconds": 2137.8966912910005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Django Admin with Inlines not using UUIDField default value\nDescription\n\t \n\t\t(last modified by Joseph Metzinger)\n\t \nHello,\nI am a long time django user, first time bug reporter, so please let me know if I need to do anything else to help get this bug fixed :)\nI am using Django 3.1.3 and python 3.8.5 and have cerated a toy project to illustrate the bug. I have the following models:\nclass UUIDModel(models.Model):\n\tpkid = models.BigAutoField(primary_key=True, editable=False)\n\tid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)\n\tclass Meta:\n\t\tabstract = True\nclass Thing(UUIDModel):\n\tname = models.CharField(max_length=191)\nclass SubThing(models.Model):\n\tname = models.CharField(max_length=191)\n\tthing = models.ForeignKey(\n\t\t'bugapp.Thing',\n\t\tto_field='id',\n\t\ton_delete = models.CASCADE,\n\t\trelated_name='subthings',\n\t)\nAnd the following admin.py file:\nclass SubThingInline(admin.StackedInline):\n\tmodel = SubThing\n@admin.register(Thing)\nclass ThingAdmin(admin.ModelAdmin):\n\tlist_display = ('name',)\n\tordering = ('pkid',)\n\tinlines = (SubThingInline,)\nWhen logging into the admin, if you delete all of the entries for \"subthings\", add a name, and save the model, it will work. As soon as you try to add a subthing alongside the main Thing, it fails with the following exception:\n​https://dpaste.com/8EU4FF6RW\nIt shows that the value of \"id\" in the Thing model is being set to null.\nI believe this is a bug in django.\nThanks!\n",
+        "start": 0,
+        "end": 1443
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-16950",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] POST to the admin add page for Thing with a name and one SubThing inline: it still returns a 500/IntegrityError instead of saving, because Thing.id is still null when the parent is inserted.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Create a new parent whose primary key itself is a UUIDField with default=uuid.uuid4, plus an inline child: the pk is no longer nullified before save, so the child references the pre-save pk or a duplicate/stale pk instead of the pk generated on parent save.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Build an inline formset directly for an unsaved Thing() with one SubThing, save the parent, then save the formset: the child is saved with thing_id=None or with a UUID different from the saved Thing.id, causing a validation or FK error.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Use multi-table inheritance (e.g. Restaurant(Place)) with an inline FK to the inherited primary key: get_field(to_field) does not compare equal to _meta.pk for the parent-link pk, so the sequence-generated pk is preserved and the child fails its FK constraint after the parent save assigns a different id.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Drive the parent through a bound Thing ModelForm as admin does, with two SubThing inline rows: the ModelForm-created instance's editable=False UUID is lost or changed during form cleaning, so saving still fails or only one child links to the parent's final id.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Add a new parent whose non-PK to_field is editable with a default, and change that field's value in the parent form while adding an inline child: the preserved/rendered old default makes InlineForeignKeyField reject the inline as not matching the parent, whereas the previous nullify-then-save flow accepted it.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 873,
+      "cached_tokens": 116,
+      "output_tokens": 11665,
+      "reasoning_tokens": 11204,
+      "micro_usd": 236352,
+      "seconds": 92.03074633599999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 10,
+        "suspected": 1,
+        "s_sat_inconclusive": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1589.9883845939999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 6,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 455.2309970610004
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:14750c1db1ad3e6412576f57293ee241abc292cad2443528f09b236440f37ef7"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:14750c1db1ad3e6412576f57293ee241abc292cad2443528f09b236440f37ef7"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

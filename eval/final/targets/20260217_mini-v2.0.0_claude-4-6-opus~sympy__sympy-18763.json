@@ -1,0 +1,177 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1899.327250769,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Incorrect parenthesizing of Subs\nHere is an example.\r\n```python\r\n>>> from sympy import Subs\r\n>>> from sympy.abc import x,y\r\n>>> 3*Subs(-x+y, (x,),(1,))\r\n```\r\nLaTeX printing of this gives:  \r\n```python\r\n'3 \\\\left. - x + y \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/76/ql_9672fd7e62c909ff3d9ac8543c2e2576_l3.png)\r\n\r\n\r\nIt would be better to be parenthesized to:  \r\n```python\r\n'3 \\\\left. \\\\left(- x + y\\\\right) \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/bf/ql_936ffdb876e784206d4c54bb93d28dbf_l3.png)\r\n\n",
+        "start": 0,
+        "end": 567
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(3*Subs(Integral(-x + t, (t, 0, 1)), (x,), (1,))). The integral's additive integrand remains unparenthesized before the evaluation bar if Integral has precedence above Mul, leaving the same ambiguity as the reported Add case.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs(x*y, (x,), (1,))) or latex(Subs(-x, (x,), (1,))). Previously unambiguous Mul expressions such as x*y and -x gain unnecessary \\\\left( \\\\right) parentheses because strict=True also parenthesizes precedence equal to Mul.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(Subs(-x + y, (x,), (1,))**2). The inner Add is parenthesized, but the whole Subs is not, so the superscript visually attaches to the evaluation bar/subscript rather than clearly to the entire substituted expression.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs(Derivative(f(x), x), (x,), (1,))). A Derivative, whose notation is already self-contained and has Mul-level precedence, now gets redundant outer parentheses around the derivative inside the Subs.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call latex(3*Subs(-x + y, (x,), (1,))) and compare with the issue's desired '3 \\\\left. \\\\left(- x + y\\\\right) \\\\right|_{\\\\substack{ x=1 }}'. The output still lacks the inner \\\\left(- x + y\\\\right) parentheses or differs in that parenthesization.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call latex(Subs(x + y, (x,), (1,))) with no surrounding multiplication. The standalone Subs output changes from '\\\\left. x + y \\\\right|...' to a parenthesized inner expression even though the reported problem involved 3*Subs(...).",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 699,
+      "cached_tokens": 244,
+      "output_tokens": 8818,
+      "reasoning_tokens": 8349,
+      "micro_usd": 178229,
+      "seconds": 63.76767875400003
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "possibly_toxic": 4,
+        "not_reproduced": 2,
+        "blocker": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-18763/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1214.0880115310001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 4,
+        "suspected": 1,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 619.4833601050002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

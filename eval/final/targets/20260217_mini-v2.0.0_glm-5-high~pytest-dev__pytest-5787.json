@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-5787",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:25:10Z",
+  "wall_seconds": 1358.2220364939985,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "exception serialization should include chained exceptions\ngiven some simple tests:\r\n```\r\ndef test_chained_exception_with_from():\r\n    try:\r\n        try:\r\n            raise ValueError(11)\r\n        except Exception as e1:\r\n            raise ValueError(12) from e1\r\n    except Exception as e2:\r\n        raise ValueError(13) from e2\r\n\r\n\r\ndef test_chained_exception_without_from():\r\n    try:\r\n        try:\r\n            raise ValueError(21)\r\n        except Exception:\r\n            raise ValueError(22)\r\n    except Exception:\r\n        raise ValueError(23)\r\n```\r\nwhen run without xdist it displays whole exception trace nicely :\r\n```\r\n================ FAILURES ==========================\r\n__________________________ test_chained_exception_with_from _______________________\r\n\r\n    def test_chained_exception_with_from():\r\n        try:\r\n            try:\r\n>               raise ValueError(11)\r\nE               ValueError: 11\r\n\r\nbasic/test_basic.py:80: ValueError\r\n\r\nThe above exception was the direct cause of the following exception:\r\n\r\n    def test_chained_exception_with_from():\r\n        try:\r\n            try:\r\n                raise ValueError(11)\r\n            except Exception as e1:\r\n>               raise ValueError(12) from e1\r\nE               ValueError: 12\r\n\r\nbasic/test_basic.py:82: ValueError\r\n\r\nThe above exception was the direct cause of the following exception:\r\n\r\n    def test_chained_exception_with_from():\r\n        try:\r\n            try:\r\n                raise ValueError(11)\r\n            except Exception as e1:\r\n                raise ValueError(12) from e1\r\n        except Exception as e2:\r\n>           raise ValueError(13) from e2\r\nE           ValueError: 13\r\n\r\nbasic/test_basic.py:84: ValueError\r\n\r\n\r\n_____________________ test_chained_exception_without_from ____________________________\r\n\r\n    def test_chained_exception_without_from():\r\n        try:\r\n            try:\r\n>               raise ValueError(21)\r\nE               ValueError: 21\r\n\r\nbasic/test_basic.py:90: ValueError\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\n    def test_chained_exception_without_from():\r\n        try:\r\n            try:\r\n                raise ValueError(21)\r\n            except Exception:\r\n>               raise ValueError(22)\r\nE               ValueError: 22\r\n\r\nbasic/test_basic.py:92: ValueError\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\n    def test_chained_exception_without_from():\r\n        try:\r\n            try:\r\n                raise ValueError(21)\r\n            except Exception:\r\n                raise ValueError(22)\r\n        except Exception:\r\n>           raise ValueError(23)\r\nE           ValueError: 23\r\n\r\nbasic/test_basic.py:94: ValueError\r\n\r\n```\r\n\r\nbut when run with xdist (`-n auto`), it just displays the last one:\r\n```\r\n============ FAILURES ================\r\n_____________ test_chained_exception_with_from _______________________________\r\n[gw0] linux -- Python 3.6.7 /home/mulawa/developement/omcp/has/test/py/.tox/sct/bin/python3.6\r\n\r\n    def test_chained_exception_with_from():\r\n        try:\r\n            try:\r\n                raise ValueError(11)\r\n            except Exception as e1:\r\n                raise ValueError(12) from e1\r\n        except Exception as e2:\r\n>           raise ValueError(13) from e2\r\nE           ValueError: 13\r\n\r\nbasic/test_basic.py:84: ValueError\r\n\r\n____________ test_chained_exception_without_from ____________\r\n[gw1] linux -- Python 3.6.7 /home/mulawa/developement/omcp/has/test/py/.tox/sct/bin/python3.6\r\n\r\n    def test_chained_exception_without_from():\r\n        try:\r\n            try:\r\n                raise ValueError(21)\r\n            except Exception:\r\n                raise ValueError(22)\r\n        except Exception:\r\n>           raise ValueError(23)\r\nE           ValueError: 23\r\n\r\nbasic/test_basic.py:94: ValueError\r\n\r\n```\r\n\r\nmy setup:\r\n```\r\npytest           4.0.2       \r\npytest-xdist     1.25.0\r\n```\n",
+        "start": 0,
+        "end": 3907
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-5787",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Round-trip the issue's three-level `test_chained_exception_with_from` through `to_json()`, `json.dumps`/`json.loads`, and `from_json()`, then render `longrepr` to a terminal: the generic chain-entry copy stores nested objects such as `reprfileloc`/`reprfuncargs` as plain dicts, so rendering raises AttributeError or drops locations instead of showing all three tracebacks.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A chained failing test that also produces captured output/sections round-trips through `from_json()`: sections added to the intermediate `ReprExceptionInfo` are discarded when it is replaced by `ExceptionChainRepr(chain)`, so captured stdout/stderr sections present before the change disappear.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Round-trip `test_chained_exception_without_from` (implicit `__context__`) and a `raise ... from None` variant: the deserialized chain loses or mislabels the description/order (`During handling...` vs `direct cause`, suppressed context), so the rendered chain differs from the unserialized output or shows only the final exception.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A plain non-chained failure report round-trips and is compared/rendered: every exception `longrepr` now gains a `\"chain\": []` key and goes through the refactored entry deserializer, breaking exact `to_json()` consumers or changing the deserialized `ReprExceptionInfo` rendering that previously passed.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a chained exception raised under `--tb=native` or `--showlocals` so chain entries are `ReprEntryNative` or carry `ReprLocals`/`ReprFuncArgs`: serialization/deserialization of the chain crashes, drops the native/local lines, or is not JSON-serializable, unlike the last-exception-only traceback.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Reports with non-exception `longrepr` values (passed/skipped reports, string longrepr, and collection-error tuple `ReprFileLocation` longreprs) round-trip through `to_json()`/`from_json()`: the new chain handling changes their type/content or crashes instead of leaving them untouched.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1815,
+      "cached_tokens": 116,
+      "output_tokens": 9218,
+      "reasoning_tokens": 8701,
+      "micro_usd": 191180,
+      "seconds": 72.22913253099978
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "not_reproduced": 2,
+        "blocker": 3,
+        "suspected": 2,
+        "possibly_toxic": 3,
+        "refuted": 2,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-5787/fixed_x/correctness-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-5787/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~pytest-dev__pytest-5787/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 880.3719917119997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 4
+      },
+      "blockers": [],
+      "wall_seconds": 404.77152960999956
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c196bd575c8d78227db3358adefe26fccc5882db91d3e5b5f84b77ac1e086c0f"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c196bd575c8d78227db3358adefe26fccc5882db91d3e5b5f84b77ac1e086c0f"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c196bd575c8d78227db3358adefe26fccc5882db91d3e5b5f84b77ac1e086c0f"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c196bd575c8d78227db3358adefe26fccc5882db91d3e5b5f84b77ac1e086c0f"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

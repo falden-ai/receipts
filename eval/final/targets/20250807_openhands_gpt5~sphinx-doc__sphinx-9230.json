@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9230",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:11:51Z",
+  "wall_seconds": 842.3713002820004,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Doc rendering is incorrect when :param has datatype dict(str,str)\n**Describe the bug**\r\nI have a parameter defined under docstring of a method as:-\r\n:param dict(str, str) opc_meta: (optional)\r\n\r\nWhich is being incorrectly rendered in the generated docs as:-\r\nstr) opc_meta (dict(str,) –(optional) \r\n\r\n**To Reproduce**\r\nCreate any method with the docstring containg the above param\r\n\r\n**Expected behavior**\r\nThe param should be rendered in the generated docs as:-\r\nopc_meta (dict(str,str)) – (optional) \r\n\r\n**Your project**\r\n[sphinxTest.zip](https://github.com/sphinx-doc/sphinx/files/6468074/sphinxTest.zip)\r\n\r\n\r\n**Screenshots**\r\n<img width=\"612\" alt=\"Screen Shot 2021-05-12 at 12 30 50 PM\" src=\"https://user-images.githubusercontent.com/8617566/118020143-5f59a280-b31f-11eb-8dc2-5280d5c4896b.png\">\r\n<img width=\"681\" alt=\"Screen Shot 2021-05-12 at 12 32 25 PM\" src=\"https://user-images.githubusercontent.com/8617566/118020154-62549300-b31f-11eb-953d-9287f9cc27ff.png\">\r\n\r\n\r\n**Environment info**\r\n- OS: Mac\r\n- Python version: 3.9.0\r\n- Sphinx version: 4.0.1\r\n- Sphinx extensions:  [\"sphinx.ext.autodoc\", \"sphinx.ext.autosummary\", \"sphinx.ext.intersphinx\", \"autodocsumm\"]\r\n- Extra tools: Browser Firefox.\r\n\r\n**Additional context**\r\nN/A\r\n\r\n\n",
+        "start": 0,
+        "end": 1237
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9230",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Transform the exact issue case ':param dict(str, str) opc_meta: (optional)' through DocFieldTransformer and render it. The type may still be rendered as 'dict(str,' with 'str) opc_meta' treated as the parameter name because downstream type/xref handling splits on the comma or space.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform the previously working multi-name field ':param int foo, bar: value', which split as type 'int' and name 'foo, bar'. With rsplit it becomes type 'int foo,' and name 'bar', so foo loses the type and the rendering changes.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Transform ':param dict(str, dict(int, str)) opc_meta: value' with a nested type containing multiple comma-space separators. The rendered type may be truncated or assigned to the wrong name despite the last-space split.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform ':param str my option: value', where the documented name contains a space and previously split as type 'str' and name 'my option'. With rsplit it becomes type 'str my' and name 'option', breaking the existing rendering.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Transform ':param dict(str, str) *args: value' or the equivalent '**kwargs' form for a variadic parameter. The asterisk-prefixed name may lose its type or be rendered incorrectly if the new split interacts badly with variadic-name handling.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform ':param int *args, **kwargs: value', previously type 'int' with names '*args, **kwargs'. With rsplit only '**kwargs' receives the type and '*args,' is folded into the type text, changing previously correct output.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 828,
+      "cached_tokens": 116,
+      "output_tokens": 4522,
+      "reasoning_tokens": 4099,
+      "micro_usd": 93312,
+      "seconds": 45.68169892000151
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 4,
+        "refuted": 3,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 534.400523884
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 261.0294502309989
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.001" timestamp="2026-10-27T00:00:00.000000+00:00" hostname="sandbox"><testcase classname="tests.test_crash" name="test_crash_in_changed" file="tests/test_crash.py" line="3" time="0.001"><failure message="ZeroDivisionError: division by zero">def test_crash_in_changed():
+&gt;       assert divide(1, 0) == 0
+               ^^^^^^^^^^^^
+
+tests/test_crash.py:5: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = 1, b = 0
+
+    def divide(a, b):
+&gt;       return a / b
+               ^^^^^
+E       ZeroDivisionError: division by zero
+
+src/pkg/mod.py:2: ZeroDivisionError</failure></testcase></testsuite></testsuites>

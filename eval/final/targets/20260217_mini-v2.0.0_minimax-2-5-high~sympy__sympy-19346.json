@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:48:52Z",
+  "wall_seconds": 1333.6265145070029,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "srepr not printing dict and set properly\n`srepr` prints the element in `list` and `tuple` correctly.\r\n```python\r\n>>> from sympy import srepr\r\n>>> from sympy.abc import x,y\r\n>>> srepr([x,y])\r\n[Symbol('x'), Symbol('y')]\r\n>>> srepr((x,y))\r\n(Symbol('x'), Symbol('y'))\r\n```\r\n\r\nHowever, `srepr` prints the elements in `dict` and `set` wrong.\r\n```python\r\n>>> srepr({x, y})\r\n{x, y}\r\n>>> srepr({x: y})\r\n{x: y}\r\n```\r\n\r\nIs this behavior intended? If it isn't, fixing it will be an easy job.\n",
+        "start": 0,
+        "end": 480
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling srepr({x, 'a', 1, None, (2, 3)}) raises TypeError while sorting the heterogeneous elements with default_sort_key, instead of printing each element in srepr form.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling srepr on an OrderedDict, Counter, or defaultdict such as OrderedDict([(x, 1), (y, 2)]) now prints a plain {Symbol('x'): 1, ...} dict and loses the container type, whereas before it fell back to repr and preserved OrderedDict([...]).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling srepr({(x, y): (y, x), x: [(y, z)]}) mishandles tuple keys/values through doprint, producing a tuple-of-strings or otherwise non-evaluable output instead of (Symbol('x'), Symbol('y')): (Symbol('y'), Symbol('x')).",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling srepr on a set of arbitrary non-SymPy callables/objects, e.g. srepr({len, print}), previously printed via repr fallback but now can raise or reorder nondeterministically because sorted(..., key=default_sort_key) sympifies/stringifies those objects.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling srepr({y: 1, x: 2}) preserves insertion order as {Symbol('y'): 1, Symbol('x'): 2}, so two equal dicts built in different orders get different sreprs instead of one canonical sorted representation like the set case.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling srepr(frozenset({y, x})) or srepr({y, x}, order='none') changes behavior beyond the dict/set issue: frozenset output is newly rewritten and set output is always lex-sorted regardless of the printer order setting.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 826,
+      "cached_tokens": 244,
+      "output_tokens": 15413,
+      "reasoning_tokens": 14943,
+      "micro_usd": 310637,
+      "seconds": 110.13056756900187
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "blocker": 2,
+        "suspected": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-19346/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 894.8086328749996
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 9,
+        "not_reproduced": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 327.79138466400036
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b8d8a49df1720c230e4cbf06ebf0caf3fc521d552bb8651577cf76aee6c47206"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

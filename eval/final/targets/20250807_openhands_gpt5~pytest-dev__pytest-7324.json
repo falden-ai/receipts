@@ -1,0 +1,177 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:49:25Z",
+  "wall_seconds": 1280.913005812,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Pytest crashes the interpreter on debug build for 3.8+\nShort reproducer\r\n```py\r\n>>> Expression.compile(\"False\")\r\npython: Python/compile.c:3559: compiler_nameop: Assertion `!_PyUnicode_EqualToASCIIString(name, \"None\") && !_PyUnicode_EqualToASCIIString(name, \"True\") && !_PyUnicode_EqualToASCIIString(name, \"False\")' failed.\r\n[1]    29440 abort (core dumped)  python\r\n```\r\n\r\nRelated issue for improvement of this behavior: [bpo-40870](https://bugs.python.org/issue40870)\n",
+        "start": 0,
+        "end": 469
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~pytest-dev__pytest-7324",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Expression.compile(\"False\").evaluate(lambda name: True) returns True by consulting the matcher, instead of evaluating the Python constant False; likewise \"True\" with an all-False matcher returns False and \"None\" with an all-True matcher returns True.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On a release build, selecting with -m \"False\" and a keyword matcher containing \"False\" previously matched nothing because False was a constant, but now matches those items because the change makes reserved words matcher identifiers.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A compound expression such as Expression.compile(\"not False and True\").evaluate(lambda name: False) returns False, although constant semantics give not False and True == True, showing the reserved-word handling also corrupts boolean compositions.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Expression.compile(\"__pytest_expr_foo\").evaluate(lambda name: name == \"__pytest_expr_foo\") raises NameError instead of returning True, and \"__pytest_expr_lookup__\" returns the injected helper as truthy regardless of the matcher, breaking identifiers with the helper prefix.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Expression.compile(\"True\").evaluate(matcher) calls matcher and propagates any exception it raises for \"True\", although evaluating the constant True should not consult the matcher at all.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With warnings configured as errors, Expression.compile(\"False\") now raises DeprecationWarning from constructing ast.Str on Python versions where ast.Str exists but is deprecated, whereas compiling the same expression before the change produced no such warning.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1034,
+      "cached_tokens": 116,
+      "output_tokens": 13956,
+      "reasoning_tokens": 13568,
+      "micro_usd": 282816,
+      "seconds": 104.87963411100009
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 2,
+        "unchecked": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pytest-dev__pytest-7324/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~pytest-dev__pytest-7324/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 899.9452132340002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "refuted": 4,
+        "not_reproduced": 2,
+        "unchecked": 5,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pytest-dev__pytest-7324/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 275.33077361599953
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3959b25fa61782831da06d9f529b678bf875c1a979799f6c8c5780affa1e175c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:39:18Z",
+  "wall_seconds": 1357.439962646,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "The value of a TextChoices/IntegerChoices field has a differing type\nDescription\n\t\nIf we create an instance of a model having a CharField or IntegerField with the keyword choices pointing to IntegerChoices or TextChoices, the value returned by the getter of the field will be of the same type as the one created by enum.Enum (enum value).\nFor example, this model:\nfrom django.db import models\nfrom django.utils.translation import gettext_lazy as _\nclass MyChoice(models.TextChoices):\n\tFIRST_CHOICE = \"first\", _(\"The first choice, it is\")\n\tSECOND_CHOICE = \"second\", _(\"The second choice, it is\")\nclass MyObject(models.Model):\n\tmy_str_value = models.CharField(max_length=10, choices=MyChoice.choices)\nThen this test:\nfrom django.test import TestCase\nfrom testing.pkg.models import MyObject, MyChoice\nclass EnumTest(TestCase):\n\tdef setUp(self) -> None:\n\t\tself.my_object = MyObject.objects.create(my_str_value=MyChoice.FIRST_CHOICE)\n\tdef test_created_object_is_str(self):\n\t\tmy_object = self.my_object\n\t\tself.assertIsInstance(my_object.my_str_value, str)\n\t\tself.assertEqual(str(my_object.my_str_value), \"first\")\n\tdef test_retrieved_object_is_str(self):\n\t\tmy_object = MyObject.objects.last()\n\t\tself.assertIsInstance(my_object.my_str_value, str)\n\t\tself.assertEqual(str(my_object.my_str_value), \"first\")\nAnd then the results:\n(django30-venv) ➜ django30 ./manage.py test\nCreating test database for alias 'default'...\nSystem check identified no issues (0 silenced).\nF.\n======================================================================\nFAIL: test_created_object_is_str (testing.tests.EnumTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n File \"/Users/mikailkocak/Development/django30/testing/tests.py\", line 14, in test_created_object_is_str\n\tself.assertEqual(str(my_object.my_str_value), \"first\")\nAssertionError: 'MyChoice.FIRST_CHOICE' != 'first'\n- MyChoice.FIRST_CHOICE\n+ first\n----------------------------------------------------------------------\nRan 2 tests in 0.002s\nFAILED (failures=1)\nWe notice when invoking __str__(...) we don't actually get the value property of the enum value which can lead to some unexpected issues, especially when communicating to an external API with a freshly created instance that will send MyEnum.MyValue, and the one that was retrieved would send my_value.\n",
+        "start": 0,
+        "end": 2353
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a child model in a multi-table inheritance hierarchy that inherits a TextChoices CharField from its parent, create it with MyChoice.FIRST_CHOICE, and check str(obj.my_str_value) == 'first'; the parent-chain/deferred loading path writes the value directly into __dict__, bypassing DeferredAttribute.__set__, so it still stringifies as 'MyChoice.FIRST_CHOICE'.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Assign any plain Enum/IntEnum member to a non-choices field (or a custom field whose from_db_value/to_python returns an Enum) and read it back after save/from_db; previously the enum member (with .name/.label and identity) was preserved, now DeferredAttribute.__set__ silently unwraps every Enum on every field to its raw value, breaking isinstance/identity checks.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use an IntegerChoices/TextChoices value on a ForeignKey's raw attname by assigning through the relation descriptor (obj.fk = enum_member or a from_db row for fk_id) and then check type/str of obj.fk_id; ForwardManyToOneDescriptor.__set__ stores the raw value in __dict__ itself, bypassing DeferredAttribute.__set__, so the enum is retained.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call del obj.field on a deferred/unloaded field, delete the same field twice, or use mock.patch on such an instance attribute; the new __delete__ does del instance.__dict__[attname] and raises KeyError instead of AttributeError when the key is absent, breaking delattr/getattr contracts and patch cleanup.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a TextChoices/IntegerChoices member whose value is a gettext_lazy proxy and assign it to the model field, then assert isinstance(obj.field, str/int) and str(obj.field) equals the translated value; __set__ only unwraps to value.value, which is still a lazy proxy rather than a plain str/int.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a custom EnumField (or DB converter) whose from_db_value returns an Enum member and load an object via the ORM; Model.from_db assigns through the new __set__, which unwraps the converter's Enum back to a raw value, so retrieved instances no longer expose the Enum type the field contract promises.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 979,
+      "cached_tokens": 116,
+      "output_tokens": 15380,
+      "reasoning_tokens": 14839,
+      "micro_usd": 311076,
+      "seconds": 143.78755184700276
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "blocker": 5
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 765.5226928360025
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 6,
+        "not_reproduced": 3,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11964/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 447.5499335450004
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2fb0831bdcae3c54dfa71fc1990ea02867e88584198cddfe7c7663010d771b23"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

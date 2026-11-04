@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15916",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:52:48Z",
+  "wall_seconds": 2065.3033070890015,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Allow ModelForm meta to specify formfield_callback.\nDescription\n\t \n\t\t(last modified by Klaas-Jan Gorter)\n\t \nThe function django.forms.modelform_factory returns a form class based on the class it recieves as form argument. As an additional argument it accepts a formfield_callback function. When no callback is provided the class uses no callback instead of the formfield_callback of the base form provided.\nExample:\nfrom django import forms\nform django.db import models\nclass MyModel(forms.Model):\n\tactive = models.BooleanField()\n\tname = models.CharField(max_length=64, blank=True, null=True)\n\t\ndef all_required(field, **kwargs):\n\tformfield = field.formfield(**kwargs)\n\tformfield.required = True\n\treturn formfield\nclass MyForm(forms.ModelForm):\n\tformfield_callback = all_required\n\tclass Meta:\n\t\tmodel = MyModel\n\t\tformfield_callback = all_required\n\t\tfields = ['active', 'name']\nFactoryForm = forms.modelform_factory(MyModel, form=MyForm)\nThe expected behavior would be that the FactoryForm uses the formfield_callback specified in the Meta attribute of MyForm and that therefore the fields would be required in both the FactoryForm and MyForm. However, under the current behavior of modelform_factory the formfield_callback is overwritten (with the default argument None) before the new class is constructed and in FactoryForm the fields are not required.\nI believe this is a bug, because this behavior has been observed before in Ticket #18573 in Django 1.3. The test that was proposed there was incorrect, because under the expected behavior the callback should have been called four times not two times as was asserted. (I believe this test has been removed from version 2, because I find no equivalent test in tests/model_formsets_regress.)\n",
+        "start": 0,
+        "end": 1744
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15916",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Define a ModelForm with formfield_callback only in Meta (no class attribute) and call modelform_factory(model, form=ThatForm); the generated form's fields are not passed through the callback, e.g. all_required does not make them required.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Call modelform_factory(model, form=FormWithClassCallback, formfield_callback=None) explicitly intending to disable the base form's callback; before the change fields were default, after it they are still customized by the inherited callback.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Define a ModelForm subclass directly with only Meta.formfield_callback set and inspect its base_fields; the callback is never invoked because the metaclass still reads the class attribute instead of Meta.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Call modelformset_factory or inlineformset_factory with a custom callback form but no formfield_callback argument, as existing code may do expecting default fields; the generated formset form now inherits the callback and changes field requiredness/widgets.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Pass a form with only Meta.formfield_callback to modelformset_factory or inlineformset_factory; the generated formset form's fields ignore the callback and retain default required/widget behavior.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Create FactoryForm via modelform_factory without a callback, then reassign the base form's formfield_callback and subclass FactoryForm; before the change the subclass used FactoryForm's own None snapshot, after it the subclass picks up the mutated base callback and builds different fields.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 849,
+      "cached_tokens": 116,
+      "output_tokens": 6023,
+      "reasoning_tokens": 5622,
+      "micro_usd": 123416,
+      "seconds": 49.65216644400061
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "s_sat_inconclusive": 2,
+        "suspected": 3,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-15916/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1617.4938988380018
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "unchecked": 2,
+        "refuted": 2,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 397.52724522599965
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:4f7dcd9015d013ec59214a24fd906742acbb4b12265faa2b38b206f2b242adfc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:4f7dcd9015d013ec59214a24fd906742acbb4b12265faa2b38b206f2b242adfc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

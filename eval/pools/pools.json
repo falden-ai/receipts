@@ -1,0 +1,42 @@
+[
+  {
+    "available": true,
+    "checks": {
+      "killed_patches_failed_plus_error": "2184 == 2184",
+      "passing_patches": "11041 == 11041",
+      "per_repo": "matches Table 6 for all 12 repositories",
+      "strengthened": "251 == 251"
+    },
+    "list_file": "eval/pools/swe_abs_251.txt",
+    "list_sha256": "d0e851c57952228801357f892300f195bd00dd1ce8e25d7e3cf4e9f204156d81",
+    "name": "swe_abs_251",
+    "per_repo": {
+      "astropy/astropy": 18,
+      "django/django": 102,
+      "matplotlib/matplotlib": 22,
+      "mwaskom/seaborn": 2,
+      "pallets/flask": 1,
+      "psf/requests": 5,
+      "pydata/xarray": 9,
+      "pylint-dev/pylint": 5,
+      "pytest-dev/pytest": 9,
+      "scikit-learn/scikit-learn": 9,
+      "sphinx-doc/sphinx": 35,
+      "sympy/sympy": 34
+    },
+    "rule": "instance_id where some agent in data/key_map_top30.json has re_evaluation_status == 'failed' and original_tests_passed == true in data/swe_abs_per_instance_verdicts.json",
+    "size": 251,
+    "why_unavailable": ""
+  },
+  {
+    "available": false,
+    "checks": {},
+    "list_file": null,
+    "list_sha256": null,
+    "name": "swe_abs_206",
+    "per_repo": null,
+    "rule": "swe_abs_251 minus the 53 instances with overfitting tests (paper section 4.4.1, Table 2 SWE-ABS*)",
+    "size": null,
+    "why_unavailable": "the 53 overfitting instances are not named in the paper (arXiv 2603.00520v1), the repository (OpenAgentEval/SWE-ABS at 26b4c736) or the dataset (OpenAgentLab/SWE-Bench_Verified_ABS, one content version since 2026-03-01); 251 - 206 = 45 of them are strengthened, and no published file says which"
+  }
+]

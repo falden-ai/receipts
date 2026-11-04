@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13798",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:30:22Z",
+  "wall_seconds": 1233.0112448570003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "latex() and mul_symbol\nThe `latex()` pretty-printing function accepts a `mul_symbol` kwarg that must be one of four choices. I would like to be able to supply my own choice which is not in the list. Specifically, I want the multiplication symbol to be `\\,` (i.e., a thin space). This is what I mean\r\n```\r\n>>> latex(3*x**2*y)\r\n'3 \\\\, x^{2} \\\\, y' # I typed the thin spaces in after the fact\r\n```\r\n\r\nThin spaces are used by sympy to separate differentials from integrands in integrals.\r\n```\r\n>>> latex(Integral(2*x**2*y, x))\r\n'\\\\int 2 x^{2} y\\\\, dx' # This thin space is sympy's current behavior\r\n```\r\n\r\nIs there a reason why the user cannot supply the `mul_symbol` of their choosing? Or are the 4 choices a historical artifact? I'm willing to attempt making a PR to allow `mul_symbol` to be arbitrary (and backwards-compatible) if such a PR would be considered.\n",
+        "start": 0,
+        "end": 861
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-13798",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "latex(3*x**2*y, mul_symbol=r'\\,') does not return '3 \\, x^{2} \\, y': the numeric-coefficient path uses mul_symbol_latex_numbers or its own spacing, leaving a plain space or dot between 3 and x even if symbol-symbol factors use the thin space.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Previously valid options regress byte-for-byte: latex(2*x*y, mul_symbol=v) for v in None, 'dot', 'ldot', and 'times' no longer returns the same strings as before the change across integer, float, and negative coefficients.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "latex(Integral(2*x**2*y, x), mul_symbol=r'\\,') or a MatMul/Derivative containing products still renders inner multiplication with the default separator, because those printers do not route through the two changed settings, so the custom symbol is only partially applied.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Default output changes: latex(3*x**2*y) and latex(1.5*x) with no mul_symbol argument differ from before, because the .get fallback alters the mul_symbol_latex_numbers default-to-dot logic for the None case.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Arbitrary symbols are not honored uniformly for non-integer coefficients: latex(2.0*x*y, mul_symbol='*') and latex(x*y/2, mul_symbol=r'\\odot') drop the custom string or substitute \\cdot on the float/fraction coefficient path instead of using it for every multiplication.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Invalid values that previously raised KeyError at LatexPrinter construction, such as latex(2*x, mul_symbol='timse') (a typo of 'times'), now silently emit the literal typo into the output instead of failing, changing established error behavior.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 876,
+      "cached_tokens": 116,
+      "output_tokens": 6222,
+      "reasoning_tokens": 5772,
+      "micro_usd": 127504,
+      "seconds": 41.76315183199995
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 1,
+        "not_reproduced": 2,
+        "suspected": 3
+      },
+      "blockers": [],
+      "wall_seconds": 715.5936376300001
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 1,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 475.3057105920002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:83f95af962c352e1b78e2e0f384e9f30df806de5777b606c973e992643e997f4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:83f95af962c352e1b78e2e0f384e9f30df806de5777b606c973e992643e997f4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

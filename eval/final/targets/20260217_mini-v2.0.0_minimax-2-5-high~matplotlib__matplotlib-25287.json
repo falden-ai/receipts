@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~matplotlib__matplotlib-25287",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:49:06Z",
+  "wall_seconds": 2149.7671980860014,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: offsetText is colored based on tick.color instead of tick.labelcolor\n### Bug summary\n\nIn version 3.6.3, when setting ytick.labelcolor / xtick.labelcolor in styles / rcParams, it does not change the color of the exponent label as well. It will be colored based on xtick.color / ytick.color.\n\n### Code for reproduction\n\n```python\nimport matplotlib.pyplot as plt\r\n\r\nplt.rcParams.update({'ytick.labelcolor': 'red'})\r\nfig = plt.figure()\r\nax = fig.add_subplot(1,1,1)\r\nax.plot([1.01e9,1.02e9,1.03e9])\n```\n\n\n### Actual outcome\n\n![wrong_color](https://user-images.githubusercontent.com/50588526/217083612-dddf85ba-ebfa-4bf0-8ae0-3dce36c17198.png)\r\n\n\n### Expected outcome\n\n![correct_color](https://user-images.githubusercontent.com/50588526/217083512-34b3b32f-5d3a-4242-8742-2269bb09c20c.png)\r\n\n\n### Additional information\n\nThe following patch seems to fix it for my simple usecases:\r\n\r\n```\r\ndiff --git a/axis.py b/axis.py\r\n--- a/axis.py\t\r\n+++ b/axis.py\t(date 1675716341305)\r\n@@ -2203,7 +2203,7 @@\r\n             transform=mtransforms.blended_transform_factory(\r\n                 self.axes.transAxes, mtransforms.IdentityTransform()),\r\n             fontsize=mpl.rcParams['xtick.labelsize'],\r\n-            color=mpl.rcParams['xtick.color'],\r\n+            color=mpl.rcParams['xtick.color'] if mpl.rcParams['xtick.labelcolor']=='inherit' else mpl.rcParams['xtick.labelcolor'],\r\n         )\r\n         self.offset_text_position = 'bottom'\r\n \r\n@@ -2456,7 +2456,7 @@\r\n             transform=mtransforms.blended_transform_factory(\r\n                 self.axes.transAxes, mtransforms.IdentityTransform()),\r\n             fontsize=mpl.rcParams['ytick.labelsize'],\r\n-            color=mpl.rcParams['ytick.color'],\r\n+            color=mpl.rcParams['ytick.color'] if mpl.rcParams['ytick.labelcolor']=='inherit' else mpl.rcParams['ytick.labelcolor'],\r\n         )\r\n         self.offset_text_position = 'left'\r\n \r\n```\n\n### Operating system\n\n_No response_\n\n### Matplotlib Version\n\n3.6.3\n\n### Matplotlib Backend\n\n_No response_\n\n### Python version\n\n_No response_\n\n### Jupyter version\n\n_No response_\n\n### Installation\n\nNone\n",
+        "start": 0,
+        "end": 2097
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~matplotlib__matplotlib-25287",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create an axes with large y-values, then call ax.tick_params(axis='y', labelcolor='red') and draw. The tick labels become red but the y-axis offsetText remains the original tick color because the fix only reads rcParams during axis construction.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Set a valid non-string labelcolor such as an RGB array for ytick.labelcolor before creating a figure. Comparing that value with 'inherit' during YAxis construction raises an ambiguous-truth error or mis-selects the color, whereas figure creation worked before the change.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create the figure and axes first, then update plt.rcParams['ytick.labelcolor'] to 'red' or apply it with rc_context before drawing a large-value plot. The offsetText remains its construction-time color instead of following the newly set labelcolor.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Leave xtick.labelcolor and ytick.labelcolor at the default 'inherit' and set only xtick.color/ytick.color to orange before creating axes with scientific notation. The offsetText should remain orange as before; any other color shows the default path was altered.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Set ytick.color='blue' with ytick.labelcolor='inherit', create the axes, then call ax.tick_params(axis='y', color='green'). The tick labels inherit green but the offsetText stays blue, so the 'inherit' resolution is frozen at construction rather than following the tick color.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create axes, explicitly set ax.yaxis.get_offset_text().set_color('purple'), then redraw and call an unrelated tick_params change. The custom purple offsetText should persist; resetting it to the rcParams labelcolor would be an unintended behavior change.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1132,
+      "cached_tokens": 116,
+      "output_tokens": 8940,
+      "reasoning_tokens": 8507,
+      "micro_usd": 182888,
+      "seconds": 67.8624577849987
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "possibly_toxic": 5,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1436.7908370209989
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 2,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 644.0338025750007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a7b4fcc4101b49d1769676a6242246b52efb3860f4e0d445d96d5ca5ba06bfca"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a7b4fcc4101b49d1769676a6242246b52efb3860f4e0d445d96d5ca5ba06bfca"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a7b4fcc4101b49d1769676a6242246b52efb3860f4e0d445d96d5ca5ba06bfca"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a7b4fcc4101b49d1769676a6242246b52efb3860f4e0d445d96d5ca5ba06bfca"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:15:03Z",
+  "wall_seconds": 2093.3318346080005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "The difference of MatrixSymbols prints as a sum with (-1) coefficient\nInternally, differences like a-b are represented as the sum of a with `(-1)*b`, but they are supposed to print like a-b. This does not happen with MatrixSymbols. I tried three printers: str, pretty, and latex: \r\n```\r\nfrom sympy import *\r\nA = MatrixSymbol('A', 2, 2)\r\nB = MatrixSymbol('B', 2, 2)\r\nprint(A - A*B - B)\r\npprint(A - A*B - B)\r\nlatex(A - A*B - B)\r\n```\r\nOutput:\r\n```\r\n(-1)*B + (-1)*A*B + A\r\n-B + -A⋅B + A\r\n'-1 B + -1 A B + A'\r\n```\r\n\r\nBased on a [Stack Overflow post](https://stackoverflow.com/q/48826611)\n",
+        "start": 0,
+        "end": 583
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Test pprint and latex on A - x*B - C with A, B, C MatrixSymbols and x a positive Symbol: _coeff_isneg only recognises Number coefficients, so it should still print 'A + -x*B - C' / 'A + -x B - C' instead of using minus signs.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Test str(I*A), pprint(I*A), and latex(I*A), which printed the imaginary coefficient before: args[0].is_Number is true for I and the new code evaluates I < 0, so each should now raise TypeError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Test str, pprint, and latex on A - I*B: the negative imaginary coefficient is not a negative Number for _coeff_isneg and the new MatMul printers compare it with '< 0', so it should crash with a TypeError or print 'A + -I*B' rather than 'A - I*B'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Test sstr on a nested unevaluated sum such as MatAdd(A, MatAdd(B, -C, evaluate=False), evaluate=False): the old _print_MatAdd parenthesized every term, while the new precedence check uses '<' instead of parenthesize, so it should lose the parentheses and print 'A + B - C' for a grouped term.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Test all three printers on A - hadamard_product(B, C): if the negated HadamardProduct is not stored as a MatMul with a Number first argument, _coeff_isneg misses it and it should still print as a sum with a (-1) factor instead of 'A - B∘C'.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Test str(MatAdd(evaluate=False)) and pprint(MatAdd(evaluate=False)): the old implementations returned an empty form for no terms, while the new str code pops from an empty list and the new pretty code returns None, so they should now raise IndexError or fail downstream.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 2241,
+      "cached_tokens": 244,
+      "output_tokens": 17881,
+      "reasoning_tokens": 17375,
+      "micro_usd": 365657,
+      "seconds": 128.6701491090007
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "suspected": 2,
+        "unchecked": 5,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1337.2347875180003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "suspected": 3,
+        "unchecked": 4,
+        "not_reproduced": 1,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-14248/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 627.0984113369996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:bb5267285c1939248ad2e65f54d023d1086592b194f81b254b6e0aadc463e15c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:bb5267285c1939248ad2e65f54d023d1086592b194f81b254b6e0aadc463e15c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-13590",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:13:26Z",
+  "wall_seconds": 1548.6631118520017,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Upgrading 2.2>3.0 causes named tuples used as arguments to __range to error.\nDescription\n\t\nI noticed this while upgrading a project from 2.2 to 3.0.\nThis project passes named 2-tuples as arguments to range queryset filters. This works fine on 2.2. On 3.0 it causes the following error: TypeError: __new__() missing 1 required positional argument: 'far'.\nThis happens because django.db.models.sql.query.Query.resolve_lookup_value goes into the tuple elements to resolve lookups and then attempts to reconstitute the tuple with the resolved elements.\nWhen it attempts to construct the new tuple it preserves the type (the named tuple) but it passes a iterator to it's constructor.\nNamedTuples don't have the code path for copying an iterator, and so it errors on insufficient arguments.\nThe fix is to * expand the contents of the iterator into the constructor.\n",
+        "start": 0,
+        "end": 859
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-13590",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a namedtuple subclass for __range whose overridden __new__ coerces or transforms its two bounds, then call filter(id__range=Bounds('1', '5')). _make bypasses that __new__ via tuple.__new__, so the query uses untransformed bounds or fails where direct construction worked.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Pass a tuple subclass that inherits _make from a namedtuple base but overrides __new__ to accept a single iterable and normalize its items, using it for an __in lookup that worked before. Routing construction through _make bypasses the normalization, changing the resolved values or type used in the query.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a tuple subclass that mimics a named tuple with a multi-argument __new__(cls, low, high) and attribute accessors but no _make, as in filter(id__range=Point(1, 5)). The else branch still passes a single generator to that constructor, raising TypeError for the missing second argument just like the reported namedtuple bug.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a variable-length instance of a namedtuple subclass via tuple.__new__ with more elements than its declared fields and pass it to an __in lookup, which previously reconstructed it from the generator. _make now raises TypeError about the expected field count, breaking that previously working lookup.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Pass a typing.NamedTuple range containing expressions, e.g. filter(num__range=Bounds(F('other'), F('other') + 1)). Resolving the bounds through the generator fed to _make raises a TypeError or leaves an expression mishandled, so the range query still cannot be built.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a list subclass (for an __in value) that defines an unrelated _make classmethod but whose constructor accepts an iterable. hasattr(type(value), '_make') now hijacks construction to _make, returning the wrong type or raising an error instead of preserving the list as before.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 758,
+      "cached_tokens": 116,
+      "output_tokens": 7489,
+      "reasoning_tokens": 7006,
+      "micro_usd": 152372,
+      "seconds": 60.374113693000254
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "blocker": 4,
+        "not_reproduced": 1,
+        "possibly_toxic": 2,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-13590/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-13590/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-13590/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-13590/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1046.6859182610006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 436.38126430899865
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:182558fe1ad77d317991102ed4c0c2b8eb683ecb99c8f6214e117eb6fffa4a11"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

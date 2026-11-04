@@ -1,0 +1,144 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~matplotlib__matplotlib-24970",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:30:05Z",
+  "wall_seconds": 2000.7555665100008,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: NumPy 1.24 deprecation warnings\n### Bug summary\r\n\r\nStarting NumPy 1.24 I observe several deprecation warnings.\r\n\r\n\r\n### Code for reproduction\r\n\r\n```python\r\nimport matplotlib.pyplot as plt\r\nimport numpy as np\r\n\r\nplt.get_cmap()(np.empty((0, ), dtype=np.uint8))\r\n```\r\n\r\n\r\n### Actual outcome\r\n\r\n```\r\n/usr/lib/python3.10/site-packages/matplotlib/colors.py:730: DeprecationWarning: NumPy will stop allowing conversion of out-of-bound Python integers to integer arrays.  The conversion of 257 to uint8 will fail in the future.\r\nFor the old behavior, usually:\r\n    np.array(value).astype(dtype)`\r\nwill give the desired result (the cast overflows).\r\n  xa[xa > self.N - 1] = self._i_over\r\n/usr/lib/python3.10/site-packages/matplotlib/colors.py:731: DeprecationWarning: NumPy will stop allowing conversion of out-of-bound Python integers to integer arrays.  The conversion of 256 to uint8 will fail in the future.\r\nFor the old behavior, usually:\r\n    np.array(value).astype(dtype)`\r\nwill give the desired result (the cast overflows).\r\n  xa[xa < 0] = self._i_under\r\n/usr/lib/python3.10/site-packages/matplotlib/colors.py:732: DeprecationWarning: NumPy will stop allowing conversion of out-of-bound Python integers to integer arrays.  The conversion of 258 to uint8 will fail in the future.\r\nFor the old behavior, usually:\r\n    np.array(value).astype(dtype)`\r\nwill give the desired result (the cast overflows).\r\n  xa[mask_bad] = self._i_bad\r\n```\r\n\r\n### Expected outcome\r\n\r\nNo warnings.\r\n\r\n### Additional information\r\n\r\n_No response_\r\n\r\n### Operating system\r\n\r\nArchLinux\r\n\r\n### Matplotlib Version\r\n\r\n3.6.2\r\n\r\n### Matplotlib Backend\r\n\r\nQtAgg\r\n\r\n### Python version\r\n\r\nPython 3.10.9\r\n\r\n### Jupyter version\r\n\r\n_No response_\r\n\r\n### Installation\r\n\r\nLinux package manager\n",
+        "start": 0,
+        "end": 1758
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~matplotlib__matplotlib-24970",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With warnings raised as errors, call plt.get_cmap() on a masked uint8 array such as np.ma.array([0, 200], dtype=np.uint8, mask=[False, True]); the masked-array path may still assign the 256/257/258 sentinels to a uint8 array and emit the NumPy deprecation warning.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the colormap on np.array([2**64 - 1], dtype=np.uint64), which before the change compared as above-range and got the over color; after astype(int) it wraps to -1 and incorrectly gets the under color.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With warnings raised as errors, call the colormap on empty and non-empty arrays of every small integer dtype (int8, uint8, int16, uint16, int32, uint32) containing negative, in-range, and above-range values; a dtype not caught by the np.issubdtype check or handled before the cast will still warn on sentinel assignment.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the colormap on a masked integer array whose masked element has underlying data in the normal range, e.g. np.ma.array([0, 10], dtype=np.uint8, mask=[False, True]); if the integer cast drops or bypasses mask handling, the masked element returns a normal color instead of the bad color it returned before.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call plt.get_cmap()(np.array([True, False])) or an object array of ints under warnings-as-errors; bool/object dtypes are neither float nor np.integer, so they reach the sentinel assignments unchanged and may still trigger the out-of-bound conversion warning or fail.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call the colormap on a read-only platform-int array containing an out-of-range value, e.g. an np.int64 array with flags.writeable=False holding 999; astype(int, copy=False) returns the same read-only array and the in-place sentinel assignment raises ValueError instead of returning the over color as before.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 932,
+      "cached_tokens": 116,
+      "output_tokens": 10111,
+      "reasoning_tokens": 9613,
+      "micro_usd": 205508,
+      "seconds": 93.03298840099887
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 3,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1249.6029580389986
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 658.1179039180024
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

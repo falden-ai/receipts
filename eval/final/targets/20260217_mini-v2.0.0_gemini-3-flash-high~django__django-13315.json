@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13315",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:43:59Z",
+  "wall_seconds": 1953.621119940999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "limit_choices_to on a ForeignKey can render duplicate options in formfield\nDescription\n\t\nIf you pass a Q object as limit_choices_to on a ForeignKey field involving a join, you may end up with duplicate options in your form.\nSee regressiontest in patch for a clear view on the problem.\n",
+        "start": 0,
+        "end": 285
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13315",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the admin autocomplete endpoint for a ForeignKey whose limit_choices_to is a Q object over a reverse or many-to-many join matching multiple rows per target object. The autocomplete view applies complex_filter without the added distinct() calls, so its JSON results and pagination still contain the same object repeatedly.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On PostgreSQL, call get_choices() on a field for a model ordered by a related field, even with no joining limit_choices_to at all. The unconditional distinct() makes the query fail with 'for SELECT DISTINCT, ORDER BY expressions must appear in select list', whereas it returned choices before the change.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On PostgreSQL, define the target model with Meta.ordering referencing a related field and call field.get_choices() with a joining Q limit_choices_to. The new SELECT DISTINCT combined with ORDER BY on a non-selected related expression raises ProgrammingError instead of returning deduplicated choices.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On Oracle or SQL Server, call get_choices() or render the formfield for a target model containing a TextField/LOB column and a simple non-joining limit_choices_to. Adding SELECT DISTINCT over all model columns now raises a database error for selecting LOB/text as DISTINCT, whereas it worked before.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build a ModelForm ForeignKey formfield whose base queryset is annotated with a value from the joined relation, then apply a joining Q limit_choices_to. Because DISTINCT includes the differing annotation values, the same primary key is still yielded multiple times as duplicate form options.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Give the target model a default manager whose queryset uses distinct('name') on PostgreSQL, then call get_choices() or create the formfield. The bare .distinct() added by the change overwrites the distinct-on-fields semantics and returns a different set of choice rows than before.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 878,
+      "cached_tokens": 116,
+      "output_tokens": 9231,
+      "reasoning_tokens": 8779,
+      "micro_usd": 187692,
+      "seconds": 77.72828253499938
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 5,
+        "s_sat_inconclusive": 2,
+        "suspected": 1,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1409.8147040100012
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 16,
+      "statuses": {
+        "unchecked": 14,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13315/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 465.46725347499887
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:64488830217057ea7dcaae1df5c8378713e67dd17c8e568b823e6ffc11ed16d5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:64488830217057ea7dcaae1df5c8378713e67dd17c8e568b823e6ffc11ed16d5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

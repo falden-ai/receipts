@@ -1,0 +1,176 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1536.2179419559998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Incorrect parenthesizing of Subs\nHere is an example.\r\n```python\r\n>>> from sympy import Subs\r\n>>> from sympy.abc import x,y\r\n>>> 3*Subs(-x+y, (x,),(1,))\r\n```\r\nLaTeX printing of this gives:  \r\n```python\r\n'3 \\\\left. - x + y \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/76/ql_9672fd7e62c909ff3d9ac8543c2e2576_l3.png)\r\n\r\n\r\nIt would be better to be parenthesized to:  \r\n```python\r\n'3 \\\\left. \\\\left(- x + y\\\\right) \\\\right|_{\\\\substack{ x=1 }}'\r\n```\r\n\r\n![image](https://quicklatex.com/cache3/bf/ql_936ffdb876e784206d4c54bb93d28dbf_l3.png)\r\n\n",
+        "start": 0,
+        "end": 567
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling latex(Subs(-x + y, (x,), (1,))**2) still groups incorrectly, because the inner Add is parenthesized but the Subs evaluation bar itself is not parenthesized as the power's base, so the exponent binds visually to the bar/subscript rather than the whole substituted expression.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling latex(Subs(Derivative(f(x), x), (x,), (y,))) previously gave \\\\left. \\\\frac{d}{d x} f(x) \\\\right| without extra parentheses, but Derivative has Add precedence so it now becomes \\\\left. \\\\left(\\\\frac{d}{d x} f(x)\\\\right) \\\\right|, breaking existing Subs/D derivative printing.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling latex(3*Subs(Sum(-x + y, (y, 1, n)), (x,), (1,))) remains ambiguous, because the Subs body is a Sum whose printed summation terms are not an Add node and are not wrapped by the Mul-level parenthesize check, so the coefficient can appear to apply only to the first summed term.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling latex(Subs(x*y, (x, y), (1, 2))) previously gave \\\\left. x y \\\\right| without parentheses, but strict Mul-level parenthesizing now wraps the product as \\\\left(x y\\\\right) even though a product needs no grouping inside the evaluation bar.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Calling latex(3*Subs(-x + y, (x,), (1,))) does not produce the issue's desired '3 \\\\left. \\\\left(- x + y\\\\right) \\\\right|_{\\\\substack{ x=1 }}', either leaving the Add ungrouped in the Mul context or adding grouping in the wrong place.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Calling latex(Subs(x + y, (x,), (1,))) for a standalone Subs previously used the evaluation bar itself as the delimiter, \\\\left. x + y \\\\right|, but the unconditional change now adds redundant \\\\left(x + y\\\\right) parentheses even when no surrounding multiplication creates ambiguity.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 699,
+      "cached_tokens": 628,
+      "output_tokens": 13234,
+      "reasoning_tokens": 12679,
+      "micro_usd": 265090,
+      "seconds": 106.72208381799999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 4,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1062.132206793
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 3,
+        "blocker": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-18763/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 365.9015052929999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:03aa4a0f227553918768ce737b5fa152d5a6b794f4c8bfd4bc9585d9b8df2337"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

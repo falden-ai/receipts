@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:14:59Z",
+  "wall_seconds": 1837.4403743940002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "RenameModel with db_table should be a noop.\nDescription\n\t\nA RenameModel operation that already has db_table defined must be a noop.\nIn Postgres, it drops and recreates foreign key constraints. In sqlite it recreates the table (as expected for a table renaming).\n",
+        "start": 0,
+        "end": 262
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rename a model with an explicit, unchanged db_table that is targeted by another model's OneToOneField: the reverse OneToOneRel is not ManyToOneRel, so alter_field is still called and drops/recreates the FK constraint or recreates the table instead of being a no-op.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call RenameModel.database_forwards with from/to states where db_table is unchanged but the incoming ForeignKey also changed db_column: the unconditional ManyToOneRel skip silently drops the needed column rename that the old alter_field call performed.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rename a model with an explicit, unchanged db_table that is targeted by another model's ManyToManyField: the reverse ManyToManyRel is not skipped, so alter_field still recreates the through-table/FK constraints instead of emitting no SQL.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call RenameModel with unchanged db_table while the renamed model's referenced primary-key/to_field column differs between states: skipping alter_field leaves the incoming FK constraint pointing at the old referenced column instead of recreating it.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rename a model with an explicit, unchanged db_table that itself defines an auto-created ManyToManyField: the separate M2M through-table handling outside the patched loop still calls alter_field/alter_db_table for the through model, so the operation is not a true no-op.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rename a model with unchanged db_table that is the parent in multi-table inheritance or otherwise referenced by a field whose schema depends on the model identity: compare the migrated schema against a freshly created schema and check for stale FK constraint/index definitions caused by skipping alter_field based only on db_table equality.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 521,
+      "cached_tokens": 116,
+      "output_tokens": 8895,
+      "reasoning_tokens": 8476,
+      "micro_usd": 179544,
+      "seconds": 64.76551611800096
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 3,
+        "possibly_toxic": 1,
+        "blocker": 4,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999/fixed_x/correctness-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999/fixed_x/correctness-3.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14999/fixed_x/correctness-3.3"
+      ],
+      "wall_seconds": 1374.3780790369983
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 11
+      },
+      "blockers": [],
+      "wall_seconds": 397.0358488849997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:1a08e226c39d494f523041e0e6b2a7cc97385c101cfb774007e1bad3d2453eec"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:1a08e226c39d494f523041e0e6b2a7cc97385c101cfb774007e1bad3d2453eec"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:1a08e226c39d494f523041e0e6b2a7cc97385c101cfb774007e1bad3d2453eec"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

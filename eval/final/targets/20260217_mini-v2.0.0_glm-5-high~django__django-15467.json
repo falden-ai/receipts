@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15467",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:34:52Z",
+  "wall_seconds": 1748.7607212130006,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "ModelAdmin with defined radio_fields override empty_label\nDescription\n\t\nModelAdmin drops my \"empty_label\" and set \"default_empty_label\". For example:\nclass MyModelAdmin(ModelAdmin):\n\tradio_fields = 'myfield',\n\tdef formfield_for_foreignkey(self, db_field, *args, **kwargs):\n\t\tif db_field.name == 'myfield':\n\t\t\tkwargs['empty_label'] = \"I WANT TO SET MY OWN EMPTY LABEL\"\n\t\treturn super().formfield_for_foreignkey(db_field, *args, **kwargs)\nYou get never the \"I WANT TO SET MY OWN EMPTY LABEL\"\nHow to fix it:\nIn django\\contrib\\admin\\options.py, row 234:\nkwargs['empty_label'] = _('None') if db_field.blank else None\nShould be changed on:\nkwargs['empty_label'] = (kwargs.get('empty_label') or _('None')) if db_field.blank else None\n",
+        "start": 0,
+        "end": 727
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15467",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For a radio_fields ForeignKey with blank=False, an override setting kwargs['empty_label']='I WANT TO SET MY OWN EMPTY LABEL' before super() retains that label instead of forcing None as the issue's proposed fix does, so a required field incorrectly renders an empty radio choice.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An existing caller that passes empty_label=None or '' for a blank=True radio_fields ForeignKey now keeps that value instead of being forced to _('None'), so the 'None' clear radio option disappears and a previously set FK can no longer be cleared in the admin.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "For a radio_fields ForeignKey with blank=True, an override setting kwargs['empty_label']='' (falsy) before super() retains '' instead of falling back to _('None') via (kwargs.get('empty_label') or _('None')), so the empty radio choice renders with a blank label rather than 'None'.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An existing caller that passes any empty_label (e.g. '---------' from formfield_overrides or a generic override) for a blank=False radio_fields ForeignKey now renders an empty choice for a required field where previously empty_label was forced to None, changing choice counts and allowing empty submission attempts.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "At the integration level, GET the admin add/change form for a blank=True radio_fields ForeignKey whose ModelAdmin override sets the custom empty_label before super() and assert the rendered radio HTML contains the custom label; the field attribute may be preserved while the rendered choices still show 'None'.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A ModelAdmin override that sets kwargs['empty_label'] unconditionally for all foreign keys (intending it for dropdowns) now leaks that label into radio_fields fields instead of the translated 'None', changing labels on existing radio admins that worked before the change.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 674,
+      "cached_tokens": 116,
+      "output_tokens": 8279,
+      "reasoning_tokens": 7825,
+      "micro_usd": 167836,
+      "seconds": 65.19411704100094
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "possibly_toxic": 2,
+        "not_reproduced": 2,
+        "suspected": 4
+      },
+      "blockers": [],
+      "wall_seconds": 1020.2023172940007
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 2,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 661.8008125039996
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:523a56bac7a6eff33039d398056583824fc6d38e70b69750fd9a22378ad08f18"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

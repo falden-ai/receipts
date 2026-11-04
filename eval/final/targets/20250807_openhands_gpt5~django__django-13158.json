@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-13158",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:03:43Z",
+  "wall_seconds": 1638.0332997410005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "QuerySet.none() on combined queries returns all results.\nDescription\n\t\nI came across this issue on Stack Overflow. I'm not 100% sure it's a bug, but it does seem strange. With this code (excuse the bizarre example filtering):\nclass Publication(models.Model):\n\tpass\nclass Article(models.Model):\n\tpublications = models.ManyToManyField(to=Publication, blank=True, null=True)\nclass ArticleForm(forms.ModelForm):\n\tpublications = forms.ModelMultipleChoiceField(\n\t\tPublication.objects.filter(id__lt=2) | Publication.objects.filter(id__gt=5),\n\t\trequired=False,\n\t)\n\tclass Meta:\n\t\tmodel = Article\n\t\tfields = [\"publications\"]\nclass ArticleAdmin(admin.ModelAdmin):\n\tform = ArticleForm\nThis works well. However, changing the ModelMultipleChoiceField queryset to use union() breaks things.\npublications = forms.ModelMultipleChoiceField(\n\tPublication.objects.filter(id__lt=2).union(\n\t\tPublication.objects.filter(id__gt=5)\n\t),\n\trequired=False,\n)\nThe form correctly shows only the matching objects. However, if you submit this form while empty (i.e. you didn't select any publications), ALL objects matching the queryset will be added. Using the OR query, NO objects are added, as I'd expect.\n",
+        "start": 0,
+        "end": 1176
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-13158",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Reproduce the issue end-to-end with a ModelMultipleChoiceField whose queryset is Publication.objects.filter(id__lt=2).union(Publication.objects.filter(id__gt=5)); submitting the ModelForm empty and saving m2m data still adds all union-matching publications instead of none.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Call operations forbidden on combined querysets through .none(), e.g. Publication.objects.all().union(other).none().delete(), .update(), or .filter(id=1); before the change these raised NotSupportedError, but resetting the query drops the combinator flag so they now silently succeed.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Call .none() on intersection() and difference() combined querysets, not just union(), and evaluate with list(), count(), and exists(); one of these still returns or counts the combined rows instead of being empty.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Take a sliced combined queryset such as union_qs[:2].none() and then call .filter() or re-slice it; before the change this raised TypeError for filtering/slicing an already-sliced query, but the fresh replacement query loses is_sliced and allows it.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Use a combined .none() queryset nested in another operation, e.g. Article.objects.filter(publications__in=Publication.objects.filter(id__lt=2).union(Publication.objects.filter(id__gt=5)).none()) or (union_qs.none()).union(other_qs); the outer query still returns rows from the supposedly empty combined queryset, or returns nothing where union with other_qs should return other_qs.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Recombine an annotated or values() combined queryset after .none(), e.g. qs.values('id').union(qs2.values('id')).none().union(qs3.values('id')); the replacement plain Query loses the original values/annotation column setup, causing a column-count/FieldError failure or wrongly shaped results instead of just qs3's rows.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 798,
+      "cached_tokens": 116,
+      "output_tokens": 9489,
+      "reasoning_tokens": 8983,
+      "micro_usd": 192532,
+      "seconds": 94.15906022000127
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 773.4510063760026
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "unchecked": 4,
+        "not_reproduced": 3,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 769.857468309001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:57f86769288206a13dd48b7b7e83af12749cfdff5e38c21a41e41690d437c9a1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

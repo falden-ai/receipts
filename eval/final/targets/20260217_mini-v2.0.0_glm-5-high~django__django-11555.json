@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11555",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:45:37Z",
+  "wall_seconds": 1788.2019926850007,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "order_by() a parent model crash when Meta.ordering contains expressions.\nDescription\n\t \n\t\t(last modified by Jonny Fuller)\n\t \nHi friends,\nDuring testing I discovered a strange bug when using a query expression for ordering during multi-table inheritance. You can find the full write up as well as reproducible test repository ​https://github.com/JonnyWaffles/djangoordermetabug. The bug occurs because the field is an OrderBy object, not a string, during get_order_dir. The linked stacktrace should make the issue obvious, but what I don't understand is why it only fails during test db setup, not during repl or script use. I wish I could help more and come up with a real solution. Hopefully, this is enough for someone wiser to find the culprit.\n",
+        "start": 0,
+        "end": 748
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11555",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With multi-table inheritance where the child model's Meta.ordering is [F('child_only_field').desc()] or [Lower('child_only_field')], querying Parent.objects.order_by('child') either still crashes or silently drops the ordering instead of returning rows in the child's expression order. Assert the exact result order, not merely that no exception is raised.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Model.objects.order_by(Lower('nonexistent_field')) or use a Meta.ordering expression referencing a misspelled field: before the change this raised FieldError, but the new try/except in get_order_by silently swallows it and returns unordered results. A test expecting FieldError for invalid ordering now fails.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Query Parent.objects.order_by('other_field', '-child') where the child's Meta.ordering contains Lower('name'): the descending direction for '-child' is lost because the patch relies on global standard_ordering rather than the per-field direction, so results come back ascending by the child's name instead of descending. A mixed-direction ordering test would show the wrong sequence.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Order by a relation, e.g. Book.objects.order_by('author'), where Author.Meta.ordering is [F('name')] and both Book and Author have a 'name' field: the early return in find_ordering_name bypasses join setup, so F('name') resolves against Book instead of the joined Author table and returns books ordered by their own name. Previously working related ordering by F() expressions gives the wrong order.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a child Meta.ordering containing a constant or wrapped constant such as [OrderBy(Value(1, output_field=IntegerField()))] and query the parent by the child relation: the patch's Cast special-case only handles a bare Value, so compilation still raises a FieldError/TypeError or fails to resolve the constant's output field instead of completing without a crash.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Order by a relation whose Meta.ordering contains a bare Value constant, e.g. [Value('x', output_field=CharField())]: the patch rewrites it to Cast(name, output_field), changing the generated SQL and ordering semantics (or failing on backends/field types where the cast is unsupported) for a case that previously compiled as a plain constant. A query that worked before now produces different SQL or errors.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1101,
+      "cached_tokens": 116,
+      "output_tokens": 8839,
+      "reasoning_tokens": 8277,
+      "micro_usd": 180744,
+      "seconds": 68.83542177799973
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 2,
+        "unchecked": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1400.4003163529997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 318.3904564769982
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:87ce10a1f9e7851e8af8b4d30368fe803ee53449ac44ccad49c3935a9ad3010a"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:87ce10a1f9e7851e8af8b4d30368fe803ee53449ac44ccad49c3935a9ad3010a"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.001" timestamp="2026-10-27T00:00:00.000000+00:00" hostname="sandbox"><testcase classname="tests.test_setup.T" name="test_never" file="tests/test_setup.py" line="9" time="0.001"><failure message="ZeroDivisionError: division by zero">Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/unittest/case.py", line 58, in testPartExecutor
+    yield
+  File "/usr/local/lib/python3.13/unittest/case.py", line 647, in run
+    self._callSetUp()
+    ~~~~~~~~~~~~~~~^^
+  File "/usr/local/lib/python3.13/unittest/case.py", line 603, in _callSetUp
+    self.setUp()
+    ~~~~~~~~~~^^
+  File "/workspace/tests/test_setup.py", line 8, in setUp
+    divide(1, 0)
+    ~~~~~~^^^^^^
+  File "/workspace/src/pkg/mod.py", line 2, in divide
+    return a / b
+           ~~^~~
+ZeroDivisionError: division by zero</failure></testcase></testsuite></testsuites>

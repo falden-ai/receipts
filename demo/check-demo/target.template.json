@@ -1,0 +1,16 @@
+{
+  "target": {
+    "id": "receipts-demo-pr-1",
+    "tier": "live",
+    "repo": "OWNER/receipts-demo",
+    "base_sha": "BASE_SHA_40_HEX",
+    "patch_sha": "PR_HEAD_SHA_40_HEX",
+    "patch": "UNIFIED_DIFF_FROM_BASE_TO_PR_HEAD",
+    "title": "Demo: a deliberately planted discount-boundary regression",
+    "body": "Falden-owned demo repository. This regression was planted for the demonstration. The discount must apply at five items or more.",
+    "image": "ghcr.io/OWNER/receipts-demo@sha256:BASE_IMAGE_DIGEST_64_HEX",
+    "test_runner": "pytest",
+    "test_command": "python -m pytest"
+  },
+  "temperatures": "spec"
+}

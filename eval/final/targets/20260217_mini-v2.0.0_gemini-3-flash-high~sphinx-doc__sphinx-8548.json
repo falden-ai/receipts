@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8548",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:34:39Z",
+  "wall_seconds": 1199.9831756530002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "autodoc inherited-members won't work for inherited attributes (data members).\nautodoc searches for a cached docstring using (namespace, attrname) as search-key, but doesn't check for baseclass-namespace.\n\n---\n- Bitbucket: https://bitbucket.org/birkenfeld/sphinx/issue/741\n- Originally reported by: Anonymous\n- Originally created at: 2011-08-02T17:05:58.754\n\n",
+        "start": 0,
+        "end": 358
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8548",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With Base defining a class-valued attribute such as `attr = SomeClass #: documented` and Sub(Base) documented with inherited-members, find_attr_doc treats SomeClass as the class to search because inspect.isclass(self.object) takes priority over self.parent, so it searches SomeClass's MRO instead of Sub's and the inherited documentation is missing.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With autodoc_inherit_docstrings disabled, Sub overriding Base's documented attribute without its own documentation now receives Base's documentation and is kept as a documented member when inherited-members is enabled, whereas previously the overridden attribute remained undocumented.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With Base defining an annotation-only attribute such as `attr: int #: documented`, Sub(Base) documented with inherited-members never generates the inherited member because it has no runtime value in Sub and Sub.__annotations__ does not contain it, so find_attr_doc is never reached for it.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "An attribute in the documented class with an empty attribute-doc list is treated as undocumented because the new code tests truthiness instead of key membership, so a member previously kept by `(namespace, name) in attr_docs` is now dropped or falls back to the value's docstring.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Documenting an inherited attribute directly with `autoattribute:: Sub.attr`, without an enclosing autoclass inherited-members option, leaves inherited_members unset on the attribute documenter, so the MRO search is skipped and Base's attribute documentation is not emitted.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For a subclass of a library class documented with inherited-members, find_attr_doc now parses every MRO base class's module, including stdlib and builtin bases, and can keep or document inherited library data members from their source comments that were previously ignored because only the documented module's analyzer was consulted.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1062,
+      "cached_tokens": 116,
+      "output_tokens": 11730,
+      "reasoning_tokens": 11282,
+      "micro_usd": 238408,
+      "seconds": 120.03210169500016
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 2,
+        "blocker": 1,
+        "unchecked": 2,
+        "suspected": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-8548/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 679.1858963310005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 3,
+        "refuted": 1,
+        "s_sat_inconclusive": 1,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 400.3716892190023
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2741082210bec885b9e2c4315b46a616b7078c75e1c96c112ec29a204ab14c7e"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2741082210bec885b9e2c4315b46a616b7078c75e1c96c112ec29a204ab14c7e"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,153 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-17084",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:35:01Z",
+  "wall_seconds": 1050.1076440179995,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Cannot use aggregate over window functions since 4.2\nDescription\n\t \n\t\t(last modified by younes-chaoui)\n\t \nAfter upgrading to Django 4.2, I encountered an exception when executing ORM queries that involve aggregates over Window functions. The specific error was psycopg2.errors.GroupingError: aggregate function calls cannot contain window function calls\nDependencies :\npsycopg2 version: 2.9.3\ndjango version: 4.2.3\nPostgreSQL version: 13.4\nExample Code:\nqueryset = queryset.annotate(\n\tcumul_DJR=Coalesce(Window(Sum(\"DJR\"), order_by=F(\"date\").asc()), 0.0)\n)\naggregate = queryset.aggregate(\n\tDJR_total=Sum(\"DJR\"),\n\tcumul_DJR_total=Sum(\"cumul_DJR\")\n)\n",
+        "start": 0,
+        "end": 648
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-17084",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Run the issue's exact query: annotate cumul_DJR=Coalesce(Window(Sum('DJR'), order_by=F('date').asc()), 0.0), then aggregate DJR_total=Sum('DJR') and cumul_DJR_total=Sum('cumul_DJR'). It still raises GroupingError about aggregate calls containing window calls, or returns a wrong cumul_DJR_total, because the outer aggregate still expands the window expression instead of summing the subquery column.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Call aggregate with the reverse nesting that was valid before, e.g. Model.objects.aggregate(cumul=Window(Sum('DJR'), order_by=F('date').asc())), a window over an aggregate rather than an aggregate over a window. The new check treats any contains_over_clause as needing a subquery, so this previously working query now crashes or returns an incorrectly aggregated value.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Reference the window indirectly through a second annotation, e.g. annotate(cumul=Window(Sum('DJR'), order_by='date'), double_cumul=F('cumul') * 2) and then aggregate(total=Sum('double_cumul')). The contains_over_clause check misses the window hidden behind the intermediate annotation reference, so the query still generates an aggregate over a window function and crashes.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Mix a plain aggregate with a standalone window in one call, e.g. aggregate(total=Sum('DJR'), rank=Window(RowNumber(), order_by='date')), which PostgreSQL could compute in a single query before. Forcing the subquery path changes or breaks the rank/total result even though no aggregate-over-window needed fixing.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Call the aggregate over a window directly without a prior annotate(), e.g. Model.objects.aggregate(total=Sum(Window(Sum('DJR'), order_by='date'))). The forced subquery has no annotation_select entry to pull the window expression from, so it is dropped or still nested, raising FieldError/GroupingError instead of returning the summed cumulative value.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Aggregate a window-over-aggregate over a combined queryset, e.g. (qs1.union(qs2)).aggregate(cumul=Window(Sum('DJR'), order_by='date')). Wrapping the combined query in an AggregateQuery subquery drops or mishandles the union, changing the result or raising an error compared with the pre-change behavior.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 744,
+      "cached_tokens": 116,
+      "output_tokens": 10913,
+      "reasoning_tokens": 10319,
+      "micro_usd": 220796,
+      "seconds": 79.97637317200042
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 4,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 564.6578857940003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 404.8086161370002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:4df19af27efb337109e503c41dd53efb1d89073a1cd93a25d49e0e7f4638ef63"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:4df19af27efb337109e503c41dd53efb1d89073a1cd93a25d49e0e7f4638ef63"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

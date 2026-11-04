@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:31:11Z",
+  "wall_seconds": 1538.455112265,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "SI._collect_factor_and_dimension() cannot properly detect that exponent is dimensionless\nHow to reproduce:\r\n\r\n```python\r\nfrom sympy import exp\r\nfrom sympy.physics import units\r\nfrom sympy.physics.units.systems.si import SI\r\n\r\nexpr = units.second / (units.ohm * units.farad)\r\ndim = SI._collect_factor_and_dimension(expr)[1]\r\n\r\nassert SI.get_dimension_system().is_dimensionless(dim)\r\n\r\nbuggy_expr = 100 + exp(expr)\r\nSI._collect_factor_and_dimension(buggy_expr)\r\n\r\n# results in ValueError: Dimension of \"exp(second/(farad*ohm))\" is Dimension(time/(capacitance*impedance)), but it should be Dimension(1)\r\n```\n",
+        "start": 0,
+        "end": 605
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call SI._collect_factor_and_dimension(exp(expr + 1)) with expr = second/(ohm*farad); the inner Add still compares the raw dimensionless dimension against Dimension(1) and raises ValueError before the Function normalization can run.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call SI._collect_factor_and_dimension(Abs(expr)) or an undefined f(expr) with expr = second/(ohm*farad); dimension-preserving functions previously returned the raw dimension but now return Dimension(1), and Abs(expr) + expr newly raises ValueError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call SI._collect_factor_and_dimension(exp(expr) + expr) with the same expr; the exp term is normalized to Dimension(1) while the bare expr keeps Dimension(time/(capacitance*impedance)), so Add raises ValueError even though both terms are dimensionless.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call SI._collect_factor_and_dimension(Min(expr, 2*expr) + expr) with the same expr; the multi-argument dimension-preserving function previously kept the raw dimensions so the addition passed, but now its normalized Dimension(1) mismatches expr and raises ValueError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call SI._collect_factor_and_dimension(100 + sqrt(expr)) with the same expr; the Pow path returns the raw dimension raised to 1/2 instead of Dimension(1), so the Add still raises ValueError for a dimensionless term.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a UnitSystem constructed without a dimension system (get_dimension_system() returning None) and call _collect_factor_and_dimension(exp(second)); previously this returned the argument dimension without needing a dimension system, but now it crashes with AttributeError on None.is_dimensionless.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 664,
+      "cached_tokens": 244,
+      "output_tokens": 9318,
+      "reasoning_tokens": 8895,
+      "micro_usd": 188089,
+      "seconds": 66.11744367600022
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "blocker": 4,
+        "suspected": 1,
+        "unchecked": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066/nothing_else_changed/regression-3.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066/nothing_else_changed/regression-3.3"
+      ],
+      "wall_seconds": 1004.1781576029998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 4,
+        "not_reproduced": 2,
+        "possibly_toxic": 4,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~sympy__sympy-24066/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 466.3102184489999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:01cc372a2288435d1cd3c2d3e5aca29fc2b91c953e6f847dae16cc45bdc9d112"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:01cc372a2288435d1cd3c2d3e5aca29fc2b91c953e6f847dae16cc45bdc9d112"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:01cc372a2288435d1cd3c2d3e5aca29fc2b91c953e6f847dae16cc45bdc9d112"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:01cc372a2288435d1cd3c2d3e5aca29fc2b91c953e6f847dae16cc45bdc9d112"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

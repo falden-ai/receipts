@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-7910",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:36:26Z",
+  "wall_seconds": 1593.4540995549996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Decorated __init__ doesn't show up in docs\nSubject: Decorated __init__ won't be documented. I'm working on [tensorpack](github.com/ppwwyyxx/tensorpack)\r\n\r\n### Problem\r\n- I have `napoleon_include_init_with_doc = True`, so `__init__` will be documented. But if I decorate the `__init__` method, it will not show up in docs.\r\nI decorate it with `functools.wraps`, so the decorated object still has the same `__doc__`.\r\nI've found that the bug is due to this commit: https://github.com/sphinx-doc/sphinx/commit/bbfd0d058aecf85bd3b711a846c83e2fe00fa136\r\nI've printed the relevant variables in that function:\r\n```\r\nqualname='DistributedTrainerReplicated.__init__'\r\nname='__init__'\r\nobj.__doc__ has contents\r\n```\r\nAnd the root cause of the issue is in this line of code:\r\n```python\r\ncls = obj.__globals__[cls_path]\r\n```\r\nBecause `obj` now is not the method itself, but a decorated method, its `__globals__` does not contain the class anymore. This makes sphinx think it's not a method, i.e. `cls_is_owner=False`.\r\n\r\n\r\n### Environment info\r\n- OS: <Unix/Linux/Mac/Win/other with version>: ArchLinux\r\n- Python version: 3.6\r\n- Sphinx version:1.6.5\r\n\n",
+        "start": 0,
+        "end": 1139
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-7910",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Build docs with napoleon_include_init_with_doc=True for a top-level class whose __init__ is wrapped by a decorator in another module that preserves __doc__ and __qualname__ but leaves the wrapper's __module__ as the decorator's module. _skip_member will import the decorator module, fail to find the class there, and still skip the decorated __init__.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Document an undecorated __init__ with a docstring on a class created dynamically or inside a function, where the class is present in the function's __globals__ but not as an attribute of obj.__module__. Previously _skip_member returned False and included it; now the import/getattr lookup fails and it is skipped.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Document a class defined inside a function or otherwise not reachable as a module attribute, with a functools.wraps-decorated __init__ whose __qualname__ contains '<locals>'. The module-level getattr chain cannot resolve the class, so cls_is_owner stays False and the __init__ remains undocumented.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Document an undecorated __init__ from a module whose obj.__module__ is None, '__main__', mocked, or not importable by name, while obj.__globals__ contains the class. Previously no import was needed for a top-level class; now importlib.import_module raises, cls_is_owner becomes False, and the member is newly skipped.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "[correctness] Decorate __init__ with a decorator returning a callable object, functools.partial, or other non-FunctionType/MethodType wrapper that carries the original __doc__. _skip_member will not treat it as having a doc before reaching the fixed lookup, so the decorated __init__ is still skipped.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "[regression] Use a function defined in one module whose globals contain its owning class, but assign it as __init__ to a class in another module or rebind the module attribute to a different class of the same name. The new obj.__module__ lookup resolves the wrong class and changes the 'name in cls.__dict__' owner check, so a previously included __init__ is skipped or a previously skipped one is included.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 892,
+      "cached_tokens": 244,
+      "output_tokens": 5236,
+      "reasoning_tokens": 4689,
+      "micro_usd": 107361,
+      "seconds": 36.548144085999866
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "unchecked": 4,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 1032.408767802
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 4
+      },
+      "blockers": [],
+      "wall_seconds": 522.1159538849997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:3421bb5981dcd2acf1e4fff2d6f653fb4407bfcb306f476de47fe43d43800570"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

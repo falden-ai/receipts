@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13112",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:45:20Z",
+  "wall_seconds": 1208.7820977039992,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "makemigrations crashes for ForeignKey with mixed-case app name.\nDescription\n\t\nWhen i run \"python3 manage.py migrate\" on Django 3.1b1 shows me that error (Please, note that the code works well in 3.0)\nValueError: The field DJ_RegLogin.Content.category was declared with a lazy reference to 'dj_reglogin.category', but app 'dj_reglogin' isn't installed.\nmodel.py (Conflict Part)\nclass Category(models.Model):\n\ttitle = models.CharField(max_length=100, db_index=True)\n\tslug = models.SlugField(max_length=100, db_index=True)\n\tclass Meta:\n\t\tverbose_name = 'Category'\n\t\tverbose_name_plural = 'Categories'\n\tdef __str__(self):\n\t\treturn self.title\n\tdef get_absolute_url(self):\n\t\treturn reverse('view_blog_category', None, kwargs={'slug': self.slug})\nclass Content(models.Model):\n\ttitle = models.CharField(max_length=100, unique=True)\n\tslug = models.SlugField(max_length=100, unique=True)\n\tbody = RichTextField(config_name='default')\n\tposted = models.DateTimeField(db_index=True, auto_now_add=True)\n\tsites = models.ManyToManyField(Site)\n\tip = models.GenericIPAddressField(editable=False)\n\tcategory = models.ForeignKey(Category, on_delete=models.CASCADE)\n\tuser = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, editable=False)\n\tstatus = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')\n\tdef __str__(self):\n\t\treturn self.title\n\tdef get_absolute_url(self):\n\t\treturn reverse('view_blog_post', None, kwargs={'slug': self.slug})\nsettings.py (Related to issue part)\nINSTALLED_APPS = [\n\t'DJ_RegLogin',\n\t'django.contrib.admin',\n\t'django.contrib.auth',\n\t'django.contrib.contenttypes',\n\t'django.contrib.sessions',\n\t'django.contrib.messages',\n\t'django.contrib.staticfiles',\n\t'social_django',\n\t'ckeditor',\n\t'django.contrib.sites',\n\t'django.contrib.flatpages',\n\t'django.contrib.sitemaps',\n]\napps.py\nfrom django.apps import AppConfig\nclass DJ_RegLoginConfig(AppConfig):\n\tname = 'DJ_RegLogin'\n\tverbose_name = \"Contents\"\n",
+        "start": 0,
+        "end": 1944
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-13112",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A ManyToManyField with to='DJ_RegLogin.Category' in an app installed with label 'DJ_RegLogin' still deconstructs to 'dj_reglogin.category' because ManyToManyField has separate deconstruction logic, so rendering the migration state raises ValueError that app 'dj_reglogin' isn't installed.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For an unchanged model in app 'DJ_RegLogin', comparing a new model state against an existing migration state serialized as to='dj_reglogin.category' now generates a spurious AlterField, whereas before the change both sides normalized to the same lowercased reference and makemigrations reported no changes.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Loading an existing migration or ProjectState whose ForeignKey is already serialized as to='dj_reglogin.category' for the installed 'DJ_RegLogin' app still crashes during makemigrations/state rendering, because the change only alters future deconstruction and does not make lazy-reference resolution accept the lowercased app label.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A ForeignKey written as 'MyApp.Model' for an installed app whose label is 'myapp' previously deconstructed to 'myapp.model' and resolved in migration state, but now preserves 'MyApp.model' and raises LookupError for an uninstalled app label.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With AUTH_USER_MODEL='DJ_RegLogin.CustomUser', deconstructing a ForeignKey to that swappable model fails to emit a SettingsReference for AUTH_USER_MODEL and instead hardcodes 'DJ_RegLogin.customuser' with swappable=False, so the mixed-case swappable reference is not handled correctly.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With installed app label 'myapp' and AUTH_USER_MODEL='myapp.CustomUser', a ForeignKey written as 'MyApp.CustomUser' previously matched the swappable setting after lowercasing and deconstructed to a SettingsReference, but now emits a literal reference with swappable=False so later user-model swaps no longer retarget it.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1018,
+      "cached_tokens": 116,
+      "output_tokens": 10526,
+      "reasoning_tokens": 10048,
+      "micro_usd": 214152,
+      "seconds": 73.83042432399816
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 1,
+        "suspected": 3,
+        "not_reproduced": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 786.6746217930013
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 1,
+        "s_sat_inconclusive": 1,
+        "unchecked": 8,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 347.6485567999989
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d974a8b4f4f253214b47a856e75890bc4547d5914701a9f9b1d0353b19648e37"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:d974a8b4f4f253214b47a856e75890bc4547d5914701a9f9b1d0353b19648e37"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

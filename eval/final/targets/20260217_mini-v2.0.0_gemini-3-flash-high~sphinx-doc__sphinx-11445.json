@@ -1,0 +1,168 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-11445",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:51:12Z",
+  "wall_seconds": 1457.759464351002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Using rst_prolog removes top level headings containing a domain directive\n### Describe the bug\r\n\r\nIf `rst_prolog` is set, then any documents that contain a domain directive as the first heading (eg `:mod:`) do not render the heading correctly or include the heading in the toctree.\r\n\r\nIn the example below, if the heading of `docs/mypackage.rst` were `mypackage2` instead of `:mod:mypackage2` then the heading displays correctly.\r\nSimilarly, if you do not set `rst_prolog` then the heading will display correctly.\r\n\r\nThis appears to have been broken for some time because I can reproduce it in v4.0.0 of Sphinx\r\n\r\n### How to Reproduce\r\n\r\n```bash\r\n$ sphinx-quickstart --no-sep --project mypackage --author me -v 0.1.0 --release 0.1.0 --language en docs\r\n$ echo -e 'Welcome\\n=======\\n\\n.. toctree::\\n\\n   mypackage\\n' > docs/index.rst\r\n$ echo -e ':mod:`mypackage2`\\n=================\\n\\nContent\\n\\nSubheading\\n----------\\n' > docs/mypackage.rst\r\n$ echo -e 'rst_prolog = \"\"\"\\n.. |psf| replace:: Python Software Foundation\\n\"\"\"\\n' >> docs/conf.py\r\n$ sphinx-build -b html . _build\r\n$ grep 'mypackage2' docs/_build/index.html\r\n```\r\n\r\n`docs/index.rst`:\r\n\r\n```rst\r\nWelcome\r\n=======\r\n\r\n.. toctree::\r\n\r\n   mypackage\r\n```\r\n\r\n`docs/mypackage.rst`:\r\n\r\n```rst\r\n:mod:`mypackage2`\r\n=================\r\n\r\nContent\r\n\r\nSubheading\r\n----------\r\n```\r\n\r\n### Environment Information\r\n\r\n```text\r\nPlatform:              linux; (Linux-6.3.2-arch1-1-x86_64-with-glibc2.37)\r\nPython version:        3.11.3 (main, Apr  5 2023, 15:52:25) [GCC 12.2.1 20230201])\r\nPython implementation: CPython\r\nSphinx version:        7.1.0+/d3c91f951\r\nDocutils version:      0.20.1\r\nJinja2 version:        3.1.2\r\nPygments version:      2.15.1\r\n```\r\n\r\n\r\n### Sphinx extensions\r\n\r\n```python\r\n[]\r\n```\r\n\r\n\r\n### Additional context\r\n\r\n_No response_\n",
+        "start": 0,
+        "end": 1791
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-11445",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With rst_prolog set, a first heading written as ':mod: `mypackage2`' (space after the role colon) followed by '=================' still matches docinfo_re, so the prolog is inserted between title and underline and the heading is lost from the HTML and toctree.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A document starting with a no-space docinfo field such as ':Version:1.0' and rst_prolog previously had the prolog inserted after the field, but now the prolog goes before it, so the field is no longer recognised as docinfo and renders as an ordinary field list instead of bibliographic metadata.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rebuilding the exact issue example (':mod:`mypackage2`' as the first heading, rst_prolog defining |psf|) still fails: the heading text or its pending cross-reference is not extracted as the section title, so 'mypackage2' does not appear as the linked title in index.html's toctree.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A contiguous docinfo block such as ':Author: Me', ':Contact:`me@example.com`', ':Date: 2024-01-01' is now split by the prolog at the glued-value middle field, so the later fields lose docinfo treatment and render differently from before the change.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "A document beginning with a genuine docinfo line such as ':Author: Me' followed by the heading ':py:mod:`mypackage2`' / '=================' still breaks with rst_prolog, because prolog placement after the docinfo line separates or alters the title so it is missing from the rendered heading/toctree.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A page starting with a glued Sphinx metadata field such as ':tocdepth:2' plus rst_prolog now has the prolog inserted before the field, causing the metadata to be missed or rendered visibly and changing toctree depth/search behaviour that worked before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 990,
+      "cached_tokens": 244,
+      "output_tokens": 9750,
+      "reasoning_tokens": 9268,
+      "micro_usd": 198033,
+      "seconds": 86.46065042199916
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 2,
+        "suspected": 3,
+        "unchecked": 1,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1003.1030724030024
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 2,
+        "unchecked": 5,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 367.5249436640006
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:d167b528f69597a61821b619972f251c4a6e4b2821b2c28a4df23c969f8b717e"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13569",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:51:09Z",
+  "wall_seconds": 1173.7031619619993,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "order_by('?') unexpectedly breaking queryset aggregation\nDescription\n\t\nSteps to reproduce:\nclass Thing(models.Model):\n\tpass\nclass Related(models.Model):\n\tmodels.ForeignKey(Thing)\nWith data\nt = Thing.objects.create()\nrs = [Related.objects.create(thing=t) for _ in range(2)]\nThe following query works as expected. The aggregation with Count produces a GROUP BY clause on related.id.\n>>> Thing.objects.annotate(rc=Count('related')).order_by('rc').values('id', 'rc')\n<QuerySet [{'id': 1, 'rc': 2}]>\nThis also works as expected (at least to me). Although there is an aggregation, ordering by related means that the grouping will be broken down.\n>>> Thing.objects.annotate(rc=Count('related')).order_by('related').values('id', 'rc')\n<QuerySet [{'id': 1, 'rc': 1}, {'id': 1, 'rc': 1}]>\nBut the following seems wrong to me.\n>>> Thing.objects.annotate(rc=Count('related')).order_by('?').values('id', 'rc')\n<QuerySet [{'id': 1, 'rc': 1}, {'id': 1, 'rc': 1}]>\nThe random function call has nothing to do with the aggregation, and I see no reason it should break it. Dumping the query seems that indeed the random call breaks the group by call: (I simpilfied the table names a little)\n>>> print(Thing.objects.annotate(rc=Count('related')).order_by('?').values('id', 'rc').query)\nSELECT \"thing\".\"id\", COUNT(\"related\".\"id\") AS \"rc\" FROM \"thing\" LEFT OUTER JOIN \"related\" ON (\"thing\".\"id\" = \"related\".\"thing_id\") GROUP BY \"thing\".\"id\", RANDOM() ORDER BY RANDOM() ASC\nI dug into the SQL compiler, and it seems to me the problem is inside django.db.models.sql.compiler.get_group_by, where the compiler combines all non-aggregate, non-ref order_by expressions into group_by. I patched it like this\nfor expr, (sql, params, is_ref) in order_by:\n\tif expr.contains_aggregate:\n\t\tcontinue\n\tif is_ref:\n\t\tcontinue\n\texpressions.extend([\n\t\texp for exp in expr.get_source_expressions()\n\t\tif not isinstance(exp, Random)\n\t])\nand things seem to work correctly. No failed tests against SQLite3 with default settings.\n",
+        "start": 0,
+        "end": 1983
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13569",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Reproduce the issue as Thing.objects.annotate(rc=Count('related')).order_by('?').values('id', 'rc') with one Thing and two Related rows; the result may still return two rows with rc=1 instead of one row with rc=2 if RANDOM() remains in GROUP BY.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Without any order_by('?'), run Thing.objects.annotate(rc=Count('related'), r=Random()).values('id', 'rc', 'r'); previously RANDOM() in the select list contributed to GROUP BY and produced separate rc=1 rows, but now it contributes no grouping columns and may collapse to one rc=2 row.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Order by an annotated random alias instead of literal '?', e.g. annotate(rc=Count('related'), rand=Random()).order_by('rand').values('id', 'rc'); because the alias resolves through Ref/Col with contains_random=False, RANDOM() may still enter GROUP BY and split the count into rc=1 rows.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Group explicitly by a random annotation without ordering, e.g. Related.objects.annotate(r=Random()).values('r').annotate(total=Count('id')); previously each random value formed its own group, but now Random.get_group_by_cols() returns no columns and all rows may collapse into a single total group.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Use the canonical values-first aggregation Thing.objects.values('id').annotate(rc=Count('related')).order_by('?'); this grouping path may still add the random ordering expression to GROUP BY and return duplicated rc=1 rows rather than a single rc=2 row.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: In an aggregated query, select or order by a composite expression containing Random plus another source, such as Random() + F('related__id'); previously GROUP BY used the whole expression, but now it may drop Random and group only by the component column/value, changing row counts and aggregation results beyond removing a bare '?' ordering.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1344,
+      "cached_tokens": 0,
+      "output_tokens": 9154,
+      "reasoning_tokens": 8651,
+      "micro_usd": 188456,
+      "seconds": 75.65996345099848
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "suspected": 1,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 666.406399350999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 5,
+        "unchecked": 4,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-13569/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 429.64761589800037
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9d1a079aa59f5d53e2759779b2e8b5d82b2d838b5b5c8c8293e0b05ed8bad52d"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9d1a079aa59f5d53e2759779b2e8b5d82b2d838b5b5c8c8293e0b05ed8bad52d"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13346",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:34:59Z",
+  "wall_seconds": 1594.4135215300003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "On MySQL, Oracle, and SQLite, __in lookup doesn't work on key transforms.\nDescription\n\t\nI am currently rewriting our app where we will start using models.JSONField instead of django_mysql.models.JSONField. I noticed that the __in operator is not reacting the same way is it does on other fields.\nfirst_filter = {‘our_field__key__in': [0]}\nfirst_items = OurModel.objects.filter(**first_filter)\nlen(first_items)\n0\nsecond_filter = {'our_field__key': 0}\nsecond_items = OurModel.objects.filter(**second_filter)\nlen(second_items )\n312\nI would expect that both filters would give me the same queryset but this is not the case.\n",
+        "start": 0,
+        "end": 620
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13346",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On MySQL, filtering with {'our_field__key__in': [0]} still returns 0 rows while {'our_field__key': 0} returns the matching rows, because connection.features.has_native_json_field is true for MySQL so the new MySQL branch in process_rhs is never executed.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On SQLite, a previously working expression-valued IN list such as filter(data__key__in=[F('name')]) breaks and generates IN () or invalid SQL, because the new code rebuilds the right-hand side from rhs_params alone and discards parameter-free compiled expressions.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On SQLite, creating rows with data={'key': None} and data={'key': 0} and filtering data__key__in=[None, 0] returns only the 0 row, because the JSON-null left-hand side is SQL NULL and cannot match the retained 'null' text parameter in an IN list.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On Oracle, a previously safely bound value such as filter(data__key__in=[\"x' OR '1'='1\"]) now changes the generated SQL itself, causing a syntax error or returning unrelated rows, because direct values are embedded as SQL literals with rhs_params cleared.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On Oracle, filtering data__key__in=[\"o'clock\"] for a row with that string value fails with a SQL syntax error or returns no row, because the value is interpolated into a JSON_VALUE('...') literal without escaping its single quote instead of remaining a bound parameter.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On SQLite, whole-field filtering such as filter(data__in=[{'a': 1}]) or key exact filtering regresses if registering KeyTransformIn leaks into JSONField lookups, returning fewer rows because document parameters get JSON_EXTRACT-wrapped and normalized differently from the stored JSON text.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 913,
+      "cached_tokens": 116,
+      "output_tokens": 17094,
+      "reasoning_tokens": 16629,
+      "micro_usd": 345092,
+      "seconds": 119.94423105700025
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 2,
+        "blocker": 3,
+        "unchecked": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13346/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13346/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_minimax-2-5-high~django__django-13346/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1150.7348804390003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 9,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 322.9287895670004
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:99734498646548f3e47c3b8ace94bb674db604e1b63e7da6f27f7be04ceb7cbf"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:99734498646548f3e47c3b8ace94bb674db604e1b63e7da6f27f7be04ceb7cbf"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

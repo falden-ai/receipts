@@ -1,0 +1,72 @@
+{
+  "ami": {
+    "fallback": "without a pin, the newest available image whose name matches, resolved at launch",
+    "name_prefix": "Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)",
+    "name_regex": "^Deep Learning Base OSS Nvidia Driver GPU AMI \\(Ubuntu 24\\.04\\) [0-9]{8}$",
+    "owner": "amazon",
+    "pinned": "by the integrator: one describe-images call, then gpu.sh launch --ami <id> or RECEIPTS_GPU_AMI"
+  },
+  "client": "RECEIPTS_GLIMMER_URL=http://<private ip>:8000/v1 on the eval VM (gpu.sh url prints it)",
+  "drafter": {
+    "gated": false,
+    "license": "apache-2.0",
+    "local_dir": "/models/glimmer-assistant",
+    "read_at": "2026-10-27",
+    "repo": "meta-models/Muse-Glimmer-30B-assistant",
+    "revision": "c676cce91658f9568aaf264a416211e2782735b7"
+  },
+  "egress": "TCP 443 until the server is up, then none (gpu.sh seal)",
+  "if_quota_slips": "If the G and VT quota (AWS case 179312451500652) is not granted before the pilot, run the Glimmer arm on Modal instead: Modal lists Muse Glimmer 30B BF16 as a dedicated endpoint on an RTX PRO 6000 at $0.000842 per second ($3.03/h; research/open-weights-2026-10-27.md, unverified whether the event credit covers it). Deploy the same image and arguments (gpu-plan.json: serve_args, the two pinned revisions), give the endpoint Modal's own auth token, and point RECEIPTS_GLIMMER_URL at it from the eval VM. What changes: the endpoint is on the internet behind a token instead of inside the eval VM's security group, and the token is a secret the orchestrator holds and no sandbox sees. The arm, its seed, step limit and the move rule stay as pilot.json fixes them.",
+  "instance_type": "g7e.2xlarge",
+  "model": {
+    "gated": false,
+    "license": "apache-2.0",
+    "local_dir": "/models/glimmer",
+    "read_at": "2026-10-27",
+    "repo": "meta-models/Muse-Glimmer-30B",
+    "revision": "cec94fcfd6512f2cfe708138c32533b346ea4f69"
+  },
+  "port": 8000,
+  "reachable_from": "the eval VM's security group only, on 8000/tcp (vLLM) and 22/tcp (SSH through the eval VM)",
+  "recipe": "https://recipes.vllm.ai/meta-models/Muse-Glimmer-30B (read 2026-10-27)",
+  "recipe_departure": "no --reasoning-parser: with it, vLLM 0.28.0 never applies response_format json_schema",
+  "region": "us-east-1",
+  "serve_args": [
+    "--model",
+    "/models/glimmer",
+    "--served-model-name",
+    "muse-glimmer-30b",
+    "--dtype",
+    "bfloat16",
+    "--tensor-parallel-size",
+    "1",
+    "--max-model-len",
+    "131072",
+    "--gpu-memory-utilization",
+    "0.92",
+    "--max-num-seqs",
+    "32",
+    "--enable-auto-tool-choice",
+    "--tool-call-parser",
+    "muse_glimmer",
+    "--generation-config",
+    "auto",
+    "--speculative-config",
+    "{\"method\": \"dflash\", \"model\": \"/models/glimmer-assistant\", \"num_speculative_tokens\": 15}",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8000"
+  ],
+  "served_name": "muse-glimmer-30b",
+  "stop": "gpu.sh stop after the pilot; terminate after the final if the arm moves, or after the pilot if not",
+  "usd_per_hour": "$3.36312",
+  "vcpu_quota_needed": 8,
+  "vllm_image": {
+    "index_digest": "sha256:61fc8a896b0a4fbbbdc063bc4b0dbc25ce98e02b5050c24aeb7830ac02039b14",
+    "platform": "linux/amd64",
+    "read_at": "2026-10-27",
+    "ref": "docker.io/vllm/vllm-openai@sha256:2286e8533ca8b6bc777594bae30524f1426ba46ca21797524e06df6a94b06635",
+    "tag": "v0.28.0"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sympy__sympy-13647",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:21:50Z",
+  "wall_seconds": 934.9234680020018,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Matrix.col_insert() no longer seems to work correctly.\nExample:\r\n\r\n```\r\nIn [28]: import sympy as sm\r\n\r\nIn [29]: M = sm.eye(6)\r\n\r\nIn [30]: M\r\nOut[30]: \r\n⎡1  0  0  0  0  0⎤\r\n⎢                ⎥\r\n⎢0  1  0  0  0  0⎥\r\n⎢                ⎥\r\n⎢0  0  1  0  0  0⎥\r\n⎢                ⎥\r\n⎢0  0  0  1  0  0⎥\r\n⎢                ⎥\r\n⎢0  0  0  0  1  0⎥\r\n⎢                ⎥\r\n⎣0  0  0  0  0  1⎦\r\n\r\nIn [31]: V = 2 * sm.ones(6, 2)\r\n\r\nIn [32]: V\r\nOut[32]: \r\n⎡2  2⎤\r\n⎢    ⎥\r\n⎢2  2⎥\r\n⎢    ⎥\r\n⎢2  2⎥\r\n⎢    ⎥\r\n⎢2  2⎥\r\n⎢    ⎥\r\n⎢2  2⎥\r\n⎢    ⎥\r\n⎣2  2⎦\r\n\r\nIn [33]: M.col_insert(3, V)\r\nOut[33]: \r\n⎡1  0  0  2  2  1  0  0⎤\r\n⎢                      ⎥\r\n⎢0  1  0  2  2  0  1  0⎥\r\n⎢                      ⎥\r\n⎢0  0  1  2  2  0  0  1⎥\r\n⎢                      ⎥\r\n⎢0  0  0  2  2  0  0  0⎥\r\n⎢                      ⎥\r\n⎢0  0  0  2  2  0  0  0⎥\r\n⎢                      ⎥\r\n⎣0  0  0  2  2  0  0  0⎦\r\nIn [34]: sm.__version__\r\nOut[34]: '1.1.1'\r\n```\r\n\r\nThe 3 x 3 identify matrix to the right of the columns of twos is shifted from the bottom three rows to the top three rows.\r\n\r\n@siefkenj Do you think this has to do with your matrix refactor?\n",
+        "start": 0,
+        "end": 1088
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sympy__sympy-13647",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Insert a distinct-entry 4x2 matrix at positions 1, 2, and 4 of a distinct-entry 4x5 matrix and compare with hstack of the left part, inserted matrix, and right part; trailing columns may still be shifted or duplicated.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Prepend a distinct-entry matrix with A.col_insert(0, B), which passed before because the old and new trailing-column formulas coincide at position 0; the result may now shift A's original columns.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Call SparseMatrix(eye(6)).col_insert(3, SparseMatrix(2*ones(6, 2))) using the issue's data; the sparse construction path may still place the trailing identity block in the wrong rows or columns.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Append a distinct-entry matrix with A.col_insert(A.cols, B), which passed before and never uses the trailing-column branch; the appended or original columns may now be reordered.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Call eye(6).col_insert(-3, 2*ones(6, 2)), which should equal insertion at position 3; negative-position normalization may interact with the new offset and misplace columns after the inserted block.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Call eye(6).row_insert(3, 2*ones(2, 6)), the previously working row analogue; its lower identity block may now be displaced despite row insertion being outside the intended fix.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1063,
+      "cached_tokens": 116,
+      "output_tokens": 5286,
+      "reasoning_tokens": 4887,
+      "micro_usd": 109532,
+      "seconds": 41.25555285900191
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 6
+      },
+      "blockers": [],
+      "wall_seconds": 298.00285563299985
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 3
+      },
+      "blockers": [],
+      "wall_seconds": 595.6633171419999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [],
+  "refuter_model": "muse-wonder-1.0"
+}

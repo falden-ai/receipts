@@ -1,0 +1,26 @@
+[
+  {
+    "Key": "Name",
+    "Value": "receipts-eval"
+  },
+  {
+    "Key": "Project",
+    "Value": "falden-receipts"
+  },
+  {
+    "Key": "Lane",
+    "Value": "eval"
+  },
+  {
+    "Key": "Purpose",
+    "Value": "tier-a-eval"
+  },
+  {
+    "Key": "StopBetweenRuns",
+    "Value": "true"
+  },
+  {
+    "Key": "DeleteAfter",
+    "Value": "2026-11-04"
+  }
+]

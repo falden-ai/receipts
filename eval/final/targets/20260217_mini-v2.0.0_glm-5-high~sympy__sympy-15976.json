@@ -1,0 +1,162 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15976",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:47:04Z",
+  "wall_seconds": 1460.1498407260005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "A symbol ending with a number is made invisible when printing with MathML\nA variable with a number, such as x1, is made invisible when printing in a MathML format.\r\n`import sympy\r\nfrom sympy.printing.mathml import mathml\r\n\r\nx2, y, z = sympy.symbols('x2 y z')\r\ny = x2*z+x2**3\r\nf = open('sympy_test.html', 'w')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write(sympy.mathml(y, printer='presentation')+'\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.write('\\n')\r\nf.close()`\r\n\r\nViewing the output in Safari 12.0.2:\r\n<img width=\"93\" alt=\"screen shot 2018-12-31 at 12 21 00 pm\" src=\"https://user-images.githubusercontent.com/46286768/50567565-48d8c080-0cfb-11e9-84d2-5738f1c2e2ba.png\">\r\n\r\nIf 'x' is used instead of 'x2', it works as expected:\r\nx, y, z = sympy.symbols('x y z')\r\ny = x*z+x**3\r\n<img width=\"78\" alt=\"screen shot 2018-12-31 at 12 26 24 pm\" src=\"https://user-images.githubusercontent.com/46286768/50567570-542bec00-0cfb-11e9-986d-015e0023a2a1.png\">\r\n\r\nBTW, I'm on a MacBook Pro, OS 10.14.2, Sympy 1.3, in Eclipse 2018-19, and Python 3.7.\n",
+        "start": 0,
+        "end": 1053
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15976",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call mathml(Symbol('x_a1'), printer='presentation'): the subscript token 'a1' is not isdigit(), so it remains <mi>a1</mi> with a digit inside an identifier element and the trailing digit can still be invisible.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call mathml(Symbol('123'), printer='presentation'): a purely numeric symbol name changes from <mi>123</mi> to <mn>123</mn>, making Symbol('123') indistinguishable from Integer(123) although the issue only required fixing digit subscripts.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call mathml(Symbol('x_-2'), printer='presentation') or mathml(Symbol('x_1.5'), printer='presentation'): the subscript '-2' or '1.5' fails isdigit(), so its digits remain inside <mi> and the reported invisibility persists for signed or decimal subscripts.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call mathml(Symbol('x_1'), printer='content'): the content printer also changes the digit subscript from <mi> to <mn>, altering non-visual content MathML semantics even though the reported problem is presentation rendering in a browser.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call mathml(Symbol('x1y2'), printer='presentation'): if the trailing alphanumeric token is kept whole rather than split into a pure digit subscript, isdigit() is false and digits stay inside <mi>, so a symbol ending in a number is still not rendered as an identifier plus <mn>.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call mathml(Symbol('x_\\u00b2'), printer='presentation') using superscript-two as the subscript: Python isdigit() accepts this non-ASCII character, so it switches from <mi> to <mn> and changes rendering for symbols not involving an ASCII digit subscript.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1333,
+      "cached_tokens": 244,
+      "output_tokens": 8036,
+      "reasoning_tokens": 7582,
+      "micro_usd": 165125,
+      "seconds": 57.8495875640001
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 14,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "suspected": 2,
+        "unchecked": 4,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15976/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15976/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-15976/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 969.9148170570006
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 1,
+        "suspected": 2,
+        "refuted": 2,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 432.0406639949979
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:413e202032581dfdd518d3c4ec1f19268f442d45267b4e1c4dc12b533dd0c919"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:413e202032581dfdd518d3c4ec1f19268f442d45267b4e1c4dc12b533dd0c919"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

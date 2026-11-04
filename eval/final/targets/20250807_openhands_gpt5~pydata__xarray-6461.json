@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~pydata__xarray-6461",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T07:18:32Z",
+  "wall_seconds": 1273.985370239,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "xr.where with scalar as second argument fails with keep_attrs=True\n### What happened?\n\n``` python\r\nimport xarray as xr\r\n\r\nxr.where(xr.DataArray([1, 2, 3]) > 0, 1, 0)\r\n```\r\n\r\nfails with\r\n\r\n```\r\n   1809 if keep_attrs is True:\r\n   1810     # keep the attributes of x, the second parameter, by default to\r\n   1811     # be consistent with the `where` method of `DataArray` and `Dataset`\r\n-> 1812     keep_attrs = lambda attrs, context: attrs[1]\r\n   1814 # alignment for three arguments is complicated, so don't support it yet\r\n   1815 return apply_ufunc(\r\n   1816     duck_array_ops.where,\r\n   1817     cond,\r\n   (...)\r\n   1823     keep_attrs=keep_attrs,\r\n   1824 )\r\n\r\nIndexError: list index out of range\r\n```\r\n\r\nThe workaround is to pass `keep_attrs=False`\n\n### What did you expect to happen?\n\n_No response_\n\n### Minimal Complete Verifiable Example\n\n_No response_\n\n### Relevant log output\n\n_No response_\n\n### Anything else we need to know?\n\n_No response_\n\n### Environment\n\nxarray 2022.3.0\n",
+        "start": 0,
+        "end": 986
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~pydata__xarray-6461",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With a Dataset condition, xr.where(ds > 0, 1, 0, keep_attrs=True) still fails or mishandles attrs for the Dataset result's variables instead of returning each variable with no attrs from the scalar x.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "xr.where(cond_dataset, x_dataset, y_dataset, keep_attrs=True) loses each data variable's distinct attrs from x_dataset, because the fix disables apply_ufunc attr keeping and restores only the Dataset-level result.attrs.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With xr.set_options(keep_attrs=True), the verbatim issue call xr.where(xr.DataArray([1, 2, 3]) > 0, 1, 0) still raises IndexError or returns non-empty attrs, because the global-option path does not reach the new scalar handling as an explicit keep_attrs=True does.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "xr.where(cond_dataset, x_dataarray_with_attrs, 0, keep_attrs=True) misplaces x's attrs onto the Dataset-level result.attrs while leaving every result data variable attr-free, whereas before each result variable received x's attrs.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "xr.where(cond, 1, y_dataarray_with_attrs, keep_attrs=True) fails or incorrectly inherits y's attrs, even though attrs should come from the scalar x and therefore be empty.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "For a DataArray x with keep_attrs=True, mutating result.attrs after xr.where(cond, x, 0) also mutates x.attrs (or vice versa), because result.attrs is assigned directly from the captured x_attrs dict rather than copied through apply_ufunc.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 939,
+      "cached_tokens": 116,
+      "output_tokens": 10661,
+      "reasoning_tokens": 10246,
+      "micro_usd": 216536,
+      "seconds": 114.93217548300004
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 3,
+        "refuted": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pydata__xarray-6461/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 763.6864374489999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 3,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pydata__xarray-6461/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 395.1234543779997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e03dda146e139ee399e1d5974ac4986ec370a9c382fe6b426ca1dd96c54de161"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:e03dda146e139ee399e1d5974ac4986ec370a9c382fe6b426ca1dd96c54de161"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

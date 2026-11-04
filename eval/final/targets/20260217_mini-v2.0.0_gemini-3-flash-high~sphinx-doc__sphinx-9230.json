@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9230",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:22:08Z",
+  "wall_seconds": 1401.5518446599963,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Doc rendering is incorrect when :param has datatype dict(str,str)\n**Describe the bug**\r\nI have a parameter defined under docstring of a method as:-\r\n:param dict(str, str) opc_meta: (optional)\r\n\r\nWhich is being incorrectly rendered in the generated docs as:-\r\nstr) opc_meta (dict(str,) –(optional) \r\n\r\n**To Reproduce**\r\nCreate any method with the docstring containg the above param\r\n\r\n**Expected behavior**\r\nThe param should be rendered in the generated docs as:-\r\nopc_meta (dict(str,str)) – (optional) \r\n\r\n**Your project**\r\n[sphinxTest.zip](https://github.com/sphinx-doc/sphinx/files/6468074/sphinxTest.zip)\r\n\r\n\r\n**Screenshots**\r\n<img width=\"612\" alt=\"Screen Shot 2021-05-12 at 12 30 50 PM\" src=\"https://user-images.githubusercontent.com/8617566/118020143-5f59a280-b31f-11eb-8dc2-5280d5c4896b.png\">\r\n<img width=\"681\" alt=\"Screen Shot 2021-05-12 at 12 32 25 PM\" src=\"https://user-images.githubusercontent.com/8617566/118020154-62549300-b31f-11eb-953d-9287f9cc27ff.png\">\r\n\r\n\r\n**Environment info**\r\n- OS: Mac\r\n- Python version: 3.9.0\r\n- Sphinx version: 4.0.1\r\n- Sphinx extensions:  [\"sphinx.ext.autodoc\", \"sphinx.ext.autosummary\", \"sphinx.ext.intersphinx\", \"autodocsumm\"]\r\n- Extra tools: Browser Firefox.\r\n\r\n**Additional context**\r\nN/A\r\n\r\n\n",
+        "start": 0,
+        "end": 1237
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sphinx-doc__sphinx-9230",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document two parameters together with `:param dict(str, str) opc_meta, other_meta: (optional)`; rsplit makes the type `dict(str, str) opc_meta,` and the only name `other_meta`, so opc_meta is lost instead of both names receiving type dict(str, str).",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform the previously working `:param str first, second: shared description`; it previously used type `str` for the combined name `first, second`, but now produces type `str first,` and only labels `second`.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the exact issue example with autodoc, `:param dict(str, str) opc_meta: (optional)`, and inspect the rendered HTML; the visible text still differs from `opc_meta (dict(str, str)) -- (optional)` because downstream type cross-reference rendering mishandles the spaced, comma-containing type.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform the previously working multi-word label `:param str my option: description`; it previously rendered name `my option` with type `str`, but now renders name `option` with garbled type `str my`.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use `:param dict(str, str) opc_meta (optional): description`, with the qualifier in the field argument; rsplit treats `(optional)` as the parameter name and `dict(str, str) opc_meta` as the type, creating a phantom `(optional)` parameter.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Transform the previously working combined varargs entry `:param int *args, **kwargs: description`; it previously applied type `int` to `*args, **kwargs`, but now swallows `*args,` into the type and applies it only to `**kwargs`.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 828,
+      "cached_tokens": 116,
+      "output_tokens": 10978,
+      "reasoning_tokens": 10544,
+      "micro_usd": 222432,
+      "seconds": 93.69962526600284
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 4,
+        "possibly_toxic": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 915.4024785319998
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 391.64745608299563
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9407bf8447c9d01862a2968f62dc7be6e53d628bb23694d1c220db911c175c3c"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,179 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~pylint-dev__pylint-7277",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:15:45Z",
+  "wall_seconds": 2342.546376651997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "`pylint` removes first item from `sys.path` when running from `runpy`.\n### Bug description\n\nThis is the line where the first item from sys.path is removed.\r\nhttps://github.com/PyCQA/pylint/blob/ce7cccf96454fb6e286e4a8f38919733a0f28f44/pylint/__init__.py#L99\r\n\r\nI think there should be a check to ensure that the first item is `\"\"`, `\".\"` or `os.getcwd()` before removing.\n\n### Configuration\n\n_No response_\n\n### Command used\n\n```shell\nRun programmatically to repro this, using this code:\r\n\r\nimport sys\r\nimport runpy\r\n\r\nsys.path.insert(0, \"something\")\r\n\r\nrunpy.run_module('pylint', run_name=\"__main__\", alter_sys=True)\n```\n\n\n### Pylint output\n\n```shell\nWhen using pylint extension which bundles the libraries, the extension add them to sys.path depending on user settings. Pylint removes the first entry from sys path causing it to fail to load.\n```\n\n\n### Expected behavior\n\nCheck if  `\"\"`, `\".\"` or `os.getcwd()` before removing the first item from sys.path\n\n### Pylint version\n\n```shell\npylint 2.14.5\n```\n\n\n### OS / Environment\n\n_No response_\n\n### Additional dependencies\n\n_No response_\n",
+        "start": 0,
+        "end": 1087
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~pylint-dev__pylint-7277",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With sys.path=['something', '', '/lib'] and PYTHONPATH=':/lib', calling modify_sys_path() preserves 'something' but never removes the PYTHONPATH-inserted '' at index 1 because the leading-colon branch rechecks index 0, leaving the cwd importable.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Running any Python subprocess from the repo root, e.g. `python -c \"import sys,os; print(sys.path, os.environ.get('PYTHONPATH'))\"`, now auto-loads the new sitecustomize.py, inserts the repo root at sys.path[0], eagerly imports pylint, and rewrites PYTHONPATH for children, changing import behavior unrelated to the sys.path fix.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With sys.path=['something', '/lib', ''] and PYTHONPATH='/lib:', calling modify_sys_path() checks only sys.path[1] ('/lib') and leaves the trailing PYTHONPATH cwd entry '' at index 2, so cwd stripping fails while the non-cwd first entry is preserved.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A cwd entry in a previously-removed non-canonical form, e.g. sys.path=['./', '/lib'] or [os.getcwd()+'/'] when running `python -m pylint`, is now retained, so a local module in cwd can shadow stdlib/pylint modules and change lint results compared with before the change.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With sys.path[0] set to a non-canonical cwd spelling such as os.getcwd() + '/' or './' (as inserted by some launchers/runpy/IDEs), modify_sys_path() leaves it in place because only exact '', '.', or os.getcwd() match, so the cwd is not stripped as the fix intends.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In an environment without GitPython, importing pylint.testutils._primer.package_to_lint and calling PackageToLint.clone() previously raised ImportError at import time but now succeeds and returns '' silently, changing primer/test behavior beyond the sys.path fix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1732,
+      "cached_tokens": 116,
+      "output_tokens": 7981,
+      "reasoning_tokens": 7491,
+      "micro_usd": 166108,
+      "seconds": 72.31591279700297
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 17,
+      "statuses": {
+        "possibly_toxic": 5,
+        "unchecked": 4,
+        "blocker": 3,
+        "refuted": 5
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pylint-dev__pylint-7277/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~pylint-dev__pylint-7277/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~pylint-dev__pylint-7277/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 1657.0800839339972
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "refuted": 2,
+        "possibly_toxic": 1,
+        "unchecked": 4,
+        "blocker": 2
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~pylint-dev__pylint-7277/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~pylint-dev__pylint-7277/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 612.0600234480007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a4bb2a7df61d1d9b7f8a33172b2d8b95d95e43e93db7148b98a8c28f6e9adc82"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

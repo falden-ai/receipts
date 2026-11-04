@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-12754",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:10:08Z",
+  "wall_seconds": 1675.0361984060019,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "FieldError when migrating field to new model subclass.\nDescription\n\t\nAnalogous to #21890. If creating a model subclass and moving a field onto it in the same step, makemigrations works but migrate dies with django.core.exceptions.FieldError: Local field 'title' in class 'Book' clashes with field of the same name from base class 'Readable'.\nFor example, take this model:\nfrom django.db import models\nclass Readable(models.Model):\n\ttitle = models.CharField(max_length=200)\nAnd change to this:\nfrom django.db import models\nclass Readable(models.Model):\n\tpass\nclass Book(Readable):\n\ttitle = models.CharField(max_length=200)\nThe migration generates with CreateModel for Book, then RemoveField for Readable.title. But running it produces the error.\nReversing the order of the migration operations makes it pass. The auto-detector should be able to use this order.\n",
+        "start": 0,
+        "end": 860
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-12754",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build the state from real same-app models, where ModelState.from_model encodes Book's parent Readable as the bare string 'readable' rather than 'app.Readable'. The '.' check skips the dependency, CreateModel Book still precedes RemoveField Readable.title, and applying the migration raises FieldError.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rename Readable.title to heading while also creating subclass Book with its own title field. old_field_keys - new_field_keys treats title as removed although only a RenameField is generated, so the spurious deletion dependency leaves CreateModel Book unresolved, dropped, or incorrectly ordered compared with before the change.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Move title from grandparent Readable to new grandchild Novel through an existing intermediate Book model that does not define title. Only Novel's direct base Book is checked, so no dependency on RemoveField Readable.title is added and CreateModel Novel is ordered first, raising FieldError.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a cross-app subclass whose app also is referenced by a remaining ForeignKey from the base model's app, forming a cycle once CreateModel depends on the other app's RemoveField. Migrations that previously generated and loaded now produce a circular migration dependency.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Put Readable in one app and new subclass Book in another app, moving title from Readable to Book in the same makemigrations run. The cross-app field-deletion dependency does not become an ordering/migration dependency, so Book's migration can run before Readable's RemoveField and raise FieldError.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Add another new model with a ForeignKey to the new subclass Book while title is removed from Book's base Readable, using the usual capitalized base string 'testapp.Readable'. The added dependency with non-lowercased model name is never matched to RemoveField on 'readable', delaying CreateModel Book past the dependent model's CreateModel and breaking previously correct FK ordering.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 753,
+      "cached_tokens": 116,
+      "output_tokens": 11686,
+      "reasoning_tokens": 11212,
+      "micro_usd": 236292,
+      "seconds": 96.23254880500099
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 1,
+        "unchecked": 4
+      },
+      "blockers": [],
+      "wall_seconds": 1195.3425567600007
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 4
+      },
+      "blockers": [],
+      "wall_seconds": 382.47378369999933
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:58a87fe3b0f2abdf76d6aeb5ac59158844bd1ea3caf9c84750a9901962990fbf"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:58a87fe3b0f2abdf76d6aeb5ac59158844bd1ea3caf9c84750a9901962990fbf"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

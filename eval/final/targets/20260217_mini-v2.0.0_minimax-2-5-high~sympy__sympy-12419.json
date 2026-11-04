@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12419",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:13:36Z",
+  "wall_seconds": 1084.1515503729988,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Sum of the elements of an identity matrix is zero\nI think this is a bug.\r\n\r\nI created a matrix by M.T * M under an assumption that M is orthogonal.  SymPy successfully recognized that the result is an identity matrix.  I tested its identity-ness by element-wise, queries, and sum of the diagonal elements and received expected results.\r\n\r\nHowever, when I attempt to evaluate the total sum of the elements the result was 0 while 'n' is expected.\r\n\r\n```\r\nfrom sympy import *\r\nfrom sympy import Q as Query\r\n\r\nn = Symbol('n', integer=True, positive=True)\r\ni, j = symbols('i j', integer=True)\r\nM = MatrixSymbol('M', n, n)\r\n\r\ne = None\r\nwith assuming(Query.orthogonal(M)):\r\n    e = refine((M.T * M).doit())\r\n\r\n# Correct: M.T * M is an identity matrix.\r\nprint(e, e[0, 0], e[0, 1], e[1, 0], e[1, 1])\r\n\r\n# Correct: The output is True True\r\nprint(ask(Query.diagonal(e)), ask(Query.integer_elements(e)))\r\n\r\n# Correct: The sum of the diagonal elements is n\r\nprint(Sum(e[i, i], (i, 0, n-1)).doit())\r\n\r\n# So far so good\r\n# Total sum of the elements is expected to be 'n' but the answer is 0!\r\nprint(Sum(Sum(e[i, j], (i, 0, n-1)), (j, 0, n-1)).doit())\r\n```\n",
+        "start": 0,
+        "end": 1141
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-12419",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the exact issue script: with Q.orthogonal(M), e=refine((M.T*M).doit()), then Sum(Sum(e[i, j], (i, 0, n-1)), (j, 0, n-1)).doit(). It returns 0, an unevaluated Sum of KroneckerDelta, or a Piecewise instead of n.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Ask the previously-correct queries ask(Q.diagonal(e)), ask(Q.upper_triangular(e)), ask(Q.lower_triangular(e)), and ask(Q.symmetric(e)) on Identity(n) or the refined e. They now return None or False instead of True because a generic off-diagonal entry is an unevaluated KroneckerDelta rather than S.Zero.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate a single row or column sum, Sum(e[i, j], (j, 0, n-1)).doit() and the double sum with summation order reversed. The KroneckerDelta summation fails without explicit bounds on the free index, returning 0 or an unevaluated sum instead of 1 for the row and n for the total.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Extract elements of products such as (Identity(n)*X)[i, j] and (X*Identity(n))[i, j] for a MatrixSymbol X, which previously simplified to X[i, j]. They now leave an unevaluated Sum involving KroneckerDelta(i, k)*X[k, j] or a Piecewise.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Check element coherence for symbolic indices: e[i, j].subs(j, i) and e[i, i] should be 1, while the total sum of Identity(n) used directly (without the orthogonal refine path) should be n. One of these still returns 0 or an unsubstituted KroneckerDelta instead of the claimed value.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Check concrete and provably-decided entries that were exact before: Identity(3).as_explicit() equals eye(3), Identity(n)[i, i] is 1, and Identity(n)[i, i+1] is 0. KroneckerDelta fails to evaluate one of these, changing the explicit matrix, trace, or entry value.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 812,
+      "cached_tokens": 244,
+      "output_tokens": 5078,
+      "reasoning_tokens": 4538,
+      "micro_usd": 103881,
+      "seconds": 36.7705750719997
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 4,
+        "suspected": 2,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 742.2537586199996
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 3,
+        "refuted": 3
+      },
+      "blockers": [],
+      "wall_seconds": 304.6554214890002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b21cd62027f97b18c4887ff4323146001dfdffcdd75dc45d20c053b6a2bd31f8"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b21cd62027f97b18c4887ff4323146001dfdffcdd75dc45d20c053b6a2bd31f8"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

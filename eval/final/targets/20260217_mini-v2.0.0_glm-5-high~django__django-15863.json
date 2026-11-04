@@ -1,0 +1,180 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15863",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:49:37Z",
+  "wall_seconds": 1808.1778807800001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Filter floatformat drops precision in decimal numbers\nDescription\n\t\nI discovered that floatformat template filter may drop precision when used for Decimal numbers.\nMWE:\nfrom decimal import Decimal\nfrom django import setup\nfrom django.conf import settings\nfrom django.template import Template, Context\nTEMPLATES = [\n\t{\n\t\t'BACKEND': 'django.template.backends.django.DjangoTemplates',\n\t},\n]\nsettings.configure(TEMPLATES=TEMPLATES)\nsetup()\nt = Template('{{ value|floatformat:20 }}')\nc = Context({'value': Decimal('42.12345678901234567890')})\nprint(t.render(c)) #>>> 42.12345678901234400000\nI traced the bug to incorrect conversion to Decimal within the floatformat implementation that can't really work for Decimal numbers. Decimal numbers are converted to float instead.\nPull request is prepared ​https://github.com/django/django/pull/15863\n",
+        "start": 0,
+        "end": 838
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15863",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call floatformat(Decimal('0.1234567890123456789012345678905'), 30); quantize precision is capped at the default context precision of 28, so it returns the unrounded 31-decimal-place input instead of '0.123456789012345678901234567891'.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call floatformat(Decimal('13.1031'), 'bar'); before the change the invalid-argument fallback returned \"Decimal('13.1031')\", but now it returns '13.1031', changing behavior unrelated to formatted precision.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call floatformat(Decimal('12345678901234567890.12345678901234567890'), 10); the result needs 30 significant digits, quantize fails, and it returns the full 20-decimal-place input instead of rounding to 10 decimal places.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call floatformat(Decimal('Infinity'), 2) or floatformat(Decimal('NaN'), 2); before the change the int-conversion fallback returned \"Decimal('Infinity')\"/\"Decimal('NaN')\", but now it returns 'Infinity'/'NaN'.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Render '{{ value|floatformat:20 }}' with value as the string '42.12345678901234567890'; the string still takes the repr/InvalidOperation/float fallback and renders '42.12345678901234400000' instead of preserving the decimal digits.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call floatformat(Decimal('1E+30'), 20) so quantization raises InvalidOperation; before the change that fallback returned \"Decimal('1E+30')\", but now it returns '1E+30'.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 744,
+      "cached_tokens": 116,
+      "output_tokens": 9153,
+      "reasoning_tokens": 8710,
+      "micro_usd": 185596,
+      "seconds": 63.006331001000945
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "possibly_toxic": 1,
+        "blocker": 3,
+        "refuted": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15863/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15863/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15863/fixed_x/correctness-3.1"
+      ],
+      "wall_seconds": 986.0943099270007
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 3,
+        "suspected": 3,
+        "blocker": 1,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~django__django-15863/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 755.8289646070007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

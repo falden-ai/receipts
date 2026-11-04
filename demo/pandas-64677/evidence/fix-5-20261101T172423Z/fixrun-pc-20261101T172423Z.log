@@ -1,0 +1,121 @@
+start 17:24:23Z PIN 46502689fb978189c503e686b5f453fd2643f423 finding demo~pandas-64677/tests_pass:315a21d647/regression-2.1
+pending
+armed at 2026-10-29T01:31:24Z for $150.000000, the operator having confirmed the Meta credit
+spent $102.807493 (102,807,493 micro-dollars) of the $150.000000 cap
+left $47.192507
+== replay
+  base_sha     82315e7fb597d53f797f62d2a83f9ee9dcad5042
+  patch_sha    d27e2f320150e3b064f3256a8bada7478e89da53
+  harness_hash d5950111a1037755981bd4113d97d098ae21aa84836805e2d3b8d487c541f2c2
+  seed         0
+  image_digest sha256:d0c43cd34df4d073c257d906ce0c3bc36fa99adbe100df41332ff2915f90252a
+repro regression-2-0-e6877e5c  attack regression-2  claim tests_pass:315a21d647  lens regression  kind regression
+  command  pandas/tests/groupby/test_receipts_regression_2_0.py::test_any_bool_categorical_unobserved
+  cases
+    pandas/tests/groupby/test_receipts_regression_2_0.py::test_any_bool_categorical_unobserved
+  file pandas/tests/groupby/test_receipts_regression_2_0.py
+    | import pandas as pd
+    | import numpy as np
+    | 
+    | def test_any_bool_categorical_unobserved():
+    |     df = pd.DataFrame(
+    |         {
+    |             "g": pd.Categorical(["a", "a", "b"], categories=["a", "b", "c"]),
+    |             "v": [True, False, True],
+    |         }
+    |     )
+    |     result = df.groupby("g", observed=False)["v"].any()
+    |     assert list(result.index) == ["a", "b", "c"]
+    |     assert result.dtype == np.dtype("bool")
+    |     assert result.loc["a"] == True
+    |     assert result.loc["b"] == True
+    |     assert result.loc["c"] == False
+    | 
+runs
+  #   side   outcome  failure    exit  fresh  seed  seconds  problem
+  1   patch  fail     assertion  1     yes    0     2.9
+  2   patch  fail     assertion  1     yes    1     2.9
+  3   patch  fail     assertion  1     yes    2     3.0
+  4   patch  fail     assertion  1     yes    3     2.8
+  5   patch  fail     assertion  1     yes    4     3.0
+  6   base   pass                0     yes    0     3.1
+  7   base   pass                0     yes    1     3.0
+  8   base   pass                0     yes    2     3.0
+  9   base   pass                0     yes    3     2.9
+  10  base   pass                0     yes    4     2.9
+replay itself is not built yet: it will rerun these files with the target's runner through the sandbox, which gives each run a report path of its own; the command is the record of how they were run
+== fixcheck
+fixcheck exit 0
+wrote runs/demo-fix-20261101T172423Z/fixcheck.json: passes_on_fix=True
+launched
+fix launched 17:25:15Z
+17:27:16Z exit=running
+17:29:17Z exit=running
+17:31:17Z exit=running
+17:33:18Z exit=running
+17:35:19Z exit=running
+17:37:19Z exit=running
+17:39:20Z exit=running
+17:41:21Z exit=running
+17:43:21Z exit=running
+17:45:22Z exit=running
+17:47:23Z exit=running
+17:49:23Z exit=running
+17:51:24Z exit=running
+17:53:25Z exit=running
+17:55:25Z exit=running
+17:57:26Z exit=running
+17:59:27Z exit=running
+18:01:27Z exit=running
+18:03:28Z exit=running
+18:05:29Z exit=running
+18:07:29Z exit=running
+18:09:30Z exit=running
+18:11:31Z exit=running
+18:13:31Z exit=1
+independent agent_patch seed 0: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent agent_patch seed 1: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent agent_patch seed 2: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent agent_patch seed 3: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent agent_patch seed 4: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent fresh_attack seed 0: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent fresh_attack seed 1: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent fresh_attack seed 2: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent fresh_attack seed 3: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent fresh_attack seed 4: pandas/tests/groupby/test_receipts_correctness_1_0.py::test_groupby_any_nullable_uses_fast_path: not verified
+independent agent_patch seed 0: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent agent_patch seed 1: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent agent_patch seed 2: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent agent_patch seed 3: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent agent_patch seed 4: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 0: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 1: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 2: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 3: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 4: pandas/tests/groupby/test_receipts_correctness_1_1.py::test_groupby_all_nullable_uses_fast_path: not verified
+independent fresh_attack seed 0: pandas/tests/groupby/test_receipts_correctness_9_2.py::test_any_multicol_speed_matches_max_with_many_empty_groups: not verified
+independent fresh_attack seed 1: pandas/tests/groupby/test_receipts_correctness_9_2.py::test_any_multicol_speed_matches_max_with_many_empty_groups: not verified
+independent fresh_attack seed 2: pandas/tests/groupby/test_receipts_correctness_9_2.py::test_any_multicol_speed_matches_max_with_many_empty_groups: not verified
+independent fresh_attack seed 3: pandas/tests/groupby/test_receipts_correctness_9_2.py::test_any_multicol_speed_matches_max_with_many_empty_groups: not verified
+independent fresh_attack seed 4: pandas/tests/groupby/test_receipts_correctness_9_2.py::test_any_multicol_speed_matches_max_with_many_empty_groups: not verified
+independent agent_patch seed 0: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent agent_patch seed 1: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent agent_patch seed 2: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent agent_patch seed 3: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent agent_patch seed 4: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent fresh_attack seed 0: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent fresh_attack seed 1: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent fresh_attack seed 2: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent fresh_attack seed 3: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+independent fresh_attack seed 4: pandas/tests/groupby/test_receipts_regression_5_2.py::test_any_nullable_kleene_na_unobserved: not verified
+coverage: unchecked (not measured)
+canary coverage: lane replays only; internal ReAttack runs are not covered
+fresh attack: fresh-attack repro demo~pandas-64677~fix1-a0027791a01e/perf:1360043349/correctness-9.1 not independently verified
+fresh attack output: runs/demo-fix-20261101T172423Z/fix/reattack/fdd9c76a2d59-a0027791a01e
+passes_shown_repros
+armed at 2026-10-29T01:31:24Z for $150.000000, the operator having confirmed the Meta credit
+spent $105.423879 (105,423,879 micro-dollars) of the $150.000000 cap
+left $44.576121
+== done 18:13:33Z
+stopping
+eval VM stopped 18:14:05Z

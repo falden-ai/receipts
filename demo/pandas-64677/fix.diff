@@ -1,0 +1,86 @@
+diff --git a/doc/source/whatsnew/v3.1.0.rst b/doc/source/whatsnew/v3.1.0.rst
+index 92c40e828a..6fde923b4e 100644
+--- a/doc/source/whatsnew/v3.1.0.rst
++++ b/doc/source/whatsnew/v3.1.0.rst
+@@ -113,6 +113,7 @@ Performance improvements
+ - Performance improvement in :func:`merge` and :meth:`DataFrame.join` for many-to-many joins with ``sort=False`` (:issue:`56564`)
+ - Performance improvement in :func:`merge` with ``how="cross"`` (:issue:`38082`)
+ - Performance improvement in :func:`merge` with ``how="left"`` (:issue:`64370`)
++- Performance improvement in :meth:`GroupBy.any` and :meth:`GroupBy.all` for boolean-dtype columns (:issue:`37850`)
+ - Performance improvement in :meth:`GroupBy.first` and :meth:`GroupBy.last` for Extension Array dtypes, which no longer fall back to a slow ``apply``-based implementation (:issue:`57591`)
+ - Performance improvement in :meth:`GroupBy.quantile` (:issue:`64330`)
+ - Performance improvement in :meth:`Index.get_indexer` for large monotonic indexes, which now uses binary search instead of building a hash table when the number of targets is small (:issue:`14273`)
+@@ -208,6 +209,7 @@ Groupby/resample/rolling
+ ^^^^^^^^^^^^^^^^^^^^^^^^
+ - Bug in :meth:`.DataFrameGroupBy.agg` when there are no groups, multiple keys, and ``group_keys=False`` (:issue:`51445`)
+ - Bug in :meth:`.DataFrameGroupBy.agg` would operate on the group as a whole when ``args`` or ``kwargs`` are supplied for the provided ``func``; now this method only operates on each Series of the group (:issue:`39169`)
++- Bug in :meth:`.GroupBy.any` and :meth:`.GroupBy.all` returning ``NaN`` with ``float64`` dtype for unobserved categorical groups on NumPy ``bool`` data instead of the boolean identity value with ``bool`` dtype (:issue:`65100`)
+ - Bug in :meth:`.Rolling.skew` and :meth:`.Rolling.kurt` (and their :class:`GroupBy` counterparts) returning ``0.0`` and ``-3.0`` respectively for degenerate windows or groups; these now return ``NaN`` (:issue:`62864`)
+ - Bug in :meth:`.Rolling.skew` and :meth:`.Rolling.kurt` returning ``NaN`` for low-variance windows (:issue:`62946`)
+ 
+diff --git a/pandas/core/groupby/groupby.py b/pandas/core/groupby/groupby.py
+index 41c88fd0c2..e9a9356c21 100644
+--- a/pandas/core/groupby/groupby.py
++++ b/pandas/core/groupby/groupby.py
+@@ -1524,11 +1524,21 @@ class GroupBy(BaseGroupBy[NDFrameT]):
+         data = self._get_data_to_aggregate(numeric_only=numeric_only, name=how)
+ 
+         def array_func(values: ArrayLike) -> ArrayLike:
++            # GH#37850 For numpy boolean data, any==max and all==min.
++            # The min/max Cython path is faster (fused types, no mask overhead).
++            # Excludes nullable BooleanDtype which needs Kleene logic.
++            use_bool_fastpath = how in ["any", "all"] and values.dtype == np.dtype(
++                "bool"
++            )
++            if use_bool_fastpath:
++                _how = "max" if how == "any" else "min"
++            else:
++                _how = how
+             try:
+                 result = self._grouper._cython_operation(
+                     "aggregate",
+                     values,
+-                    how,
++                    _how,
+                     axis=data.ndim - 1,
+                     min_count=min_count,
+                     **kwargs,
+@@ -1544,6 +1554,11 @@ class GroupBy(BaseGroupBy[NDFrameT]):
+                 elif alt is None or how in ["any", "all", "std", "sem"]:
+                     raise  # TODO: re-raise as TypeError?  should not be reached
+             else:
++                if use_bool_fastpath and result.dtype.kind == "f":
++                    fill = 0.0 if how == "any" else 1.0
++                    result = np.where(
++                        np.isnan(result), fill, np.asarray(result)
++                    ).astype(bool)
+                 return result
+ 
+             assert alt is not None
+diff --git a/pandas/tests/groupby/test_reductions.py b/pandas/tests/groupby/test_reductions.py
+index 21a80ef98b..39d411d7d2 100644
+--- a/pandas/tests/groupby/test_reductions.py
++++ b/pandas/tests/groupby/test_reductions.py
+@@ -251,6 +251,22 @@ def test_empty(frame_or_series, all_boolean_reductions):
+     tm.assert_equal(result, expected)
+ 
+ 
++@pytest.mark.parametrize("method,fill_value", [("any", False), ("all", True)])
++def test_numpy_bool_unobserved_categorical_group_returns_identity(method, fill_value):
++    # GH#65100
++    key = pd.Categorical(["A", "B"], categories=["A", "B", "C"])
++    ser = Series(np.array([True, False], dtype=bool))
++
++    result = getattr(ser.groupby(key, observed=False), method)()
++
++    expected = Series(
++        [True, False, fill_value],
++        index=pd.CategoricalIndex(["A", "B", "C"], categories=["A", "B", "C"]),
++        dtype=bool,
++    )
++    tm.assert_series_equal(result, expected)
++
++
+ @pytest.mark.parametrize("how", ["idxmin", "idxmax"])
+ def test_idxmin_idxmax_extremes(how, any_real_numpy_dtype):
+     # GH#57040

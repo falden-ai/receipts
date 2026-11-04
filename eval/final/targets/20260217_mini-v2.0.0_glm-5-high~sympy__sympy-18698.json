@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-18698",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T06:54:40Z",
+  "wall_seconds": 2395.577720731,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "sqf and sqf_list output is not consistant\nThe example below is wrong in the sense that we should have (x*_2 - 5_x + 6, 3) and not 2 factors of multiplicity 3.\n\n```\n>  sqf_list(  (x**2 + 1)  * (x - 1)**2 * (x - 2)**3 * (x - 3)**3  )\n\n>  (1, [(x**2 + 1, 1), (x - 1, 2), (x - 3, 3), (x - 2, 3)])\n```\n\nwhereas below is correct --- one factor of multiplicity 2\n\n```\n>  sqf_list( x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2 )\n\n>  (1, [(x - 2, 1), (x**2 - 1, 2)])\n```\n\n",
+        "start": 0,
+        "end": 458
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-18698",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Poly((x**2 + 1)*(x - 1)**2*(x - 2)**3*(x - 3)**3, x).sqf_list() still returns separate (x - 2, 3) and (x - 3, 3) factors because Poly.sqf_list bypasses the changed top-level helpers. [correctness]",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "sqf(sin(x)**2*cos(x)**2) changes from sin(x)**2*cos(x)**2 to (sin(x)*cos(x))**2, altering symbolic sqf behavior for non-polynomial factors beyond the polynomial sqf_list issue. [regression]",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "sqf((x**2 + 1)*(x - 1)**2*(x - 2)**3*(x - 3)**3) returns ((x - 2)*(x - 3))**3 rather than the canonical (x**2 - 5*x + 6)**3, because the symbolic path multiplies Expr factors without expanding them. [correctness]",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "sqf((x + 1)**a*(x + 2)**2) with symbolic exponent a raises TypeError when sorted() compares Symbol and int multiplicity keys, whereas before the change it returned the factored product. [regression]",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "sqf_list((sqrt(x) - 1)**3*(sqrt(x) - 2)**3, x) still returns two multiplicity-3 factors because the non-rational symbolic branch returns _symbolic_factor_list without applying _combine_sqf_factors. [correctness]",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "sqf((x + 1)**2*(x + 2)**2) changes its previously expected structural result (x + 1)**2*(x + 2)**2 to ((x + 1)*(x + 2))**2, breaking existing sqf tests and downstream code relying on separate square-free factors. [regression]",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1110,
+      "cached_tokens": 116,
+      "output_tokens": 13320,
+      "reasoning_tokens": 12829,
+      "micro_usd": 270400,
+      "seconds": 113.59356627899999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 3,
+        "suspected": 2,
+        "unchecked": 3,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-18698/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-18698/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-18698/nothing_else_changed/regression-2.3"
+      ],
+      "wall_seconds": 961.430856712
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 5,
+        "suspected": 3,
+        "s_sat_inconclusive": 1,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1320.214744466
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:922cd0fcc1dbd6349560f1c42c6319ea59d19ab7d7a44f8d8fbd0dbb143a8c11"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:922cd0fcc1dbd6349560f1c42c6319ea59d19ab7d7a44f8d8fbd0dbb143a8c11"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

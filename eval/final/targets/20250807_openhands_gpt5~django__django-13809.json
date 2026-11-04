@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-13809",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:55:16Z",
+  "wall_seconds": 2375.0991794109996,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Add --skip-checks option to the runserver command.\nDescription\n\t\nRationale:\nIt would be consistent with other management commands performing system checks\nIt would help people like me who would rather have checks enabled exclusively in CI/CD than wait 15-20 seconds for each project reload during development\nRelated StackOverflow question:\n​https://stackoverflow.com/questions/41438593/skip-system-checks-on-django-server-in-debug-mode-in-pycharm/41725866\n",
+        "start": 0,
+        "end": 457
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-13809",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run `runserver --skip-checks --noreload` in a project with a registered failing system check. The server still raises SystemCheckError and fails to start because a check runs outside the guarded inner_run block.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run `runserver --noreload` without --skip-checks in a project with a failing system check. Checks are no longer printed or enforced and the server starts anyway, breaking the previous default behavior.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run `runserver --skip-checks` with the default autoreloader and trigger a file-change reload. The reloader child process loses or ignores the flag and calls Command.check on every reload, defeating the claimed speedup.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Run `runserver --skip-checks` with unapplied migrations. The migrations check is also suppressed or crashes, so the usual unapplied-migrations warning disappears even though only system checks were meant to be skipped.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the contrib.staticfiles override of runserver with `--skip-checks`, as used when staticfiles is installed. That command still performs system checks because the flag is only wired into the core command's parser or inner_run path it overrides.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call runserver programmatically via existing code that invokes inner_run/run without a skip_checks option, or via a subclass that already registers --skip-checks. The invocation now raises KeyError or an argparse conflicting-option error where it previously worked.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 699,
+      "cached_tokens": 116,
+      "output_tokens": 6492,
+      "reasoning_tokens": 6115,
+      "micro_usd": 132196,
+      "seconds": 50.90555503399992
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "unchecked": 2,
+        "not_reproduced": 1,
+        "refuted": 4,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1030.6826836249984
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "refuted": 2,
+        "unchecked": 5,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1289.7786344370015
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b3255aba1cd0d57fdd02ec89c80038f07a6b88ea4e017b67e49ee3280da879c5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b3255aba1cd0d57fdd02ec89c80038f07a6b88ea4e017b67e49ee3280da879c5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b3255aba1cd0d57fdd02ec89c80038f07a6b88ea4e017b67e49ee3280da879c5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b3255aba1cd0d57fdd02ec89c80038f07a6b88ea4e017b67e49ee3280da879c5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

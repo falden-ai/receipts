@@ -1,0 +1,170 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9367",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:13:44Z",
+  "wall_seconds": 1043.1826911260005,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "1-element tuple rendered incorrectly\n**Describe the bug**\r\nThis is a followup to #7964 which has been addressed in #8265.\r\n\r\nHowever the special case of a 1-element tuple is still not handled correctly.\r\n\r\n`(1,)` is rendered as `(1)`, but should keep the trailing comma.\r\n\r\n**To Reproduce**\r\nAdd a testcase\r\n```\r\n    (\"(1,)\", \"(1,)\"),                           # Tuple (single element)\r\n```\r\nat https://github.com/sphinx-doc/sphinx/blob/e0b1e1002b500acc63dfd0806f8095dd6b27037b/tests/test_pycode_ast.py#L57\r\n\r\n\n",
+        "start": 0,
+        "end": 511
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9367",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "unparse(ast.parse('((1,),)', mode='eval').body) does not return '((1,),)': the inner or outer single-element tuple loses its trailing comma during recursive visiting.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "unparse(ast.parse('a[1,]', mode='eval').body) changes from the previous 'a[(1)]' to 'a[(1,)]' because a subscript slice reuses ast.Tuple, altering subscript rendering beyond standalone tuples.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling unparse on single-element tuples embedded in other expressions, such as '[(1,)]', '{(1,): None}', or 'f((1,))', still renders the tuple as '(1)' instead of '(1,)'.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "unparse(ast.parse('f(1,)', mode='eval').body) changes the existing rendering of a call's trailing comma, even though the call arguments are not a tuple display.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling unparse on a single-element tuple with a non-trivial element, such as '(*a,)', '((),)', or '(1 + 2,)', drops or misplaces the trailing comma instead of returning the source form.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Neighbouring forms that passed before now change: unparse for '()', '(1, 2, 3)', or the non-tuple '(1)' no longer returns '()', '(1, 2, 3)', and '(1)' respectively.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 657,
+      "cached_tokens": 244,
+      "output_tokens": 7507,
+      "reasoning_tokens": 7120,
+      "micro_usd": 151841,
+      "seconds": 73.20222139199996
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 3,
+        "possibly_toxic": 5,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 667.2695583960003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 4,
+        "refuted": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 301.9602198440007
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:b9b75db58dc76a4c1505459c60703a0fe67f74935203009efb330e362d49ee41"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,174 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~astropy__astropy-7166",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:30:57Z",
+  "wall_seconds": 1300.9740878349985,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "InheritDocstrings metaclass doesn't work for properties\nInside the InheritDocstrings metaclass it uses `inspect.isfunction` which returns `False` for properties.\n",
+        "start": 0,
+        "end": 162
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~astropy__astropy-7166",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a base class with a documented @property and a subclass using InheritDocstrings that overrides it with an undocumented @property; the subclass property's __doc__ remains None instead of inheriting the base docstring.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define a subclass property with no docstring overriding a base class attribute that is plain data (e.g. an int or str class variable); the property now incorrectly copies that object's type __doc__ (e.g. int's docstring) instead of staying None as before the change.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define the subclass property with a setter via @x.setter (which replaces the property object in the class dict) overriding a documented base property; the final property's __doc__ remains None because the docstring is not propagated through the setter-created property.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Reuse the same property object in two classes with different documented bases (e.g. `x = SomeBase.__dict__['x']` aliased into a subclass); assigning val.__doc__ mutates the shared property, leaking the first class's inherited docstring into the base or the other class.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Override a documented base property in the subclass using a property-like descriptor that is not a property subclass, such as functools.cached_property or abc.abstractproperty wrapping; isinstance(val, property) misses it and its __doc__ remains None.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define a subclass using a custom property subclass whose __doc__ is read-only or slotted, overriding a documented base member; class creation now raises AttributeError/TypeError when InheritDocstrings assigns val.__doc__, whereas the class defined successfully before the change.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 488,
+      "cached_tokens": 116,
+      "output_tokens": 6501,
+      "reasoning_tokens": 6079,
+      "micro_usd": 131532,
+      "seconds": 57.36133188799795
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "suspected": 2,
+        "unchecked": 2,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~astropy__astropy-7166/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 721.5189736600005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 1,
+        "refuted": 3,
+        "possibly_toxic": 1
+      },
+      "blockers": [],
+      "wall_seconds": 520.7856399260017
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93b10f4911a42061dc319ebc757fe48a969173fafe37633ba9377e2475c55389"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

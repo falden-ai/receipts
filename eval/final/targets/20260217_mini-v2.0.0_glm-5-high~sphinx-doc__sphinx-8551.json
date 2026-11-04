@@ -1,0 +1,155 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-8551",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:05:53Z",
+  "wall_seconds": 1317.5855567430008,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": ":type: and :rtype: gives false ambiguous class lookup warnings\n**Describe the bug**\r\nThe implicit xrefs created by the info fields ``:type:`` and ``:rtype:`` seems to do lookup differently than explicit xref roles. For unqualified names it seems like they search for the name in every (sub)module instead of in the current module and then parent modules.\r\n\r\n**To Reproduce**\r\n```rst\r\n.. py:class:: mod.A\r\n.. py:class:: mod.submod.A\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param mod.A a:\r\n\t:param mod.submod.A b:\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n\r\n.. py:currentmodule:: mod\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`A`\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param A a:\r\n\t:param mod.A b:\r\n\t:param mod.submod.A c:\r\n\t:rtype: A\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n\r\n.. py:currentmodule:: mod.submod\r\n\r\n.. py:function:: f()\r\n\r\n\t- :py:class:`A`\r\n\t- :py:class:`mod.A`\r\n\t- :py:class:`mod.submod.A`\r\n\r\n\t:param A a: BUG: links to mod.A instead of mod.submod.A\r\n\t:param mod.A b:\r\n\t:param mod.submod.A c:\r\n\t:rtype: A\r\n\t:rtype: mod.A\r\n\t:rtype: mod.submod.A\r\n```\r\ngives the warnings\r\n```\r\nindex.rst:28: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:28: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:43: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\nindex.rst:43: WARNING: more than one target found for cross-reference 'A': mod.A, mod.submod.A\r\n```\r\nwhich refer to the 4 unqualified type names ``A``.\r\nThe ``:param:`` annotated with ``BUG`` as well as the corresponding ``rtype`` gets resolved to ``mod.A``.\r\n\r\n**Expected behavior**\r\nNo warnings, and the two mentioned types should resolve to ``mod.submod.A``.\r\n\r\n**Environment info**\r\n- Sphinx version: tested both with v3.3 and with master\n",
+        "start": 0,
+        "end": 1874
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-8551",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Build the issue's reproduction under `py:currentmodule:: mod.submod` using only `:param A a:` in `py:function f()`, with both `mod.A` and `mod.submod.A` defined. The field xref still emits the ambiguous-target warning or links to `mod.A` instead of `mod.submod.A`, because the param-type path bypasses the new scope attachment.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Put a standalone info-field list with `:type a: UniqueClass` in narrative text before any `py:currentmodule`, in a document that later sets a different current module containing a same-named class. Previously it resolved uniquely to `UniqueClass`; after the change it inherits the document-final ref_context and mislinks or warns.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Build the same `mod`/`mod.submod` setup using only the separate forms `:type a: A` and `:rtype: A` under `py:currentmodule:: mod.submod`. At least one of those paths still warns as ambiguous or resolves to `mod.A`, showing the return/separate-type xref creation does not receive the current-module scope.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Under `py:currentmodule:: mod.submod`, use a fully qualified field type `:type a: mod.A` where only `mod.A` exists. Previously the fullname resolved directly; after attaching scope it is prefixed/resolved as a relative name and becomes unresolved or ambiguous.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "correctness: Define `mod.Inner` and `mod.Outer.Inner`, then document `py:class Outer` whose own `:param Inner x:` field list is followed by a nested `py:method`. The class-level type xref loses the enclosing-class scope by transform time and warns or links to `mod.Inner` instead of `mod.Outer.Inner`, unlike an explicit xref in the same docstring.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "regression: Call `PythonDomain.process_field_xref` on a pending_xref that already carries an explicit `py:module` chosen by its creator while `env.ref_context` names a different module (or none). The unconditional `attributes.update(ref_context)` clobbers the preset scope that the base no-op implementation used to preserve, changing that xref's resolution.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1060,
+      "cached_tokens": 244,
+      "output_tokens": 14543,
+      "reasoning_tokens": 13988,
+      "micro_usd": 294173,
+      "seconds": 106.34219486299844
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "s_sat_inconclusive": 2,
+        "suspected": 2
+      },
+      "blockers": [],
+      "wall_seconds": 869.0957947539973
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 5,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 341.490737969998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:13a792107451e9b23fcccafbc9c8418adbfb4cbb1f49ed1ad130a72c3a563cf1"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:13a792107451e9b23fcccafbc9c8418adbfb4cbb1f49ed1ad130a72c3a563cf1"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

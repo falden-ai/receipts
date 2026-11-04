@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-15554",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:23:52Z",
+  "wall_seconds": 1594.2236947239999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Using multiple FilteredRelation with different filters but for same relation is ignored.\nDescription\n\t \n\t\t(last modified by lind-marcus)\n\t \nI have a relation that ALWAYS have at least 1 entry with is_all=True and then I have an optional entry that could have is_all=False but instead have zone set.\nI'm trying to use FilteredRelation together with Case(When()) to ensure that it use the zone level one (if exist) and fall back on \"All\" if zone do not exist.\nfrom django.db.models import FilteredRelation\nqs.alias(\n\trelation_zone=FilteredRelation(\n\t\t\"myrelation__nested\",\n\t\tcondition=Q(myrelation__nested__zone=F(\"zone\"))\n\t),\n\trelation_all=FilteredRelation(\n\t\t\"myrelation__nested\",\n\t\tcondition=Q(myrelation__nested__is_all=True)\n\t),\n\tprice_zone=F(\"relation_zone__price\")\n).annotate(\n\tprice_final=Case(\n\t\tWhen(\n\t\t\tprice_zone__isnull=True,\n\t\t\tthen=F(\"relation_all__price\"),\n\t\t),\n\t\tdefault=F(\"price_zone\")\n\t)\n)\nI noticed that when using multiple FilteredRelation with the same relation (myrelation__nested) it actually just generates a single SQL JOIN (if inspecting the raw SQL) and ignores the other. So in this case if I do print(str(qs.query)) I would only see a join for relation_zone. Not for relation_all.\nIs this intended behavior or should I be able to do the thing above?\n",
+        "start": 0,
+        "end": 1278
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-15554",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reproduce the issue end-to-end with a chained relation: alias two FilteredRelations on 'myrelation__nested' (zone=F('zone') vs is_all=True), then annotate price_final via Case/When falling back to the all-row. It fails if the SQL still contains only one nested JOIN or price_final picks the wrong row when both a zone row and an all row exist.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Annotate two separately constructed but identical FilteredRelations (same relation and same Q condition) under two names and also Count a related field. Previously they shared one join; it regresses if the stricter equality now emits duplicate joins that multiply rows or inflate the count.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Swap the definition order (relation_all first, relation_zone second) and reference both only inside a Case/When in annotate(). It fails if whichever FilteredRelation is defined second (or first) is dropped from the SQL, yielding NULL/incorrect price_final for the fallback branch.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Mix a FilteredRelation annotation on a relation with a plain traversal of the same relation in the same query, e.g. annotate(filtered=FilteredRelation('author', condition=...)) plus order_by/filter on 'author__name'. It regresses if previously reused joins now split into an extra unfiltered join that duplicates rows or changes the returned values versus before the change.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Annotate aggregates over both filtered relations at once, e.g. Sum('relation_zone__price') and Count('relation_all__id') grouped by parent. It fails if the two joins are still conflated or cross-multiply, inflating the count/sum compared to computing each filtered relation separately.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a filtered relation inside an OR or negated filter, e.g. filter(Q(rel_filtered__x=1) | Q(other=2)) or exclude(rel_filtered__x=1), where join reuse/promotion to LEFT OUTER matters. It regresses if the freshly resolved/cloned FilteredRelation no longer compares equal, so the join is not reused or promoted and rows are wrongly dropped or not excluded.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 768,
+      "cached_tokens": 116,
+      "output_tokens": 5754,
+      "reasoning_tokens": 5235,
+      "micro_usd": 117712,
+      "seconds": 46.272429380000176
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1176.1081139670005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 7,
+        "not_reproduced": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 368.6719856079999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c82cf0cf7bf347506837689664bb55b57afeb966f95498be3a0e3ede0194bd87"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~django__django-12273",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:49:28Z",
+  "wall_seconds": 2048.1111108299992,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Resetting primary key for a child model doesn't work.\nDescription\n\t\nIn the attached example code setting the primary key to None does not work (so that the existing object is overwritten on save()).\nThe most important code fragments of the bug example:\nfrom django.db import models\nclass Item(models.Model):\n\t# uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)\n\tuid = models.AutoField(primary_key=True, editable=False)\n\tf = models.BooleanField(default=False)\n\tdef reset(self):\n\t\tself.uid = None\n\t\tself.f = False\nclass Derived(Item):\n\tpass\nclass SaveTestCase(TestCase):\n\tdef setUp(self):\n\t\tself.derived = Derived.objects.create(f=True) # create the first object\n\t\titem = Item.objects.get(pk=self.derived.pk)\n\t\tobj1 = item.derived\n\t\tobj1.reset()\n\t\tobj1.save() # the first object is overwritten\n\tdef test_f_true(self):\n\t\tobj = Item.objects.get(pk=self.derived.pk)\n\t\tself.assertTrue(obj.f)\nDjango 2.1.2\n",
+        "start": 0,
+        "end": 926
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~django__django-12273",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Create a Derived object, fetch it via Derived.objects.get(), set obj.pk = None, and save it. The new code resurrects the old pk from the inherited uid attribute into item_ptr_id, so it updates the original row instead of inserting a clone.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Construct a child with only the parent link set, e.g. Derived(item_ptr_id=existing_item.pk).save(). Before the change _save_parents copied the link into the parent pk and reused/updated that parent; now it clears the link and inserts a brand-new Item, changing Item counts and the child's identity.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reproduce the issue exactly: fetch Item, access item.derived, set uid = None via reset(), and save. The cleared item_ptr_id is never repopulated from the newly inserted parent's uid before the child insert, so the save raises an integrity error or creates a child row with a missing/mismatched pk instead of preserving the old f=True row plus a new row.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "On an existing Derived instance, assign only the link attribute to another existing parent (derived.item_ptr_id = other_item.pk with the inherited uid cleared/unset) and save. Instead of updating/reusing the chosen parent row as before, the save discards the link and inserts a new parent, silently reparenting the child to a different row.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "After resetting uid to None on a Derived instance and saving, check the in-memory instance: obj.pk remains None (only uid was set by the parent insert). A second save() therefore inserts yet another parent/child pair instead of updating the clone created by the first save.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Trigger a failing MTI save (e.g. set the parent pk to None and violate a unique constraint on a parent field) and inspect the instance after the exception. The pre-insert clearing of item_ptr_id destroys the instance's pk in memory even though the database row still exists, so the object can no longer be refreshed, retried, or deleted by pk as it could before.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1257,
+      "cached_tokens": 116,
+      "output_tokens": 11538,
+      "reasoning_tokens": 11029,
+      "micro_usd": 235348,
+      "seconds": 97.57201390800037
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "blocker": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~django__django-12273/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 1507.8033133810022
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "refuted": 4,
+        "unchecked": 2,
+        "not_reproduced": 2
+      },
+      "blockers": [],
+      "wall_seconds": 442.2538439009986
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

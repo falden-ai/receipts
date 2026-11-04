@@ -1,0 +1,11 @@
+# The founder's R24 gold drops, for `receipts eval manifest --gold-drop eval/gold-drops.tsv` at the freeze (the
+# runbook in eval/vm/quote.json): one <instance_id><TAB><reason> per line. A drop lands only on an instance R24 left
+# unchecked, and the manifest records each reason. Add a line only on the founder's word, by name, with the reason.
+sphinx-doc__sphinx-8265	REG-571, pre-approved for the freeze: SWE-bench's log parser cut its one FAIL_TO_PASS id at a space ('tests/test_pycode_ast.py::test_unparse[(1,'), so R24 can name no FAIL_TO_PASS case and the instance stays unchecked whatever a run does
+sphinx-doc__sphinx-8621	REG-571, pre-approved for the freeze: SWE-bench's log parser cut both its FAIL_TO_PASS ids at a space ('tests/test_markup.py::test_inline[verify-:kbd:`Alt+^`-<p><kbd' and its pair), so R24 can name no FAIL_TO_PASS case and the instance stays unchecked whatever a run does
+psf__requests-1921	REG-574: R24 run d2 left it INFRA only on network errors; its tests need network the run phase does not have
+psf__requests-2317	REG-574: R24 run d2 left it INFRA only on network errors; its tests need network the run phase does not have
+psf__requests-2931	REG-574: R24 run d2 left it INFRA only on network errors; its tests need network the run phase does not have
+psf__requests-5414	REG-574: R24 run d2 left it INFRA only on network errors; its tests need network the run phase does not have
+matplotlib__matplotlib-20488	REG-574: R24 run d2 left it INFRA only on network errors; its tests need network the run phase does not have (test_https_imread_smoketest)
+astropy__astropy-7606	REG-575: SWE-bench's PASS_TO_PASS id test_compose_roundtrip[] names a case this image's pytest 3.3.1 reports as test_compose_roundtrip[unit0]; swebench 4.1.0 grades it failing the same way

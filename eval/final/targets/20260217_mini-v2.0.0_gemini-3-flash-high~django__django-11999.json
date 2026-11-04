@@ -1,0 +1,163 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:57:08Z",
+  "wall_seconds": 1603.9143067539999,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Cannot override get_FOO_display() in Django 2.2+.\nDescription\n\t\nI cannot override the get_FIELD_display function on models since version 2.2. It works in version 2.1.\nExample:\nclass FooBar(models.Model):\n\tfoo_bar = models.CharField(_(\"foo\"), choices=[(1, 'foo'), (2, 'bar')])\n\tdef __str__(self):\n\t\treturn self.get_foo_bar_display() # This returns 'foo' or 'bar' in 2.2, but 'something' in 2.1\n\tdef get_foo_bar_display(self):\n\t\treturn \"something\"\nWhat I expect is that I should be able to override this function.\n",
+        "start": 0,
+        "end": 512
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define an abstract base with a choices field `foo`, then a concrete subclass that defines `get_foo_display()` returning 'something' without redefining `foo`. Calling the subclass instance's `get_foo_display()` returns the choice label instead of 'something' because the cloned field's contribution on the subclass mishandles the inherited method.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create an abstract parent with choices field `foo=[(1, 'foo')]`, then a child that redefines `foo=[(1, 'baz')]` with no custom display method. The child's `get_foo_display()` returns 'foo' instead of 'baz' because the parent's auto-generated partialmethod is kept and remains bound to the parent field.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define the issue's model but assign the override explicitly in the class body as another model's auto display method, e.g. `get_foo_bar_display = OtherModel.get_foo_bar_display` where that method maps the value to 'something'. Calling it returns this model's choice label instead of 'something' because the check treats any `_partialmethod` wrapping `_get_FIELD_display` as auto-generated and overwrites the explicit assignment.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create an abstract parent that defines a custom `get_foo_display()`, then a child that redefines the choices field expecting the standard auto-generated display for its new field as before the change. The child still returns the parent's custom result because the inherited custom method is now preserved on field redefinition, altering behavior beyond the same-class override fix.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Define a subclass that both redefines an inherited choices field with new choices and defines `get_foo_display()` returning 'something'. Calling the subclass instance's display method returns a choice label instead of 'something' because field contribution for the redefined field replaces or shadows the subclass override.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Take a model with only the auto-generated `get_foo_display()` and re-contribute a replacement choices field with different labels to the same class, as migrations/state rendering or dynamic field addition can do. The instance still returns the old label because the existing auto method is mistaken for a user override and is not updated to the new field.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 708,
+      "cached_tokens": 116,
+      "output_tokens": 12559,
+      "reasoning_tokens": 12024,
+      "micro_usd": 253572,
+      "seconds": 92.29037541399975
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 1,
+        "s_sat_inconclusive": 1,
+        "blocker": 2,
+        "refuted": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 1147.8612809310007
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 4,
+        "s_sat_inconclusive": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-11999/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 363.172004181999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:6bf502e69a74a0a78a87565117d04369ec89fbbca71e5929110f65e3ee1f5bc6"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:6bf502e69a74a0a78a87565117d04369ec89fbbca71e5929110f65e3ee1f5bc6"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

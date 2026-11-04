@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "tests/runtests.py",
+  "--verbosity",
+  "2",
+  "--parallel",
+  "1",
+  "--settings=test_sqlite",
+  "receipts_nonl"
+ ],
+ "exit_code": 1,
+ "seconds": 0.4,
+ "stdout": "Testing against Django installed in '/testbed/django'\nImporting application receipts_nonl\nSkipping setup of unused database(s): default, other.\nSystem check identified no issues (0 silenced).\n",
+ "stderr": "test_a_writes_then_passes (receipts_nonl.tests.NoNewline) ... xok\ntest_b_writes_then_fails (receipts_nonl.tests.NoNewline) ... xFAIL\ntest_c_ends_its_output_in_ok_then_skips (receipts_nonl.tests.NoNewline) ... it is ok\nskipped 'skipped after its own output'\ntest_d_after (receipts_nonl.tests.NoNewline) ... ok\n\n======================================================================\nFAIL: test_b_writes_then_fails (receipts_nonl.tests.NoNewline)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/receipts_nonl/tests.py\", line 12, in test_b_writes_then_fails\n    self.assertEqual(1, 2)\nAssertionError: 1 != 2\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=1, skipped=1)\n"
+}

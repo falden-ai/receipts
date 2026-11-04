@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-12273",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1838.0722202839997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Resetting primary key for a child model doesn't work.\nDescription\n\t\nIn the attached example code setting the primary key to None does not work (so that the existing object is overwritten on save()).\nThe most important code fragments of the bug example:\nfrom django.db import models\nclass Item(models.Model):\n\t# uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)\n\tuid = models.AutoField(primary_key=True, editable=False)\n\tf = models.BooleanField(default=False)\n\tdef reset(self):\n\t\tself.uid = None\n\t\tself.f = False\nclass Derived(Item):\n\tpass\nclass SaveTestCase(TestCase):\n\tdef setUp(self):\n\t\tself.derived = Derived.objects.create(f=True) # create the first object\n\t\titem = Item.objects.get(pk=self.derived.pk)\n\t\tobj1 = item.derived\n\t\tobj1.reset()\n\t\tobj1.save() # the first object is overwritten\n\tdef test_f_true(self):\n\t\tobj = Item.objects.get(pk=self.derived.pk)\n\t\tself.assertTrue(obj.f)\nDjango 2.1.2\n",
+        "start": 0,
+        "end": 926
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-12273",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Reset the fetched Derived instance via obj.pk = None (which sets item_ptr_id) instead of uid = None, then save(); the original Item row is still overwritten or an integrity error occurs instead of inserting a new row.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create a new Derived(uid=<existing Item pk>) with no item_ptr set and save(); previously it saved against that existing Item, but the change clears uid and silently inserts a new Item with a different pk.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a three-level MTI chain GrandDerived(Derived(Item)), fetch it, set uid = None, and save(); the intermediate Derived link is not fully reset, so the old Derived/Item rows are updated or a duplicate-key error occurs instead of creating a new chain.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Fetch an existing Derived, set only item_ptr_id = None while keeping uid, and save an unrelated change; previously this did not duplicate the object, but the change clears uid and inserts new Item/Derived rows.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use the UUIDField primary-key variant from the issue, reset uid = None on a fetched Derived, and save(); the save reuses the old UUID/link or fails on a null pk instead of generating a fresh UUID and preserving the original row.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use an MTI child that has its own separate primary key in addition to the parent link, fetch it, set the parent uid = None, and save(); previously the parent link restored uid, but the change clears the link and re-points the child to a newly inserted parent, orphaning the old one.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 854,
+      "cached_tokens": 116,
+      "output_tokens": 12826,
+      "reasoning_tokens": 12419,
+      "micro_usd": 259496,
+      "seconds": 123.63945739399998
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "not_reproduced": 3,
+        "unchecked": 5,
+        "blocker": 1,
+        "suspected": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-12273/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 1177.482416073
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 9,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 536.3359174389998
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:ddd76eec5bcb8ddcae1b1df4de1c3b5fa9c467d14400a2447fb094eff2c772fc"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.001" timestamp="2026-10-27T00:00:00.000000+00:00" hostname="sandbox"><testcase classname="tests.test_ut.T" name="test_equal" file="tests/test_ut.py" line="4" time="0.001"><failure message="AssertionError: 1 != 2">Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/unittest/case.py", line 58, in testPartExecutor
+    yield
+  File "/usr/local/lib/python3.13/unittest/case.py", line 651, in run
+    self._callTestMethod(testMethod)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/unittest/case.py", line 606, in _callTestMethod
+    if method() is not None:
+       ~~~~~~^^
+  File "/workspace/tests/test_ut.py", line 6, in test_equal
+    self.assertEqual(1, 2)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/local/lib/python3.13/unittest/case.py", line 907, in assertEqual
+    assertion_func(first, second, msg=msg)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/unittest/case.py", line 900, in _baseAssertEqual
+    raise self.failureException(msg)
+AssertionError: 1 != 2</failure></testcase></testsuite></testsuites>

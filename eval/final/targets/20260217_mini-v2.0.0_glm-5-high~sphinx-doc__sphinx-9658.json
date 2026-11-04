@@ -1,0 +1,164 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9658",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:41:47Z",
+  "wall_seconds": 2037.4652806249978,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Inherited classes not correctly documented when mocked\n### Describe the bug\r\n\r\nWe're experiencing an issue when documenting classes that inherit mocked classes. However, classes which inherit other classes from our own package are ok.\r\n\r\nThis issue appears to be dependent on the `sphinx` version:\r\n\r\n- `sphinx<3.0`: Everything is OK. \r\n- `sphinx>=3.0 < 3.4.2`: Classes that inherit mocked classes are not documented. (see [sphinx #8164](https://github.com/sphinx-doc/sphinx/issues/8164)). This is fixed in `sphinx 3.4.2`. \r\n- `sphinx>=3.4.2`: The previously missing classes are now documented, but there is a problem with the \"Bases\" section in the docs. \r\n \r\nExample: In the docs for `alibi_detect.utils.pytorch.kernels.DeepKernel` in this readthedocs build https://seldon--338.org.readthedocs.build/projects/alibi-detect/en/338/api/alibi_detect.utils.pytorch.kernels.html, the base class is listed as \"Bases: `torch.nn.`\" instead of \"Bases: `torch.nn.Module`\". \r\n\r\n\r\n### How to Reproduce\r\n\r\n```\r\n$ git clone https://github.com/ascillitoe/alibi-detect.git\r\n$ cd alibi-detect\r\n$ pip install -r requirements/docs.txt\r\n$ make build_docs\r\n$ # open doc/_build/html/api/alibi_detect.utils.pytorch.kernels.html and see \"Bases\" section.\r\n```\r\n\r\n\r\n### Expected behavior\r\n\r\nThe \"Bases\" section should report `torch.nn.Module` not `torch.nn.`. \r\n\r\ni.e. see\r\nhttps://seldon--325.org.readthedocs.build/projects/alibi-detect/en/325/api/alibi_detect.utils.pytorch.kernels.html\r\n\r\n### Your project\r\n\r\nhttps://github.com/ascillitoe/alibi-detect/tree/feature_sphinx4\r\n\r\n### Screenshots\r\n\r\n### Screenshot with `sphinx==4.2`\r\n![sphinx_problem](https://user-images.githubusercontent.com/32061685/133816582-ca162b07-41c7-4b8e-98ea-781e7c659229.png)\r\n\r\n### Screenshot with `sphinx<3.0`\r\n![sphinx_working](https://user-images.githubusercontent.com/32061685/133816065-6291ce1b-96cf-4b0f-9648-7f993fc15611.png)\r\n\r\n\r\n\r\n### OS\r\n\r\nUbuntu 18.04 (used by readthedocs/build:6.0)\r\n\r\n### Python version\r\n\r\n3.8.11\r\n\r\n### Sphinx version\r\n\r\n`>=3.4.2`\r\n\r\n### Sphinx extensions\r\n\r\n    [\"sphinx.ext.autodoc\",\r\n    \"sphinx.ext.doctest\",\r\n    \"sphinx.ext.intersphinx\",\r\n    \"sphinx.ext.todo\",\r\n    \"sphinx.ext.coverage\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinx.ext.ifconfig\",\r\n    \"sphinx.ext.viewcode\",\r\n    \"sphinx.ext.napoleon\",\r\n    \"sphinx_autodoc_typehints\",\r\n    \"sphinxcontrib.apidoc\", \r\n    \"nbsphinx\",\r\n    \"nbsphinx_link\",  \r\n    \"myst_parser\"]\r\n\r\n\r\n### Extra tools\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\ndemo PR:\r\nhttps://github.com/SeldonIO/alibi-detect/pull/338\r\n\r\nreadthedocs demo build:\r\nhttps://seldon--338.org.readthedocs.build/projects/alibi-detect/en/338/api/alibi_detect.utils.pytorch.kernels.html\r\n\r\n\n",
+        "start": 0,
+        "end": 2690
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9658",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "With 'torch' in autodoc_mock_imports, define a real intermediate class Intermediate(torch.nn.Module) and a subclass Documented(Intermediate), then render Documented's Bases with restify(Intermediate). It will show torch.nn.Module instead of the intermediate class's real dotted name because the mock attributes are inherited, so indirect inheritance from a mock is still misdocumented.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call restify on a real user class that itself subclasses a mocked class, e.g. class Real(torch.nn.Module) in a real package, where restify(Real) previously returned Real's own module and name. After the change it returns the mock base's __display_name__ (torch.nn.Module), breaking cross-references and annotations that use the real subclass.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call sphinx.util.typing.stringify on a mocked class such as unknown.Class (the text/type-annotation rendering path, not restify). It will still produce the truncated 'unknown.' form because only restify was patched, so mocked bases/annotations rendered as plain text remain broken.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Define a real class whose metaclass implements __getattr__ returning a truthy auto-created object (as MagicMock-backed registries do), then call restify on that class. The __sphinx_mock__ probe will be truthy and the __display_name__ probe will produce a mock repr, so a previously correct name-based reference becomes garbage or falls back to object_description.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a class inheriting a subscripted mocked generic, e.g. class Foo(unknown.Base[int]), and pass its __orig_bases__[0] to restify. The mock check will miss the GenericAlias/subscripted mock result, so the output loses the [int] parameter or the class name instead of rendering the full unknown.Base[int] reference.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call restify on the mocked module object itself, e.g. import unknown inside mock(['unknown']) and call restify(unknown). A _MockModule has no genuine class __display_name__, so the new branch raises AttributeError and falls back to object_description (or formats a fabricated mock subclass) instead of the previous name-based rendering, changing behavior for non-class mocks beyond the Bases fix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1217,
+      "cached_tokens": 244,
+      "output_tokens": 12176,
+      "reasoning_tokens": 11631,
+      "micro_usd": 247461,
+      "seconds": 88.34373887300171
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "blocker": 2,
+        "not_reproduced": 1,
+        "unchecked": 2,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9658/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_glm-5-high~sphinx-doc__sphinx-9658/fixed_x/correctness-2.1"
+      ],
+      "wall_seconds": 1460.0622591799984
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 11,
+      "statuses": {
+        "unchecked": 6,
+        "not_reproduced": 1,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 487.9798395959988
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

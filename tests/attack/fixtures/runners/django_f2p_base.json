@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "tests/runtests.py",
+  "--verbosity",
+  "2",
+  "--parallel",
+  "1",
+  "--settings=test_sqlite",
+  "model_fields.tests.GetFieldDisplayTests"
+ ],
+ "exit_code": 1,
+ "seconds": 0.7,
+ "stdout": "Testing against Django installed in '/testbed/django'\nImporting application model_fields\nSkipping setup of unused database(s): default, other.\nSystem check identified no issues (0 silenced).\n",
+ "stderr": "test_choices_and_field_display (model_fields.tests.GetFieldDisplayTests) ... ok\ntest_empty_iterator_choices (model_fields.tests.GetFieldDisplayTests) ... ok\ntest_get_FIELD_display_translated (model_fields.tests.GetFieldDisplayTests)\nA translated display value is coerced to str. ... ok\ntest_iterator_choices (model_fields.tests.GetFieldDisplayTests) ... ok\ntest_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests) ... FAIL\n\n======================================================================\nFAIL: test_overriding_FIELD_display (model_fields.tests.GetFieldDisplayTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/testbed/tests/model_fields/tests.py\", line 179, in test_overriding_FIELD_display\n    self.assertEqual(f.get_foo_bar_display(), 'something')\nAssertionError: 'foo' != 'something'\n- foo\n+ something\n\n\n----------------------------------------------------------------------\nRan 5 tests in 0.001s\n\nFAILED (failures=1)\n"
+}

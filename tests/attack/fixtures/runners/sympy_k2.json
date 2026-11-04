@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "python",
+  "bin/test",
+  "-C",
+  "--verbose",
+  "sympy/utilities/tests/test_receipts_two.py",
+  "-k",
+  "test_two_a",
+  "test_two_b"
+ ],
+ "exit_code": 1,
+ "seconds": 1.1,
+ "stdout": "============================= test process starts ==============================\nexecutable:         /opt/miniconda3/envs/testbed/bin/python  (3.9.20-final-0) [CPython]\narchitecture:       64-bit\ncache:              no\nground types:       python \nnumpy:              None\nrandom seed:        9464271\nhash randomization: off\n\nsympy/utilities/tests/test_receipts_two.py[2] \ntest_two_a F\ntest_two_b F                                                              [FAIL]\n\n\n________________________________________________________________________________\n____________ sympy/utilities/tests/test_receipts_two.py:test_two_a _____________\n  File \"/testbed/sympy/utilities/tests/test_receipts_two.py\", line 2, in test_two_a\n    assert 1 == 2\nAssertionError\n________________________________________________________________________________\n____________ sympy/utilities/tests/test_receipts_two.py:test_two_b _____________\n  File \"/testbed/sympy/utilities/tests/test_receipts_two.py\", line 6, in test_two_b\n    assert 1 == 3\nAssertionError\n\n============= tests finished: 0 passed, 2 failed, in 0.01 seconds ==============\nDO *NOT* COMMIT!\n",
+ "stderr": "/testbed/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Mapping, defaultdict\n/testbed/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  class OrderedSet(collections.MutableSet):\n/testbed/sympy/solvers/diophantine.py:3188: SyntaxWarning: \"is\" with a literal. Did you mean \"==\"?\n  if feasible is 1:  # it's prime and k == 2\n/testbed/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Callable\n"
+}

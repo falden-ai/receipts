@@ -1,0 +1,173 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15572",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:42:52Z",
+  "wall_seconds": 1643.3488357710003,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Django 3.2.4+ autoreload breaks on empty string in TEMPLATES DIRS.\nDescription\n\t\nDjango versions > 3.2.3 changes the way template dirs are handled, they are now normalized using pathlib.Path.\nPeople having an invalid value in TEMPLATESDIRS? will notice that autoreload stops working.\n\"DIRS\": os.getenv(\"TEMPLATES_DIRS\", \"\").split(\",\") # wrong, should be filter(None, os.getenv(\"TEMPLATES_DIRS\", \"\").split(\",\"))\nor anything else that produces this:\n\"DIRS\": [''] # wrong\nwill break autoreload.\nThis happens because django/template/autoreload.py::template_changed was previously comparing the empty string to a directory, and would never match. Now the normalization transforms the empty string into the root of the project. The result is that template_changed() will now always return True, preventing the autoreload when the app code changes\nChange that produced the regression\nhttps://code.djangoproject.com/ticket/32744\nCommits in main and stable/3.2.x:\n​https://github.com/django/django/commit/68357b2ca9e88c40fc00d848799813241be39129\n​https://github.com/django/django/commit/c0d506f5ef253f006dbff0b0092c8eecbd45eedf\nPrevious reports\n[Server Reload Error...](https://code.djangoproject.com/ticket/33285)\n[Auto-reload not detecting changes in Django 3.2](https://code.djangoproject.com/ticket/33266)\n[Autoreloader doesn't work on Windows 10](https://code.djangoproject.com/ticket/32630)\n",
+        "start": 0,
+        "end": 1388
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-15572",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Configure a real DjangoTemplates backend with TEMPLATES DIRS=[''] and call get_template_directories() and template_changed() for a .py file under Path.cwd(). If the filesystem loader normalizes '' to Path('.') before this code sees it, the truthiness check passes, cwd remains a template directory, and template_changed() still returns True.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "In a temp cwd containing template.html, set DIRS=[''] so the filesystem loader legitimately serves templates from the current directory, then call template_changed() for that template file. Before the change it returned True because '' resolved to cwd; after the change it returns False, so edits to cwd-root templates are no longer detected.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Set DIRS=[Path('')] (the pathlib form made valid by the Path normalization in the issue) with a mocked or real backend. Path('') is truthy, so cwd / Path('') == cwd is still returned and template_changed() still returns True for ordinary code files under cwd.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With DIRS=[''] serving templates from cwd, call watch_for_template_changes() with a mock autoreloader sender. Before the change sender.watch_dir was called with cwd; after the change it is not called at all, so newly created or edited templates under cwd are never watched.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use an engine whose dirs are empty but whose filesystem loader is configured with dirs=[Path('')] and call get_template_directories(). The loader branch's `if directory` check also passes for Path(''), so cwd is still included via loader.get_dirs() even though the engine branch is bypassed.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Pass a valid template directory as a falsy path-like object (an os.PathLike/str subclass whose __fspath__ returns a real template dir but whose __bool__/__len__ is False) in engine.dirs or a loader's get_dirs(). Before the change cwd / to_path(dir) included it; after the change `if dir` silently drops it and its templates stop triggering template_changed().",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 865,
+      "cached_tokens": 116,
+      "output_tokens": 6631,
+      "reasoning_tokens": 6126,
+      "micro_usd": 135640,
+      "seconds": 49.28251802300019
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 5,
+        "suspected": 2,
+        "refuted": 4
+      },
+      "blockers": [],
+      "wall_seconds": 1108.2716426889997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "unchecked": 1,
+        "not_reproduced": 2,
+        "suspected": 2,
+        "refuted": 3,
+        "possibly_toxic": 4
+      },
+      "blockers": [],
+      "wall_seconds": 484.39533726399986
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c22550f7df48dfd028fe294dc1b64925834619d7ee45a4ae8f6b22303d979c36"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

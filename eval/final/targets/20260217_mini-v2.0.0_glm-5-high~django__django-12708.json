@@ -1,0 +1,156 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-12708",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:32:28Z",
+  "wall_seconds": 1646.568479681002,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Migration crashes deleting an index_together if there is a unique_together on the same fields\nDescription\n\t\nHappens with Django 1.11.10\nSteps to reproduce:\n1) Create models with 2 fields, add 2 same fields to unique_together and to index_together\n2) Delete index_together -> Fail\nIt will fail at django/db/backends/base/schema.py, line 378, in _delete_composed_index(), ValueError: Found wrong number (2) of constraints for as this one will find two constraints, the _uniq and the _idx one. No way to get out of this...\nThe worst in my case is that happened as I wanted to refactor my code to use the \"new\" (Dj 1.11) Options.indexes feature. I am actually not deleting the index, just the way it is declared in my code.\nI think there are 2 different points here:\n1) The deletion of index_together should be possible alone or made coherent (migrations side?) with unique_together\n2) Moving the declaration of an index should not result in an index re-creation\n",
+        "start": 0,
+        "end": 959
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-12708",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Migrate a model with unique_together and index_together on the same two fields by removing index_together and adding an equivalent Meta.indexes Index while keeping unique_together. The physical index is still dropped and recreated, or the operation still crashes, so the declaration move described in the issue is not made a no-op.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call _delete_composed_index with {'index': True} to delete a composed index that is the sole, unique-backed index on those columns, as unique indexes are represented on PostgreSQL/MySQL. It previously deleted that index, but now filters it out and raises 'Found wrong number (0) of constraints'.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call _delete_composed_index on a model having both togethers on the same fields with constraint_kwargs={'index': True, 'unique': None} and the delete-index SQL. Because 'unique' is already present, the fix does not inject unique=False and it still raises ValueError for finding 2 constraints.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Remove an ordinary index_together with no unique_together on the same fields from a model whose matching index is introspected without a reliable unique=False flag, such as a primary-key-backed composed index. The new unique=False filter excludes the previously deletable index and the removal fails or leaves the index behind.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Apply one migration that removes both unique_together and index_together on the same fields, in autodetector order. One of the two alter operations raises 'Found wrong number of constraints' or deletes the remaining constraint/index, leaving the schema inconsistent with the final model state.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use a schema-editor subclass or backend whose _constraint_names override accepts index filtering but ignores or mishandles an explicit unique argument. Passing the newly added unique=False changes its result for a normal index_together deletion, causing a wrong-name deletion or a wrong-number error where the old call succeeded.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 782,
+      "cached_tokens": 116,
+      "output_tokens": 9253,
+      "reasoning_tokens": 8775,
+      "micro_usd": 187748,
+      "seconds": 68.35265353700015
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 3,
+        "refuted": 3,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 1099.9915100849976
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 6,
+        "not_reproduced": 2,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 477.55326326700015
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:16261ad21b7230cde2327c771afd63a9756ca92951f00c8593763d0904227a06"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:16261ad21b7230cde2327c771afd63a9756ca92951f00c8593763d0904227a06"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

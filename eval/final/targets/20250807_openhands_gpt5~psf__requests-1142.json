@@ -1,0 +1,167 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~psf__requests-1142",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:27:04Z",
+  "wall_seconds": 1322.6459197249987,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "requests.get is ALWAYS sending content length\nHi,\n\nIt seems like that request.get always adds 'content-length' header to the request.\nI think that the right behavior is not to add this header automatically in GET requests or add the possibility to not send it.\n\nFor example http://amazon.com returns 503 for every get request that contains 'content-length' header.\n\nThanks,\n\nOren\n\n",
+        "start": 0,
+        "end": 381
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~psf__requests-1142",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run requests.get against a local raw-socket HTTP server and capture the wire headers: even though the PreparedRequest drops Content-Length, the urllib3/http.client transport may re-add 'Content-Length: 0', so the server still sees the header the issue complains about.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Prepare a GET or HEAD with an explicitly user-supplied header, e.g. headers={'Content-Length': '0'}: the new pop() silently strips a header the user deliberately set, going beyond merely not auto-adding one.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Prepare a GET with an empty-but-present body, e.g. requests.get(url, data=b'') or data=open(empty_file, 'rb'): the non-None body path still emits 'Content-Length: 0', so a GET still sends the header.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Create an HTTP(S)ConnectionPool with strict=True/False (mocking or on the old http.client) and open a connection: the vendored urllib3 change drops the strict argument entirely, so connection strictness behavior that previously worked is silently changed.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call PreparedRequest.prepare_content_length(None) with the method set as lowercase 'get' (bypassing prepare_method's upper-casing, as direct/unit-level callers do): the exact-match check against ('GET', 'HEAD') misses it and leaves 'Content-Length: 0' in place.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use cookies.MockRequest the way urllib2/cookielib-style code does and assign mock.origin_req_host = 'example.com' (or rely on a settable attribute): the new read-only property raises AttributeError, breaking code that worked before this unrelated change.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1135,
+      "cached_tokens": 116,
+      "output_tokens": 8032,
+      "reasoning_tokens": 7603,
+      "micro_usd": 164740,
+      "seconds": 72.06614349399933
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 2,
+        "s_sat_inconclusive": 4,
+        "blocker": 5
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-2.3",
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-3.1",
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 685.8513719620005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 13,
+      "statuses": {
+        "not_reproduced": 4,
+        "unchecked": 2,
+        "s_sat_inconclusive": 4,
+        "blocker": 2,
+        "suspected": 1
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~psf__requests-1142/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 564.3799911379992
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:47f61a8c842da4e5f7c3612ed39e3413e52a1f399757f12d057f3ea4305a9210"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

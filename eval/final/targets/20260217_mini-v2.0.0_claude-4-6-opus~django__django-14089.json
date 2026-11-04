@@ -1,0 +1,152 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-14089",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:58:14Z",
+  "wall_seconds": 778.6990460660004,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Allow calling reversed() on an OrderedSet\nDescription\n\t\nCurrently, ​OrderedSet isn't reversible (i.e. allowed to be passed as an argument to Python's ​reversed()). This would be natural to support given that OrderedSet is ordered. This should be straightforward to add by adding a __reversed__() method to OrderedSet.\n",
+        "start": 0,
+        "end": 318
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-14089",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "list(reversed(OrderedSet([1, 2, 3, 4]))) may not equal [4, 3, 2, 1], for example returning forward order or the dict's None values instead of its keys.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling list(reversed(s)) on OrderedSet([1, 2, 3]) may mutate or consume the underlying dict, so a subsequent list(s), len(s), or membership check no longer gives [1, 2, 3], 3, and True for 2.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "After OrderedSet(['a', 'b', 'c']) has 'b' removed, 'd' added, and existing 'a' re-added, list(reversed(s)) may not equal ['d', 'c', 'a'] reflecting the current dict insertion order.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing mutator semantics may change: adding an existing item should keep its position, remove() on a missing item should raise KeyError, and discard() on a missing item should stay silent, with forward iteration order unchanged.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "reversed() on empty and duplicate-collapsing sets may fail: list(reversed(OrderedSet())) should be [] and list(reversed(OrderedSet([1, 1, 2, 2, 3]))) should be [3, 2, 1], with separate reversed() calls returning independent fresh iterators.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Copying, pickling, repr(), and truthiness of an OrderedSet may change after adding __reversed__, so copy.copy()/pickle round-trips no longer preserve the same contents and forward order.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 495,
+      "cached_tokens": 116,
+      "output_tokens": 3862,
+      "reasoning_tokens": 3435,
+      "micro_usd": 78780,
+      "seconds": 26.561881346000064
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 6,
+      "statuses": {
+        "not_reproduced": 6
+      },
+      "blockers": [],
+      "wall_seconds": 305.11137578900025
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 5,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 444.50931056499985
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:9dfa1742a5cf642d94966440fd232fcc4d11c6c880493a48a559703a39e4f939"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:9dfa1742a5cf642d94966440fd232fcc4d11c6c880493a48a559703a39e4f939"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

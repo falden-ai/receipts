@@ -1,0 +1,52 @@
+[project]
+name = "falden-receipts"
+version = "0.0.1"
+description = "An adversarial verifier for pull requests written by AI coding agents."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "pydantic>=2.9",
+]
+
+[project.optional-dependencies]
+# `receipts eval rows` reads SWE-bench's parquet files, and the label runs and `receipts eval r24 --diagnose` grade
+# with the SWE-bench harness, swebench 4.1.0 (uv.lock pins the bytes of the wheel eval/manifest.json pins, and every
+# dependency of it): `uv sync --frozen --extra eval`.
+eval = ["pyarrow==22.0.0", "swebench==4.1.0"]
+
+[project.scripts]
+receipts = "receipts.cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/receipts"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+mypy_path = "src"
+packages = ["receipts"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --import-mode=importlib"

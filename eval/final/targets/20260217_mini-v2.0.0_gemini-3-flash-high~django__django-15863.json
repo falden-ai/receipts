@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T00:13:48Z",
+  "wall_seconds": 1691.9879240299997,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Filter floatformat drops precision in decimal numbers\nDescription\n\t\nI discovered that floatformat template filter may drop precision when used for Decimal numbers.\nMWE:\nfrom decimal import Decimal\nfrom django import setup\nfrom django.conf import settings\nfrom django.template import Template, Context\nTEMPLATES = [\n\t{\n\t\t'BACKEND': 'django.template.backends.django.DjangoTemplates',\n\t},\n]\nsettings.configure(TEMPLATES=TEMPLATES)\nsetup()\nt = Template('{{ value|floatformat:20 }}')\nc = Context({'value': Decimal('42.12345678901234567890')})\nprint(t.render(c)) #>>> 42.12345678901234400000\nI traced the bug to incorrect conversion to Decimal within the floatformat implementation that can't really work for Decimal numbers. Decimal numbers are converted to float instead.\nPull request is prepared ​https://github.com/django/django/pull/15863\n",
+        "start": 0,
+        "end": 838
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rendering {{ value|floatformat:20 }} with value=Decimal('42.12345678901234567890') still outputs 42.12345678901234400000 instead of preserving all 20 decimal places.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling floatformat('42.12345678901234567890', 20) with a plain string previously output the float-rounded 42.12345678901234400000 but now outputs the exact 42.12345678901234567890, changing behavior for non-Decimal string inputs beyond the Decimal issue.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling floatformat with Decimal('1.12345678901234567890E+100') and arg 20 fails to format the large-exponent Decimal, returning the repr \"Decimal('1.12345678901234567890E+100')\" or truncated digits instead of the full integer followed by 20 decimal places, because quantize precision is miscalculated for positive exponents.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling floatformat((0, (4, 2), -2), 2) with a tuple previously returned '' because float(tuple) fails, but now returns '0.42' because Decimal accepts the tuple constructor form, so an unrelated input type is newly accepted.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Calling floatformat with a Decimal-like object whose __str__ returns '42.12345678901234567890' but whose type is neither str nor Decimal (so Decimal(obj) raises TypeError) still falls back to float conversion and outputs 42.12345678901234400000, or an empty string, instead of the exact decimal string.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling floatformat with a float subclass instance F(0.1) whose __repr__ is overridden to a non-numeric string previously used Decimal(str(float(text))) and output 0.10000000000000000000 at arg 20, but now Decimal(F) uses the exact binary float value and outputs 0.10000000000000000555, changing float-subclass handling.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 669,
+      "cached_tokens": 116,
+      "output_tokens": 11409,
+      "reasoning_tokens": 10904,
+      "micro_usd": 230416,
+      "seconds": 85.97331541400126
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 2,
+        "blocker": 7,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/fixed_x/correctness-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/fixed_x/correctness-3.3",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1100.3289370620005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 1,
+        "refuted": 1,
+        "blocker": 3,
+        "suspected": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-15863/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 494.83977077300005
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:f8f1a4227208d6d3fa198ee76315fd10f15d712ba9e927f4dd4a10387087e9c9"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

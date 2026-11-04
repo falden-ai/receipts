@@ -1,0 +1,165 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:37:22Z",
+  "wall_seconds": 2915.2901959730007,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Rational calc value error\npython 3.11, sympy 1.11.1\r\nwhen calc Rational('0.5', '100'), the value is 1/100100; but Rational(0.5, 100) the value is 1/200, this value is the true value, and the version of sympy 1.8 is normal\n",
+        "start": 0,
+        "end": 222
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('0.5', '0.25') should return 2, but processing q first repeats the string p by q.q=4 to '0.50.50.50.5', raising TypeError instead.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational('2', 0.5) previously returned 4, but now repeats the string numerator by 2 and returns 22.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('2', '0.5') should return 4, but processing q first repeats the string p to '22' and silently returns 22.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational('0.5', 0.5) previously returned 1, but now forms the invalid string '0.50.5' and raises TypeError.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Rational('3/2', '1/2') should return 3, but processing q first repeats the string p to '3/23/2', raising TypeError instead.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rational('foo', '1/0') previously raised TypeError while converting the invalid numerator, but now converts the denominator first and raises ZeroDivisionError instead.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 663,
+      "cached_tokens": 244,
+      "output_tokens": 6684,
+      "reasoning_tokens": 6365,
+      "micro_usd": 135405,
+      "seconds": 40.88140269500218
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 4,
+        "blocker": 4
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 2114.793185224
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 12,
+      "statuses": {
+        "not_reproduced": 1,
+        "unchecked": 6,
+        "s_sat_inconclusive": 2,
+        "blocker": 2,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~sympy__sympy-24562/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 759.0963466450012
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:a6aa2a6e80fe5b4533e7bc08e44835d470369e330da8cd934eb3c0e2b2f70024"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

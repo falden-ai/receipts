@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:32:21Z",
+  "wall_seconds": 2158.341249647001,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "sqf and sqf_list output is not consistant\nThe example below is wrong in the sense that we should have (x*_2 - 5_x + 6, 3) and not 2 factors of multiplicity 3.\n\n```\n>  sqf_list(  (x**2 + 1)  * (x - 1)**2 * (x - 2)**3 * (x - 3)**3  )\n\n>  (1, [(x**2 + 1, 1), (x - 1, 2), (x - 3, 3), (x - 2, 3)])\n```\n\nwhereas below is correct --- one factor of multiplicity 2\n\n```\n>  sqf_list( x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2 )\n\n>  (1, [(x - 2, 1), (x**2 - 1, 2)])\n```\n\n",
+        "start": 0,
+        "end": 458
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "sqf_list((x - 1)*(x - 2)*(x**2 + 1)) still returns separate multiplicity-1 factors such as (x - 1, 1) and (x - 2, 1), because the patch explicitly leaves k == 1 unmerged, instead of the canonical single factor ((x - 1)*(x - 2)*(x**2 + 1), 1).",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "sqf_list((x - 1)*(x - 2)**2) changes from the previously correct [(x - 1, 1), (x - 2, 2)] to [(x - 2, 2), (x - 1, 1)] even though no duplicate multiplicity needs merging, breaking existing order-sensitive tests and downstream consumers.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "sqf_list((x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2)*(x - 4)**2) fails to produce [(x - 2, 1), ((x**2 - 1)*(x - 4), 2)], because the Add factor is collapsed to ((x - 2)*(x**2 - 1)**2, 1) and its hidden internal multiplicity 2 is never merged with (x - 4, 2), leaving a non-squarefree factor.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling sqf_list((x - 1)**a*(x - 2)**a) with a symbolic exponent a, or with identical fractional/negative exponents, now merges the bases into ((x - 1)*(x - 2), a), although the issue only concerns integer squarefree multiplicities and such factors were previously kept separate.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "sqf_list((x - 1)**3*(x - 2)**2*(x - 3)) returns factors ordered by first non-1 encounter with multiplicity 1 last, e.g. exponent order 3, 2, 1, rather than the canonical ascending order [(x - 3, 1), (x - 2, 2), (x - 1, 3)] produced for polynomial inputs.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "sqf_list((x - 1)**2*sin(x)**2) now merges a polynomial factor with a non-polynomial PolificationFailed factor into ((x - 1)*sin(x), 2) instead of keeping (x - 1, 2) and (sin(x), 2) separate, changing sqf/sqf_list behavior for transcendental expressions and potentially breaking later Poly conversion of individual factors.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 747,
+      "cached_tokens": 244,
+      "output_tokens": 8383,
+      "reasoning_tokens": 7747,
+      "micro_usd": 169721,
+      "seconds": 49.7567891869985
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 12,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 2,
+        "blocker": 4,
+        "refuted": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-3.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-3.2"
+      ],
+      "wall_seconds": 1567.4532433189997
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "unchecked": 1,
+        "blocker": 2,
+        "refuted": 2,
+        "suspected": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_gemini-3-flash-high~sympy__sympy-18698/nothing_else_changed/regression-2.2"
+      ],
+      "wall_seconds": 540.7311148330009
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:922cd0fcc1dbd6349560f1c42c6319ea59d19ab7d7a44f8d8fbd0dbb143a8c11"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:922cd0fcc1dbd6349560f1c42c6319ea59d19ab7d7a44f8d8fbd0dbb143a8c11"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9658",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:31:13Z",
+  "wall_seconds": 1712.2449927599991,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Inherited classes not correctly documented when mocked\n### Describe the bug\r\n\r\nWe're experiencing an issue when documenting classes that inherit mocked classes. However, classes which inherit other classes from our own package are ok.\r\n\r\nThis issue appears to be dependent on the `sphinx` version:\r\n\r\n- `sphinx<3.0`: Everything is OK. \r\n- `sphinx>=3.0 < 3.4.2`: Classes that inherit mocked classes are not documented. (see [sphinx #8164](https://github.com/sphinx-doc/sphinx/issues/8164)). This is fixed in `sphinx 3.4.2`. \r\n- `sphinx>=3.4.2`: The previously missing classes are now documented, but there is a problem with the \"Bases\" section in the docs. \r\n \r\nExample: In the docs for `alibi_detect.utils.pytorch.kernels.DeepKernel` in this readthedocs build https://seldon--338.org.readthedocs.build/projects/alibi-detect/en/338/api/alibi_detect.utils.pytorch.kernels.html, the base class is listed as \"Bases: `torch.nn.`\" instead of \"Bases: `torch.nn.Module`\". \r\n\r\n\r\n### How to Reproduce\r\n\r\n```\r\n$ git clone https://github.com/ascillitoe/alibi-detect.git\r\n$ cd alibi-detect\r\n$ pip install -r requirements/docs.txt\r\n$ make build_docs\r\n$ # open doc/_build/html/api/alibi_detect.utils.pytorch.kernels.html and see \"Bases\" section.\r\n```\r\n\r\n\r\n### Expected behavior\r\n\r\nThe \"Bases\" section should report `torch.nn.Module` not `torch.nn.`. \r\n\r\ni.e. see\r\nhttps://seldon--325.org.readthedocs.build/projects/alibi-detect/en/325/api/alibi_detect.utils.pytorch.kernels.html\r\n\r\n### Your project\r\n\r\nhttps://github.com/ascillitoe/alibi-detect/tree/feature_sphinx4\r\n\r\n### Screenshots\r\n\r\n### Screenshot with `sphinx==4.2`\r\n![sphinx_problem](https://user-images.githubusercontent.com/32061685/133816582-ca162b07-41c7-4b8e-98ea-781e7c659229.png)\r\n\r\n### Screenshot with `sphinx<3.0`\r\n![sphinx_working](https://user-images.githubusercontent.com/32061685/133816065-6291ce1b-96cf-4b0f-9648-7f993fc15611.png)\r\n\r\n\r\n\r\n### OS\r\n\r\nUbuntu 18.04 (used by readthedocs/build:6.0)\r\n\r\n### Python version\r\n\r\n3.8.11\r\n\r\n### Sphinx version\r\n\r\n`>=3.4.2`\r\n\r\n### Sphinx extensions\r\n\r\n    [\"sphinx.ext.autodoc\",\r\n    \"sphinx.ext.doctest\",\r\n    \"sphinx.ext.intersphinx\",\r\n    \"sphinx.ext.todo\",\r\n    \"sphinx.ext.coverage\",\r\n    \"sphinx.ext.mathjax\",\r\n    \"sphinx.ext.ifconfig\",\r\n    \"sphinx.ext.viewcode\",\r\n    \"sphinx.ext.napoleon\",\r\n    \"sphinx_autodoc_typehints\",\r\n    \"sphinxcontrib.apidoc\", \r\n    \"nbsphinx\",\r\n    \"nbsphinx_link\",  \r\n    \"myst_parser\"]\r\n\r\n\r\n### Extra tools\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\ndemo PR:\r\nhttps://github.com/SeldonIO/alibi-detect/pull/338\r\n\r\nreadthedocs demo build:\r\nhttps://seldon--338.org.readthedocs.build/projects/alibi-detect/en/338/api/alibi_detect.utils.pytorch.kernels.html\r\n\r\n\n",
+        "start": 0,
+        "end": 2690
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sphinx-doc__sphinx-9658",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Build autodoc docs with autodoc_mock_imports=['torch'] for a class DeepKernel(torch.nn.Module) and inspect its Bases entry. It may still render as torch.nn. if the mocked base object reaching restify has an empty __name__ as well as an empty __qualname__, so the fallback produces nothing.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call restify on a non-mock dynamic object with __module__='m', __qualname__='', and __name__ returning a Mock/non-string object. Previously it rendered 'm.', now it embeds that object's repr, producing a nondeterministic or broken cross-reference.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call sphinx.util.typing.stringify on the mocked torch.nn.Module base (the path used for annotations/signatures). It still returns 'torch.nn.' because only the restify helpers were patched, not stringify.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call restify on a class with __qualname__='' whose metaclass/descriptor raises a non-AttributeError when __name__ is accessed. Previously restify returned 'm.', now the new fallback evaluation propagates the exception and crashes rendering.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Document a class inheriting a nested mocked base such as external_pkg.Outer.Inner whose __qualname__ is empty. Falling back to leaf __name__ renders external_pkg.Inner, dropping the Outer qualifier instead of the full mocked path.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call restify on an existing non-mock callable/C-type-like annotation object that has __qualname__='' but an internal __name__ such as 'internal_name'. Its rendered target changes from 'module.' to 'module.internal_name', altering existing documentation output and intersphinx references beyond the mocked-inheritance case.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1271,
+      "cached_tokens": 244,
+      "output_tokens": 7459,
+      "reasoning_tokens": 7027,
+      "micro_usd": 153337,
+      "seconds": 58.359238466000534
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 2,
+        "refuted": 1,
+        "suspected": 3
+      },
+      "blockers": [],
+      "wall_seconds": 1276.2630811050003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 4,
+        "not_reproduced": 1,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 377.0731788150006
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:6f32b3976fc14418b320cf95fb46439c077ea694fd2cf8a314a81d1ba561b8e5"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

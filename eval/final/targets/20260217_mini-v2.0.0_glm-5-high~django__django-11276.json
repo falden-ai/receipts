@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11276",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:05:03Z",
+  "wall_seconds": 1882.882155016,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Use Python stdlib html.escape() to in django.utils.html.escape()\nDescription\n\t\nThe function django.utils.html.escape() partially duplicates the Python stdlib function html.escape(). We can replace this duplication with wider community developed version.\nhtml.escape() has been available since Python 3.2:\n​https://docs.python.org/3/library/html.html#html.escape\nThis function is also faster than Django's. As Python bug ​https://bugs.python.org/issue18020 concludes, using .replace() can be faster than .translate(). This function gets called numerous times when rendering templates. After making the change locally, I saw the following improvement:\nmaster:\n$ python -m timeit -s 'from django.utils.html import escape' 'escape(copyright)'\n50000 loops, best of 5: 4.03 usec per loop\nbranch:\n$ python -m timeit -s 'from django.utils.html import escape' 'escape(copyright)'\n100000 loops, best of 5: 2.45 usec per loop\nOne small concern, html.escape() converts ' to &#x27 rather than &#39. These values are functionally equivalent HTML, but I'll mention it as a backwards incompatible change as the literal text has changed\n",
+        "start": 0,
+        "end": 1120
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11276",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call urlize() on a URL containing an apostrophe after it has been escaped by the new escape(), such as escape(\"http://example.com/?name=O'Reilly\"). The resulting link may retain &#x27; in the href or text, or break the URL, if the added unescaping is not applied on every urlize path.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Import the previously available mapping with from django.utils.html import _html_escapes, or run existing code that imports it. The removal of _html_escapes raises ImportError even though replacing escape()'s internals did not require deleting the name.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call escape() with all special characters together and an already-escaped entity, such as escape(\"<a href='x'>&\\\"&lt;</a>\"). The output may differ from html.escape() for &#x27;, ordering, or double-escaping of &lt; if the stdlib replacement is not behaving as claimed.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Render existing exact-output cases through the template escape filter, conditional_escape(), or format_html() using a value containing an apostrophe, such as \"O'Reilly\". Existing expectations and downstream string comparisons for &#39; now fail because the output is &#x27;, including in consumers that only replace or recognize &#39;.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call escape() with lazy, non-string, and SafeString inputs, such as a lazy proxy for \"'\", the integer 123, and a SafeString containing '<'. It may raise TypeError or lose the SafeString return type if html.escape() is not correctly combined with str() conversion, keep_lazy, and mark_safe.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call urlize() on an already-escaped URL containing a literal &#x27; sequence, such as \"http://example.com/?q=&amp;#x27;test\". The new chained replacement may first turn &amp; into & and then turn the resulting &#x27; into an apostrophe, changing a URL that the previous code preserved as an entity.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1039,
+      "cached_tokens": 0,
+      "output_tokens": 7128,
+      "reasoning_tokens": 6623,
+      "micro_usd": 146716,
+      "seconds": 61.22239385700004
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "unchecked": 3,
+        "not_reproduced": 2,
+        "suspected": 4
+      },
+      "blockers": [],
+      "wall_seconds": 826.398039485
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 20,
+      "statuses": {
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 5,
+        "unchecked": 6,
+        "refuted": 2,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 993.63200149
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:92fa08a6ce4c52e31878c23a217aa018a4eaea781e18156806de54444e4cad11"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:92fa08a6ce4c52e31878c23a217aa018a4eaea781e18156806de54444e4cad11"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

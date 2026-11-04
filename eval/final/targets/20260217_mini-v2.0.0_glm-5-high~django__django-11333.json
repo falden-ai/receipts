@@ -1,0 +1,171 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11333",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:30:39Z",
+  "wall_seconds": 1600.657637552,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Optimization: Multiple URLResolvers may be unintentionally be constructed by calls to `django.urls.resolvers.get_resolver`\nDescription\n\t\nMultiple URLResolvers may be constructed by django.urls.resolvers.get_resolver if django.urls.base.set_urlconf has not yet been called, resulting in multiple expensive calls to URLResolver._populate.\n​`get_resolver` constructs a new URLResolver, and caches it using functools.lru_cache.\nURLResolver instances can pre-compute a large amount of information about routes in ​`URLResolver._populate`, and they store those caches as instance variables.\n​`set_urlconf` is called with when ​we first handle a request in `BaseHandler.get_response`.\nget_resolver has a number of call-sites. Most notably, ​`reverse`. Like the other call-sites, reverse calls get_resolver with the result of get_urlconf.\nIf reverse (or anything else using get_resolver) is called both before (e.g. at import time) and after a request is handled, get_resolver will be called with different values. Initially it will be called with None, and later if will be called with settings.ROOT_URLCONF, because request handling calls set_urlconf.\nIn an application with a large number of routes, URLResolver._populate can be expensive, so calling it twice and storing those caches twice is wasteful.\nMy proposed solution is just to modify ​`get_resolver` to look up settings.ROOT_URLCONF before the memoized function call.\nI'm planning to contribute a fix, as soon as I can get the CLA signed.\n",
+        "start": 0,
+        "end": 1493
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-11333",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call get_resolver() with settings.ROOT_URLCONF imported as a module object and with None (normalized to the ROOT_URLCONF string); the two calls return different URLResolver instances for the same URLconf and populate separately, so the duplicate-populate waste remains.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Existing code calling django.urls.resolvers.get_resolver.cache_clear() or .cache_info() now raises AttributeError, because get_resolver is no longer an lru_cache-wrapped function.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call set_urlconf() with a custom URLconf, then call get_resolver() with no argument; it ignores the thread-local URLconf and returns the settings.ROOT_URLCONF resolver instead of the current one, so callers relying on the active URLconf still get an extra, wrong resolver.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Mutate the resolver returned by get_resolver(None), e.g. replace its url_patterns, then call get_resolver(settings.ROOT_URLCONF); previously the explicit-ROOT caller got an independent resolver, but now it sees the mutation.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Pass a list of URL patterns as urlconf to get_resolver() or reverse(), a form URLResolver itself accepts; _get_resolver's lru_cache raises TypeError for the unhashable list instead of returning a usable resolver.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Populate the resolver via one spelling (None), append a new route to the ROOT_URLCONF urlpatterns, then reverse that route via the other spelling without clear_url_caches(); previously a fresh resolver would find it, but the now-shared populated resolver raises NoReverseMatch from stale caches.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1013,
+      "cached_tokens": 116,
+      "output_tokens": 6897,
+      "reasoning_tokens": 6483,
+      "micro_usd": 141552,
+      "seconds": 49.69204153399983
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 15,
+      "statuses": {
+        "possibly_toxic": 5,
+        "not_reproduced": 1,
+        "unchecked": 4,
+        "suspected": 5
+      },
+      "blockers": [],
+      "wall_seconds": 994.7256172529999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "refuted": 3,
+        "not_reproduced": 2,
+        "unchecked": 5
+      },
+      "blockers": [],
+      "wall_seconds": 548.444993868
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:e8537e87a5eb3f21f83c203effea70e56361fb230c75b108f44c590c6a44c133"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

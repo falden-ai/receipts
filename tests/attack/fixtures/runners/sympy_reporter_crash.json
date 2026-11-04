@@ -1,0 +1,13 @@
+{
+ "argv": [
+  "python",
+  "bin/test",
+  "-C",
+  "--verbose",
+  "sympy/utilities/tests/test_receipts_e_raises_first.py"
+ ],
+ "exit_code": 1,
+ "seconds": 0.4,
+ "stdout": "============================= test process starts ==============================\nexecutable:         /opt/miniconda3/envs/testbed/bin/python  (3.9.20-final-0) [CPython]\narchitecture:       64-bit\ncache:              no\nground types:       python \nnumpy:              None\nrandom seed:        5359823\nhash randomization: off\n\nsympy/utilities/tests/test_receipts_e_raises_first.py[0] ",
+ "stderr": "/testbed/sympy/core/basic.py:3: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Mapping, defaultdict\n/testbed/sympy/core/containers.py:271: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  class OrderedSet(collections.MutableSet):\n/testbed/sympy/plotting/plot.py:28: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working\n  from collections import Callable\nTraceback (most recent call last):\n  File \"/testbed/sympy/utilities/runtests.py\", line 1156, in test_file\n    exec_(code, gl)\n  File \"/testbed/sympy/utilities/tests/test_receipts_e_raises_first.py\", line 1, in <module>\n    raise ValueError(\"raised before any test\")\nValueError: raised before any test\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/testbed/bin/test\", line 107, in <module>\n    ok = sympy.test(*args, verbose=options.verbose, kw=options.kw,\n  File \"/testbed/sympy/utilities/runtests.py\", line 487, in test\n    val = not bool(_test(*paths, **kwargs))\n  File \"/testbed/sympy/utilities/runtests.py\", line 574, in _test\n    return int(not t.test(sort=sort, timeout=timeout, slow=slow,\n  File \"/testbed/sympy/utilities/runtests.py\", line 1088, in test\n    self.test_file(f, sort, timeout, slow,\n  File \"/testbed/sympy/utilities/runtests.py\", line 1163, in test_file\n    reporter.test_exception(sys.exc_info())\n  File \"/testbed/sympy/utilities/runtests.py\", line 2299, in test_exception\n    self._exceptions.append((self._active_file, self._active_f, exc_info))\nAttributeError: 'PyTestReporter' object has no attribute '_active_file'\n"
+}

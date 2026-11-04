@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14122",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T21:32:17Z",
+  "wall_seconds": 1342.422040307,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Meta.ordering fields must not be included in GROUP BY clause\nDescription\n\t\nThis continues (closed) [1] ticket.\nI beleave it was not properly fixed in commit [0ddb4ebf].\nWhile commit [0ddb4ebf] removes ORDER BY when Meta.ordering is used it still does populates GROUP BY with Meta.ordering fields thus leads to wrong aggregation.\nPR with test case was added at [2].\n[1] https://code.djangoproject.com/ticket/14357\n[2] ​​https://github.com/django/django/pull/14122\n",
+        "start": 0,
+        "end": 463
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-14122",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "On a model with Meta.ordering = ['name'], call Model.objects.annotate(n=Count('related')) without values(), where grouping is implicit rather than via query.group_by at ordering time. The ordering field still leaks into the GROUP BY/select list, splitting rows by name and producing wrong per-object counts.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Model.objects.values('name') or values_list('name') with no annotate/aggregate on a model with Meta.ordering. Because values() sets query.group_by even though no GROUP BY aggregation is needed, Meta ordering is now dropped and previously ordered results become unordered.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Call Model.objects.aggregate(total=Sum('amount')) on a model with Meta.ordering. The summary aggregation path can still add the Meta ordering field to GROUP BY, so the aggregate is computed for one ordering group instead of over the whole table.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call Model.objects.values('name').annotate(n=Count('id')) where Meta.ordering = ['name'] and 'name' is already a grouped/values field. Keeping that ordering could not add anything to GROUP BY, but the change drops it anyway, so grouped results that were previously sorted by name are returned in arbitrary database order.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use a grouped values query such as Model.objects.values('category').annotate(n=Count('id')) on a model whose Meta.ordering contains a related lookup or expression, e.g. ['author__name'] or [Lower('name')]. The related/expression ordering column still appears in GROUP BY through join/select handling, so counts are split by that ordering value instead of only by category.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Take a grouped queryset relying on Meta.ordering for deterministic limiting, e.g. Model.objects.values('category').annotate(n=Count('id'))[:1] or .first(), or the same queryset with [:1] inside a Subquery. Dropping Meta ordering changes which grouped row is selected, not merely the order of a full result list.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 605,
+      "cached_tokens": 116,
+      "output_tokens": 10501,
+      "reasoning_tokens": 10009,
+      "micro_usd": 212000,
+      "seconds": 74.3359318979999
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 11,
+      "statuses": {
+        "s_sat_inconclusive": 2,
+        "not_reproduced": 3,
+        "refuted": 4,
+        "suspected": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 896.925035838
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 16,
+      "statuses": {
+        "unchecked": 12,
+        "not_reproduced": 3,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 370.5385170919999
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:578f60b2e875f3b87210b103fc8d81d9477b833a09967c10a78cefc6b53bc35f"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:578f60b2e875f3b87210b103fc8d81d9477b833a09967c10a78cefc6b53bc35f"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

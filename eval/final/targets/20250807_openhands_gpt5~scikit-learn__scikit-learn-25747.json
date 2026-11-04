@@ -1,0 +1,162 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~scikit-learn__scikit-learn-25747",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:56:08Z",
+  "wall_seconds": 1425.4214127509986,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "FeatureUnion not working when aggregating data and pandas transform output selected\n### Describe the bug\n\nI would like to use `pandas` transform output and use a custom transformer in a feature union which aggregates data. When I'm using this combination I got an error. When I use default `numpy` output it works fine.\n\n### Steps/Code to Reproduce\n\n```python\r\nimport pandas as pd\r\nfrom sklearn.base import BaseEstimator, TransformerMixin\r\nfrom sklearn import set_config\r\nfrom sklearn.pipeline import make_union\r\n\r\nindex = pd.date_range(start=\"2020-01-01\", end=\"2020-01-05\", inclusive=\"left\", freq=\"H\")\r\ndata = pd.DataFrame(index=index, data=[10] * len(index), columns=[\"value\"])\r\ndata[\"date\"] = index.date\r\n\r\n\r\nclass MyTransformer(BaseEstimator, TransformerMixin):\r\n    def fit(self, X: pd.DataFrame, y: pd.Series | None = None, **kwargs):\r\n        return self\r\n\r\n    def transform(self, X: pd.DataFrame, y: pd.Series | None = None) -> pd.DataFrame:\r\n        return X[\"value\"].groupby(X[\"date\"]).sum()\r\n\r\n\r\n# This works.\r\nset_config(transform_output=\"default\")\r\nprint(make_union(MyTransformer()).fit_transform(data))\r\n\r\n# This does not work.\r\nset_config(transform_output=\"pandas\")\r\nprint(make_union(MyTransformer()).fit_transform(data))\r\n```\n\n### Expected Results\n\nNo error is thrown when using `pandas` transform output.\n\n### Actual Results\n\n```python\r\n---------------------------------------------------------------------------\r\nValueError                                Traceback (most recent call last)\r\nCell In[5], line 25\r\n     23 # This does not work.\r\n     24 set_config(transform_output=\"pandas\")\r\n---> 25 print(make_union(MyTransformer()).fit_transform(data))\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/sklearn/utils/_set_output.py:150, in _wrap_method_output.<locals>.wrapped(self, X, *args, **kwargs)\r\n    143 if isinstance(data_to_wrap, tuple):\r\n    144     # only wrap the first output for cross decomposition\r\n    145     return (\r\n    146         _wrap_data_with_container(method, data_to_wrap[0], X, self),\r\n    147         *data_to_wrap[1:],\r\n    148     )\r\n--> 150 return _wrap_data_with_container(method, data_to_wrap, X, self)\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/sklearn/utils/_set_output.py:130, in _wrap_data_with_container(method, data_to_wrap, original_input, estimator)\r\n    127     return data_to_wrap\r\n    129 # dense_config == \"pandas\"\r\n--> 130 return _wrap_in_pandas_container(\r\n    131     data_to_wrap=data_to_wrap,\r\n    132     index=getattr(original_input, \"index\", None),\r\n    133     columns=estimator.get_feature_names_out,\r\n    134 )\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/sklearn/utils/_set_output.py:59, in _wrap_in_pandas_container(data_to_wrap, columns, index)\r\n     57         data_to_wrap.columns = columns\r\n     58     if index is not None:\r\n---> 59         data_to_wrap.index = index\r\n     60     return data_to_wrap\r\n     62 return pd.DataFrame(data_to_wrap, index=index, columns=columns)\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/pandas/core/generic.py:5588, in NDFrame.__setattr__(self, name, value)\r\n   5586 try:\r\n   5587     object.__getattribute__(self, name)\r\n-> 5588     return object.__setattr__(self, name, value)\r\n   5589 except AttributeError:\r\n   5590     pass\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/pandas/_libs/properties.pyx:70, in pandas._libs.properties.AxisProperty.__set__()\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/pandas/core/generic.py:769, in NDFrame._set_axis(self, axis, labels)\r\n    767 def _set_axis(self, axis: int, labels: Index) -> None:\r\n    768     labels = ensure_index(labels)\r\n--> 769     self._mgr.set_axis(axis, labels)\r\n    770     self._clear_item_cache()\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/pandas/core/internals/managers.py:214, in BaseBlockManager.set_axis(self, axis, new_labels)\r\n    212 def set_axis(self, axis: int, new_labels: Index) -> None:\r\n    213     # Caller is responsible for ensuring we have an Index object.\r\n--> 214     self._validate_set_axis(axis, new_labels)\r\n    215     self.axes[axis] = new_labels\r\n\r\nFile ~/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/pandas/core/internals/base.py:69, in DataManager._validate_set_axis(self, axis, new_labels)\r\n     66     pass\r\n     68 elif new_len != old_len:\r\n---> 69     raise ValueError(\r\n     70         f\"Length mismatch: Expected axis has {old_len} elements, new \"\r\n     71         f\"values have {new_len} elements\"\r\n     72     )\r\n\r\nValueError: Length mismatch: Expected axis has 4 elements, new values have 96 elements\r\n```\n\n### Versions\n\n```shell\nSystem:\r\n    python: 3.10.6 (main, Aug 30 2022, 05:11:14) [Clang 13.0.0 (clang-1300.0.29.30)]\r\nexecutable: /Users/macbookpro/.local/share/virtualenvs/3e_VBrf2/bin/python\r\n   machine: macOS-11.3-x86_64-i386-64bit\r\n\r\nPython dependencies:\r\n      sklearn: 1.2.1\r\n          pip: 22.3.1\r\n   setuptools: 67.3.2\r\n        numpy: 1.23.5\r\n        scipy: 1.10.1\r\n       Cython: None\r\n       pandas: 1.4.4\r\n   matplotlib: 3.7.0\r\n       joblib: 1.2.0\r\nthreadpoolctl: 3.1.0\r\n\r\nBuilt with OpenMP: True\r\n\r\nthreadpoolctl info:\r\n       user_api: blas\r\n   internal_api: openblas\r\n         prefix: libopenblas\r\n       filepath: /Users/macbookpro/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/numpy/.dylibs/libopenblas64_.0.dylib\r\n        version: 0.3.20\r\nthreading_layer: pthreads\r\n   architecture: Haswell\r\n    num_threads: 4\r\n\r\n       user_api: openmp\r\n   internal_api: openmp\r\n         prefix: libomp\r\n       filepath: /Users/macbookpro/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/sklearn/.dylibs/libomp.dylib\r\n        version: None\r\n    num_threads: 8\r\n\r\n       user_api: blas\r\n   internal_api: openblas\r\n         prefix: libopenblas\r\n       filepath: /Users/macbookpro/.local/share/virtualenvs/3e_VBrf2/lib/python3.10/site-packages/scipy/.dylibs/libopenblas.0.dylib\r\n        version: 0.3.18\r\nthreading_layer: pthreads\r\n   architecture: Haswell\r\n    num_threads: 4\n```\n\n",
+        "start": 0,
+        "end": 6147
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~scikit-learn__scikit-learn-25747",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Run the exact issue reproduction with make_union(MyTransformer()).fit_transform(data) under transform_output='pandas'. It may still raise ValueError when FeatureUnion supplies two feature names for the one-column aggregated output and _wrap_in_pandas_container assigns data_to_wrap.columns, because the diff fixes only the index length, not the columns length.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call _wrap_in_pandas_container directly with a column-oriented dict such as {'a': [10, 20, 30]}, a three-element input index, and columns=None, which previously preserved that index. len(dict) counts columns rather than rows, so the new check drops the valid index and returns a RangeIndex instead.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use an aggregating transformer that returns a Series or DataFrame whose row count coincidentally equals the input row count but whose index labels differ, e.g. groupby dates when the number of groups equals the number of input rows. Because the lengths match, the code overwrites the correct aggregated index with the original input index, mislabelling the output values.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Call _wrap_in_pandas_container, or a normal non-aggregating transformer with pandas output, with an output whose row count mismatches the input index and assert the previous ValueError. The change now silently returns the mismatched output with a default or preserved index, so the previously passing strict-validation behavior fails.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Use an aggregating transformer that returns a plain ndarray with fewer rows and one column, without implementing get_feature_names_out for the reduced output. The wrap may still fail or misname output when columns derived from the two input features are applied to the one-column aggregated array, since only the index mismatch is handled.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Put a row-filtering transformer beside a passthrough transformer in a FeatureUnion with pandas output, a combination that previously raised on the index mismatch. The union may now concatenate on mismatched indexes and silently produce NaN-expanded aligned rows instead of failing, changing behavior beyond the single-transformer aggregation case.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1173,
+      "cached_tokens": 116,
+      "output_tokens": 9758,
+      "reasoning_tokens": 9256,
+      "micro_usd": 199412,
+      "seconds": 73.91041244299777
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 9,
+      "statuses": {
+        "not_reproduced": 2,
+        "possibly_toxic": 3,
+        "suspected": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 1016.705111203999
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "possibly_toxic": 1,
+        "not_reproduced": 3,
+        "refuted": 1,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 333.8699873760015
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adb1d448903ae2251dbd368850bd4a34e586535ca1985e895793cd521b92d706"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:adb1d448903ae2251dbd368850bd4a34e586535ca1985e895793cd521b92d706"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:adb1d448903ae2251dbd368850bd4a34e586535ca1985e895793cd521b92d706"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

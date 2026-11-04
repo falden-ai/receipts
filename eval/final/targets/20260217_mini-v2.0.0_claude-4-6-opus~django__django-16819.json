@@ -1,0 +1,159 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T02:45:10Z",
+  "wall_seconds": 1600.9596086479978,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Reduce Add/RemoveIndex migration operations.\nDescription\n\t\nWe should reduce AddIndex/RemoveIndex operations when optimizing migration operations.\n",
+        "start": 0,
+        "end": 146
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimize [RemoveIndex('pony', 'idx'), AddIndex('pony', Index(fields=['weight'], name='idx'))] against a pre-state containing 'idx' on another field: it returns only the AddIndex, so applying the optimized operations fails with a duplicate index name instead of replacing the old index.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A previously valid migration [RemoveIndex('pony', 'idx'), AddIndex('pony', Index(fields=['weight'], name='idx'))] applied to a database/state that already has 'idx' now optimizes to only AddIndex and errors on the duplicate name, whereas before optimization both operations were kept and it applied cleanly.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimize [RemoveIndex('pony', 'idx'), AddIndex('pony', Index(fields=['name'], name='idx'))] where the added index is identical to the removed one: it returns [AddIndex] rather than [], so the claimed reduction leaves a redundant operation that recreates an existing index.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Rolling back the optimized form of RemoveIndex+AddIndex with the same name but a changed definition only removes the new index instead of restoring the original index, so reverse migration loses an index that the unoptimized sequence restored.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimize [AddIndex('pony', idx), AddField('pony', 'age', ...), RemoveIndex('pony', 'idx')]: the pair should reduce to just the AddField, but the optimizer either fails to reduce through the intervening operation or drops/strands that operation, so the result is not [AddField].",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimize [AddIndex('pony', idx), RenameIndex('pony', 'idx', 'idx_new'), RemoveIndex('pony', 'idx_new')] or the same pair separated by another same-model operation: cancelling/through-reducing the Add/Remove pair leaves the intervening operation dropped or referencing a never-created index, changing the final state versus the unoptimized operations.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 648,
+      "cached_tokens": 116,
+      "output_tokens": 14808,
+      "reasoning_tokens": 14311,
+      "micro_usd": 298312,
+      "seconds": 105.58380258499892
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 1,
+        "blocker": 3
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-16819/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1111.0526952830005
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 4,
+        "unchecked": 5,
+        "refuted": 1
+      },
+      "blockers": [],
+      "wall_seconds": 383.249943275001
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

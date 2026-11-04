@@ -1,0 +1,160 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13757",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:37:25Z",
+  "wall_seconds": 2683.866106718,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Multiplying an expression by a Poly does not evaluate when the expression is on the left side of the multiplication\nTested in Python 3.4 64-bit and 3.6 64-bit\r\nVersion: 1.1.2.dev0\r\n```\r\n>>> Poly(x)*x\r\nPoly(x**2, x, domain='ZZ')\r\n\r\n>>> x*Poly(x)\r\nx*Poly(x, x, domain='ZZ')\r\n\r\n>>> -2*Poly(x)\r\nPoly(-2*x, x, domain='ZZ')\r\n\r\n>>> S(-2)*Poly(x)\r\n-2*Poly(x, x, domain='ZZ')\r\n\r\n>>> Poly(x)*S(-2)\r\nPoly(-2*x, x, domain='ZZ')\r\n```\n",
+        "start": 0,
+        "end": 421
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13757",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test S(-2)*Poly(x, x) and Rational(1, 2)*Poly(x, x) from the issue: a Number on the left still yields the unevaluated -2*Poly(x, x, domain='ZZ') instead of Poly(-2*x, x, domain='ZZ').",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test x + Poly(x, x), x - Poly(x, x), x/Poly(x, x), and x**Poly(x, x): operations other than multiplication that previously produced symbolic Expr results now defer to Poly's reflected operations and return a Poly or raise, changing result types beyond the multiplication fix.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test (x + 1)*Poly(x, x) and (2*x**2)*Poly(x, x): a compound Add/Mul on the left still returns an unevaluated Mul instead of the corresponding evaluated Poly.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test MatrixSymbol('M', 2, 2)*Poly(x, x) and Matrix([[x]])*Poly(x, x): the new priority ties or outranks matrix operands, so Poly tries to consume the matrix and raises TypeError or returns a non-matrix instead of the previous matrix expression.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Test y*Poly(x, x) where y is not a generator of the Poly: it stays unevaluated, raises, or keeps the wrong generators instead of matching Poly(x, x)*y as Poly(x*y, x, y).",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Test sin(x)*Poly(x, x) and sqrt(x)*Poly(x, x): factors that cannot be converted to a polynomial previously formed an unevaluated Mul, but Poly's reflected multiplication now raises PolynomialError instead of falling back to that unevaluated Mul.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 596,
+      "cached_tokens": 244,
+      "output_tokens": 6581,
+      "reasoning_tokens": 6133,
+      "micro_usd": 133077,
+      "seconds": 50.516179992002435
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 7,
+      "statuses": {
+        "not_reproduced": 2,
+        "unchecked": 1,
+        "refuted": 2,
+        "s_sat_inconclusive": 1,
+        "blocker": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_minimax-2-5-high~sympy__sympy-13757/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 2026.8374595720015
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "s_sat_inconclusive": 1,
+        "unchecked": 1,
+        "not_reproduced": 2,
+        "refuted": 2
+      },
+      "blockers": [],
+      "wall_seconds": 606.1429035379988
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:2f9535e079b079ec6416e98f41f2fc8c92bbb5ea515476907f19481aef2ac596"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:2f9535e079b079ec6416e98f41f2fc8c92bbb5ea515476907f19481aef2ac596"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

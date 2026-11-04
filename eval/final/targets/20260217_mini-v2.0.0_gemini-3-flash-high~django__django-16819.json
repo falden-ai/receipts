@@ -1,0 +1,158 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-16819",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T22:37:31Z",
+  "wall_seconds": 1292.8799722649992,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Reduce Add/RemoveIndex migration operations.\nDescription\n\t\nWe should reduce AddIndex/RemoveIndex operations when optimizing migration operations.\n",
+        "start": 0,
+        "end": 146
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-16819",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing [AddIndex(Index(fields=['title'], name='old_idx')), RenameIndex(new_name='new_idx', old_fields=['title'])] leaves both operations instead of one AddIndex named 'new_idx', because AddIndex.reduce only matches RenameIndex.old_name.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimizing [CreateModel with no matching index in options['indexes'], RemoveIndex(name='missing_idx')] or the analogous RenameIndex silently drops the index operation and returns only the CreateModel, whereas before it was preserved and would fail or apply against an externally created index.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing [AddIndex(name='idx'), AlterModelOptions on the same model, RemoveIndex(name='idx')] does not cancel the index pair, because the intervening operation references the model even though it does not affect the index.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimizing [AddIndex, RunPython that queries using that index, RemoveIndex for the same index] cancels the index operations around the RunPython, so the data operation now runs without an index that existed when it ran before this change.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Optimizing a CreateModel containing two partial indexes on the same fields but different conditions followed by RenameIndex(old_fields=['title'], new_name='new_idx') renames both indexes to 'new_idx' instead of only the targeted one, producing duplicate index names and a state unlike the unoptimized operations.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Optimizing CreateModel followed by django.contrib.postgres AddIndexConcurrently folds the concurrent index into CreateModel, and AddIndexConcurrently followed by RenameIndex is rewritten as a plain AddIndex, losing the subclass's concurrent and non-atomic behavior that the optimizer previously left intact.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1184,
+      "cached_tokens": 116,
+      "output_tokens": 13748,
+      "reasoning_tokens": 13320,
+      "micro_usd": 279256,
+      "seconds": 109.66910204299984
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 8,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "unchecked": 1,
+        "blocker": 1,
+        "not_reproduced": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_gemini-3-flash-high~django__django-16819/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 875.2162283810003
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 9,
+      "statuses": {
+        "refuted": 1,
+        "unchecked": 7,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 307.4261646039995
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:93191a2418b528583047a15996158c684845a4cc36e70bb56baac00ef4501331"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

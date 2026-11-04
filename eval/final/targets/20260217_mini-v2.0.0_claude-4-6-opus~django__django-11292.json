@@ -1,0 +1,174 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T01:37:45Z",
+  "wall_seconds": 1437.2515825599985,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Add --skip-checks option to management commands.\nDescription\n\t\nManagement commands already have skip_checks stealth option. I propose exposing this option on the command line. This would allow users to skip checks when running a command from the command line. Sometimes in a development environment, it is nice to move ahead with a task at hand rather than getting side tracked fixing a system check.\n",
+        "start": 0,
+        "end": 401
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "In a project with a failing system check, running `manage.py runserver --skip-checks --noreload` still fails or reports the check because runserver's inner_run performs its own unconditional check, instead of starting the server without checks.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Calling `call_command()` with skip_checks=True for a requires_system_checks=False command, which previously worked via base_stealth_options, now raises TypeError for an unknown option.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running `manage.py test --skip-checks` in a project with a failing system check is rejected as an unrecognized argument because the test command sets requires_system_checks=False, so tests cannot be run with checks skipped from the command line.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "A custom requires_system_checks=True command that already defines its own --skip-checks argument in add_arguments() now crashes on invocation or --help with argparse's conflicting option string error, whereas it parsed correctly before.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Running a requires_system_checks=False command such as `manage.py shell --skip-checks` fails with argparse's unrecognized-arguments error, so the new option is not actually available to management commands generally as the issue requests.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Running a requires_system_checks=True custom command without --skip-checks now passes an unexpected skip_checks=False entry in the options dict to handle(), breaking handlers that forward **options verbatim to strict callables or nested call_command() targets that reject unknown options.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 700,
+      "cached_tokens": 116,
+      "output_tokens": 10403,
+      "reasoning_tokens": 10022,
+      "micro_usd": 210420,
+      "seconds": 76.78168175800238
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "refuted": 1,
+        "possibly_toxic": 1,
+        "not_reproduced": 1,
+        "blocker": 4,
+        "suspected": 5,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292/fixed_x/correctness-2.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292/fixed_x/correctness-3.1",
+        "20260217_mini-v2.0.0_claude-4-6-opus~django__django-11292/fixed_x/correctness-3.2"
+      ],
+      "wall_seconds": 994.7996954430018
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 8,
+      "statuses": {
+        "possibly_toxic": 3,
+        "not_reproduced": 1,
+        "refuted": 3,
+        "suspected": 1
+      },
+      "blockers": [],
+      "wall_seconds": 361.751435938997
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c75c74327852c905337ecdcccf094048e32444bf1112696774d0d8ee09c3c3d9"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c75c74327852c905337ecdcccf094048e32444bf1112696774d0d8ee09c3c3d9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c75c74327852c905337ecdcccf094048e32444bf1112696774d0d8ee09c3c3d9"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c75c74327852c905337ecdcccf094048e32444bf1112696774d0d8ee09c3c3d9"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

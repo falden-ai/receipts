@@ -1,0 +1,154 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-11734",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-10-31T23:38:28Z",
+  "wall_seconds": 1230.1641468399994,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "OuterRef in exclude() or ~Q() uses wrong model.\nDescription\n\t\nThe following test (added to tests/queries/test_qs_combinators) fails when trying to exclude results using OuterRef()\ndef test_exists_exclude(self):\n\t# filter()\n\tqs = Number.objects.annotate(\n\t\tfoo=Exists(\n\t\t\tItem.objects.filter(tags__category_id=OuterRef('pk'))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # works\n\t# exclude()\n\tqs = Number.objects.annotate(\n\t\tfoo =Exists(\n\t\t\tItem.objects.exclude(tags__category_id=OuterRef('pk'))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # crashes\n\t# filter(~Q())\n\tqs = Number.objects.annotate(\n\t\tfoo =Exists(\n\t\t\tItem.objects.filter(~Q(tags__category_id=OuterRef('pk')))\n\t\t)\n\t).filter(foo=True)\n\tprint(qs) # crashes\nIt results in the following error\nValueError: This queryset contains a reference to an outer query and may only be used in a subquery\n",
+        "start": 0,
+        "end": 832
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_minimax-2-5-high~django__django-11734",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate, rather than merely compile, Number.objects.annotate(foo=Exists(Item.objects.exclude(tags__category_id=OuterRef('pk')))).filter(foo=True): it still raises ValueError about an outer-query reference, or returns Numbers as if 'pk' referred to Item instead of Number.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Re-run the previously working plain-filter form, Number.objects.annotate(foo=Exists(Item.objects.filter(tags__category_id=OuterRef('pk')))).filter(foo=True), and evaluate it: returning ResolvedOuterRef unresolved from resolve_lookup_value now leaves it unresolved against Number, causing a crash or wrong rows where it passed before.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate Number.objects.annotate(foo=Exists(Item.objects.filter(~Q(tags__category_id=OuterRef('pk'))))).filter(foo=True): the negated-Q path still crashes during compilation/execution or produces the un-negated result set.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Use exclude() across a many-valued relation with a plain same-model F() reference, e.g. Item.objects.exclude(tags__category_id=F('pk')) evaluated on existing fixtures: split_exclude no longer rewrites/resolves the reference as before and returns rows that should have been excluded.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate the Exists subquery with OuterRef nested in a list lookup, Item.objects.exclude(tags__category_id__in=[OuterRef('pk')]) inside the Number annotation: because only a bare ResolvedOuterRef is preserved, the listed reference is resolved against Item and crashes or matches the wrong rows.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Build a doubly nested subquery in which an inner Exists uses OuterRef('pk') to refer to the immediate middle query rather than the outermost query, and evaluate it: the unconditional preservation of ResolvedOuterRef makes it skip the middle model and resolve against the outermost model, changing previously correct results.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1056,
+      "cached_tokens": 116,
+      "output_tokens": 6151,
+      "reasoning_tokens": 5687,
+      "micro_usd": 126804,
+      "seconds": 45.44899802100008
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "s_sat_inconclusive": 5,
+        "not_reproduced": 3,
+        "unchecked": 2
+      },
+      "blockers": [],
+      "wall_seconds": 918.8172744940002
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 10,
+      "statuses": {
+        "unchecked": 9,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 265.3578565930002
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:51bde15d21afbe70c3685db53a52873e29e230c589c944cf5d1bd9a5b3130805"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:51bde15d21afbe70c3685db53a52873e29e230c589c944cf5d1bd9a5b3130805"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

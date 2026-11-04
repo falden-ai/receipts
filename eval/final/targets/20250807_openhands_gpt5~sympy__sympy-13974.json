@@ -1,0 +1,161 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20250807_openhands_gpt5~sympy__sympy-13974",
+  "tier": "A",
+  "temperatures": "meta_default",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T03:16:44Z",
+  "wall_seconds": 2105.182811333998,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Evaluating powers of `TensorProduct`\nPowers of tensor product expressions are not possible to evaluate with either `expand(tensorproduct=True)` method nor the `tensor_product_simp`function.\r\n\r\nThis is an example session showing the issue\r\n```\r\nIn [1]: from sympy import *\r\n        from sympy.physics.quantum import TensorProduct as tp\r\n        from sympy.physics.quantum import tensor_product_simp as tps\r\n        from sympy.physics.paulialgebra import Pauli\r\n        a = Symbol('a', commutative=False)\r\n\r\nIn [2]: t1 = tp(1,1)*tp(1,1)\r\n        t1\r\nOut[2]: 1x1**2\r\n\r\nIn [3]: tps(t1)\r\nOut[3]: 1x1**2\r\n\r\nIn [4]: t1.expand(tensorproduct=True)\r\nOut[4]: 1x1**2\r\n\r\nIn [5]: tps(tp(1,1)*tp(1,a)).subs(a, 1)\r\nOut[5]: 1x1\r\n\r\nIn [6]: t2 = tp(1,Pauli(3))*tp(1,Pauli(3))\r\n        t2\r\nOut[6]: 1xsigma3**2\r\n\r\nIn [7]: tps(t2)\r\nOut[7]: 1xsigma3**2\r\n\r\nIn [8]: t2.expand(tensorproduct=True)\r\nOut[8]: 1xsigma3**2\r\n\r\nIn [9]: tps(tp(1,Pauli(3))*tp(1,a)).subs(a, Pauli(3))\r\nOut[9]: 1x1\r\n```\r\nwhere `[5]` and `[9]` shows expected result for `t1` and `t2` respectively.\n",
+        "start": 0,
+        "end": 1044
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20250807_openhands_gpt5~sympy__sympy-13974",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Construct Pow(TensorProduct(1, Pauli(3)), 2, evaluate=False) and call tensor_product_simp on it or .expand(tensorproduct=True); both still return the unevaluated power because the fix only adds automatic Pow evaluation and does not teach those two functions named in the issue to handle an existing Pow.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Evaluate TensorProduct(Matrix([[1, 0], [0, 0]]), Pauli(3))**-1, which before the change could be held as an unevaluated Pow; it now raises NonInvertibleMatrixError by eagerly computing the singular matrix factor's inverse.",
+        "mask": "diff",
+        "temperature": 1.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate TensorProduct(1, Pauli(3))**-2, expecting TensorProduct(1, 1) since Pauli(3) is its own inverse and squares to 1; the result instead keeps an unevaluated Pauli(3)**-2 factor because negative Pauli powers do not reduce like positive products do.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Evaluate TensorProduct(Ket('a'), Ket('b'))**2, which before stayed as a single unevaluated Pow of the whole tensor product; it now rewrites into TensorProduct(Ket('a')**2, Ket('b')**2), inventing meaningless per-factor powers of state vectors.",
+        "mask": "diff_functions",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Evaluate TensorProduct(Pauli(1), Pauli(2))**0, expecting the universal Pow result 1; the new _eval_power instead returns TensorProduct(1, 1), which is not simplified to the scalar 1.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "With n = Symbol('n', integer=True), evaluate TensorProduct(MatrixSymbol('M', 2, 2), MatrixSymbol('N', 2, 2))**n; a formerly unevaluated symbolic power is now distributed into M**n and N**n even though the sign of n is unknown and negative values would require inverses that are not assumed to exist.",
+        "mask": "claim_spec",
+        "temperature": 1.0,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 850,
+      "cached_tokens": 244,
+      "output_tokens": 7620,
+      "reasoning_tokens": 7136,
+      "micro_usd": 154873,
+      "seconds": 79.79968416799966
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "not_reproduced": 2,
+        "s_sat_inconclusive": 4,
+        "blocker": 4
+      },
+      "blockers": [
+        "20250807_openhands_gpt5~sympy__sympy-13974/nothing_else_changed/regression-2.1",
+        "20250807_openhands_gpt5~sympy__sympy-13974/nothing_else_changed/regression-2.2",
+        "20250807_openhands_gpt5~sympy__sympy-13974/nothing_else_changed/regression-2.3",
+        "20250807_openhands_gpt5~sympy__sympy-13974/nothing_else_changed/regression-3.1"
+      ],
+      "wall_seconds": 1572.22243754
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 6,
+      "statuses": {
+        "s_sat_inconclusive": 3,
+        "not_reproduced": 1,
+        "suspected": 1,
+        "unchecked": 1
+      },
+      "blockers": [],
+      "wall_seconds": 452.59772533100113
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "gnu_patch_fuzz",
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:49c852aecff5447405c1f9413d2d90113bd5ba58fdbd3efe6ba2f4d1f882fbc4"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

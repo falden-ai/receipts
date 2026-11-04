@@ -1,0 +1,182 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T05:54:23Z",
+  "wall_seconds": 2908.26542892,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "[Bug]: ConciseDateFormatter not showing year anywhere when plotting <12 months\n### Bug summary\n\nWhen I plot < 1 year and January is not included in the x-axis, the year doesn't show up anywhere.\r\nThis bug is different from bug #21670 (fixed in #21785).\n\n### Code for reproduction\n\n```python\nimport matplotlib.pyplot as plt\r\nimport matplotlib.dates as mdates\r\nfrom datetime import datetime, timedelta\r\n\r\n#create time array\r\ninitial = datetime(2021,2,14,0,0,0)\r\ntime_array = [initial + timedelta(days=x) for x in range(1,200)]\r\n\r\n#create data array\r\ndata = [-x**2/20000 for x in range(1,200)]\r\n\r\n\r\n#plot data\r\nfig,ax = plt.subplots()\r\nax.plot(time_array,data) \r\n        \r\nlocator = mdates.AutoDateLocator()\r\nformatter = mdates.ConciseDateFormatter(locator)\r\n\r\nax.grid(True)\r\nax.set_ylabel(\"Temperature ($\\degree$C)\")\r\nax.xaxis.set_major_locator(locator)   \r\nax.xaxis.set_major_formatter(formatter)\r\nfig.autofmt_xdate() #automatically makes the x-labels rotate\n```\n\n\n### Actual outcome\n\n![image](https://user-images.githubusercontent.com/15143365/154090257-c7813f1c-f9ea-4252-86bf-f84e449c2f46.png)\r\n\n\n### Expected outcome\n\nI expect the year \"2021\" to show in the offset, to the right of the x-axis\n\n### Additional information\n\nI'm using Spyder IDE, v5.1.5\n\n### Operating system\n\nWindows 10\n\n### Matplotlib Version\n\n3.4.3\n\n### Matplotlib Backend\n\nQt5Agg\n\n### Python version\n\n3.9.1\n\n### Jupyter version\n\n_No response_\n\n### Installation\n\nconda\n",
+        "start": 0,
+        "end": 1439
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Use ConciseDateFormatter with MonthLocator(interval=2) and ticks Feb/Apr/Jun/Aug/Oct/Dec 2021 plus Feb 2022, so months vary across two years but no January tick exists. format_ticks suppresses the offset because the years differ, leaving duplicate 'Feb' labels and no year anywhere.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Run the existing concise-date formatter tests in test_dates.py for single-year monthly ticks such as Feb-Aug 2021 that previously expected offset_string == ''. They now return '2021' (and related image comparisons gain offset text), so tests passing before the change fail after it.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Plot Nov 2021-Mar 2022 with monthly ticks Dec/Jan/Feb included; the January tick shows only 2022 while Nov/Dec 2021 get plain month names and no offset. A test asserting both 2021 and 2022 are identifiable from labels plus offset_string fails for the 2021 ticks.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Configure ConciseDateFormatter with month labels that already include the year, e.g. formats[1]='%b %Y', and format Feb-Aug 2021 ticks. Previously no offset was shown, but now a redundant '2021' offset is added even though this configuration never had the missing-year bug.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "Correctness: Use monthly ticks on the 15th (MonthLocator(bymonthday=15)) for Jan-Jun 2021 and call format_ticks. The presence of a January month suppresses the offset, but if the mid-month January tick is not treated as the year-showing zero tick, its label is just 'Jan' and no year appears.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "Regression: Give ConciseDateFormatter a custom offset_formats list whose entry for the month level was previously dormant because month-varying ticks always suppressed the offset, then format Feb-Aug 2021 ticks. That custom offset string now suddenly appears, changing existing customized output beyond the default missing-year fix.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 1012,
+      "cached_tokens": 244,
+      "output_tokens": 13309,
+      "reasoning_tokens": 12801,
+      "micro_usd": 269301,
+      "seconds": 98.68754936599726
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 10,
+      "statuses": {
+        "blocker": 6,
+        "not_reproduced": 1,
+        "possibly_toxic": 1,
+        "suspected": 2
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/fixed_x/correctness-1.1",
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/fixed_x/correctness-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/nothing_else_changed/regression-2.1",
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/nothing_else_changed/regression-2.2",
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/nothing_else_changed/regression-2.3",
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/fixed_x/correctness-3.1"
+      ],
+      "wall_seconds": 2146.3855210930014
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 7,
+      "statuses": {
+        "possibly_toxic": 2,
+        "refuted": 1,
+        "not_reproduced": 2,
+        "blocker": 1,
+        "unchecked": 1
+      },
+      "blockers": [
+        "20260217_mini-v2.0.0_glm-5-high~matplotlib__matplotlib-22871/nothing_else_changed/regression-2.1"
+      ],
+      "wall_seconds": 661.3756372290009
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6"
+    },
+    {
+      "side": "surrogate",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:c722c185103f1b8767dd2488db514a746bf3826fbf74b5f8966fd3e18476c6b6"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}

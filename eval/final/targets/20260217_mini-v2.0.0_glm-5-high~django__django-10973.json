@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "receipts_version": "0.0.1",
+  "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-10973",
+  "tier": "A",
+  "temperatures": "spec",
+  "status": "done",
+  "error": "",
+  "started_at": "2026-11-01T04:05:54Z",
+  "wall_seconds": 1556.3311438160017,
+  "claims": [
+    {
+      "id": "fixed_x",
+      "type": "fixed_x",
+      "text": "The change fixes the problem described in the issue.",
+      "span": {
+        "source": "issue",
+        "text": "Use subprocess.run and PGPASSWORD for client in postgres backend\nDescription\n\t\n​subprocess.run was added in python 3.5 (which is the minimum version since Django 2.1). This function allows you to pass a custom environment for the subprocess.\nUsing this in django.db.backends.postgres.client to set PGPASSWORD simplifies the code and makes it more reliable.\n",
+        "start": 0,
+        "end": 357
+      },
+      "high_risk": false
+    },
+    {
+      "id": "nothing_else_changed",
+      "type": "nothing_else_changed",
+      "text": "The change alters no behavior beyond what fixing the issue requires.",
+      "span": {
+        "source": "template",
+        "text": "The change alters no behavior beyond what fixing the issue requires.",
+        "start": null,
+        "end": null
+      },
+      "high_risk": false
+    }
+  ],
+  "dropped": [],
+  "intake_unchecked": [],
+  "plan": {
+    "target_id": "20260217_mini-v2.0.0_glm-5-high~django__django-10973",
+    "attacks": [
+      {
+        "id": "correctness-1",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Call DatabaseClient.runshell_db() with passwd='a:b\\\\c' and capture the subprocess.run() call; the captured env is None or contains an escaped/mangled PGPASSWORD instead of the exact password, so psql authentication fails for passwords containing ':' or '\\\\' that the old pgpass escaping handled.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-1",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Run the existing PostgreSQL DatabaseClient tests that patch subprocess.check_call, NamedTemporaryFile, and _escape_pgpass; they fail or invoke a real psql binary because the code now calls subprocess.run and the patched helpers no longer exist or are never called.",
+        "mask": "diff",
+        "temperature": 0.0,
+        "existing_tests": true
+      },
+      {
+        "id": "correctness-2",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Set PGPASSFILE to a file containing a wrong password for the same host/user, then call runshell_db() with the correct Django password against a password-authenticating PostgreSQL (or a fake psql emulating libpq precedence); libpq uses the pgpass entry instead of PGPASSWORD, so login fails despite the correct configured password.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-2",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Set os.environ['PGPASSFILE']='/home/user/custom.pgpass' and call runshell_db() with a password, then call it again without one in the same process; before, the variable was replaced during the first call and deleted afterwards, but now the custom file stays in the child env and in os.environ, changing authentication of the subsequent no-password shell.",
+        "mask": "diff_functions",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "correctness-3",
+        "claim_id": "fixed_x",
+        "lens": "correctness",
+        "hypothesis": "(correctness) Call runshell_db() with a password containing characters unencodable in the current locale/filesystem encoding (e.g. under LC_ALL=C); subprocess.run() raises UnicodeEncodeError when encoding the env instead of letting the user type the password manually as the old pgpass code did, so dbshell crashes.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      },
+      {
+        "id": "regression-3",
+        "claim_id": "nothing_else_changed",
+        "lens": "regression",
+        "hypothesis": "(regression) Start runshell_db() for host A with A's password and then use psql's \\connect to host B; before, the temporary pgpass entry was scoped to A:port:db:user so B would prompt, but now the global PGPASSWORD in the environment is automatically offered to B, leaking/attempting A's password on the wrong server.",
+        "mask": "claim_spec",
+        "temperature": 0.8,
+        "existing_tests": false
+      }
+    ],
+    "unchecked": []
+  },
+  "planner_model": "muse-wonder-1.0",
+  "planner_fallback": false,
+  "planner_fallback_reason": "",
+  "planner_notes": [],
+  "costs": [
+    {
+      "stage": "plan",
+      "model": "muse-wonder-1.0",
+      "input_tokens": 935,
+      "cached_tokens": 116,
+      "output_tokens": 6658,
+      "reasoning_tokens": 6133,
+      "micro_usd": 136460,
+      "seconds": 53.846511353000096
+    }
+  ],
+  "arms": [
+    {
+      "arm": "spark",
+      "attacker_model": "muse-spark-1.3",
+      "findings": 13,
+      "statuses": {
+        "not_reproduced": 2,
+        "refuted": 5,
+        "s_sat_inconclusive": 3,
+        "suspected": 3
+      },
+      "blockers": [],
+      "wall_seconds": 974.5738248250018
+    },
+    {
+      "arm": "glimmer",
+      "attacker_model": "muse-glimmer-30b",
+      "findings": 14,
+      "statuses": {
+        "unchecked": 6,
+        "suspected": 5,
+        "refuted": 2,
+        "not_reproduced": 1
+      },
+      "blockers": [],
+      "wall_seconds": 527.3580550110019
+    }
+  ],
+  "earlier_attempts": [],
+  "skeptic_workspaces": [
+    {
+      "side": "patch",
+      "patch_method": "git_apply",
+      "image_digest": "sha256:abc30e315e5442707234077961e218e663967191b01294531f54a5fa841017c6"
+    },
+    {
+      "side": "base",
+      "patch_method": null,
+      "image_digest": "sha256:abc30e315e5442707234077961e218e663967191b01294531f54a5fa841017c6"
+    }
+  ],
+  "refuter_model": "muse-wonder-1.0"
+}
