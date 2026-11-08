@@ -14,7 +14,8 @@ implementations behind the contracts it codes against.
   mapping, released with the sandbox's cleanup once the target is done). No two targets run on one sandbox, so
   `run --jobs N` runs N targets at once, up to RUN_MAX_JOBS.
 - surface: `replay`, `ledger rollup`, `ticket` (one blocker drafted as a Linear ticket; `--post` files it), `check
-  post` (a Receipts result as a GitHub check) and `receipt html` (a static receipt page for one target).
+  post` (a Receipts result as a GitHub check), `receipt html` (a static receipt page for one target) and `demo` (the
+  pandas demo's receipt pages, rebuilt from its shipped records with no key and no model call).
 - agentloop: `fix` (FX1: fix one confirmed blocker with Spark and try a fresh attack on the combined patch), on
   FixWiring: the fixer's client (`fix_client`: SparkFixer's muse-spark-1.3 routed to the Meta client), a run phase of
   its own (`run_phase`, as for a target of `receipts run`) and the fresh attack (FixReAttack: the `receipts run`
@@ -107,7 +108,7 @@ from receipts.core.planner import TIER_A_LENSES, PlanCaps, TemperatureMode
 from receipts.core.refuter import Refuter
 from receipts.core.routing import ModelRouter
 from receipts.eval import cli as eval_commands
-from receipts.surface import check_command, receipt_command, ticket_command
+from receipts.surface import check_command, demo_command, receipt_command, ticket_command
 from receipts.surface import cli_commands as surface_commands
 from receipts.surface.ledger import JsonlLedger
 from receipts.surface.text import visible
@@ -662,6 +663,7 @@ LANE_COMMANDS: tuple[Callable[[Subparsers], None], ...] = (
     ticket_command.register,
     check_command.register,
     receipt_command.register,
+    demo_command.register,
     functools.partial(
         fix_command.register,
         wiring=fix_command.FixWiring(client=fix_client, run_phase=run_phase, reattack=FixReAttack),

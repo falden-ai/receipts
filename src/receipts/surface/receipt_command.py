@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -29,12 +30,13 @@ def _warn(message: str) -> None:
     print(f"receipts receipt html: {visible(message)}", file=sys.stderr)
 
 
-def _report_tails(ledger: JsonlLedger) -> None:
+def report_torn_tails(ledger: JsonlLedger, warn: Callable[[str], None] = _warn) -> None:
+    """Warn once per torn last line a read-only ledger skipped; `receipts demo` shares it with its own prefix."""
     seen: set[tuple[int, int]] = set()
     for tail in ledger.torn_tails:
         key = (tail.line, tail.offset)
         if key not in seen:
-            _warn(f"{ledger.path}: skipped torn last line {tail.line}; read-only, so the file is unchanged")
+            warn(f"{ledger.path}: skipped torn last line {tail.line}; read-only, so the file is unchanged")
             seen.add(key)
 
 
@@ -72,6 +74,6 @@ def html_command(args: argparse.Namespace) -> int:
         return 2
     finally:
         for opened in ledgers:
-            _report_tails(opened)
+            report_torn_tails(opened)
     print(f"wrote {visible(str(output))}")
     return 0

@@ -6,6 +6,40 @@
 
 **One real catch.** On pandas #64677, a performance pull request that pandas later followed with a fix of its own, Receipts found 9 blockers: tests that failed 5 of 5 on the PR and passed 5 of 5 on the code before it. One of them also passes 5 of 5 on pandas' own later fix. Receipts' fix loop then made six attempts. The fifth passed the repro it was shown and the one held back, and a fresh attack on it caught a performance regression in the fix itself, so Receipts does not call it fixed. One case, not part of the measured results: see [The pandas demo](#the-pandas-demo).
 
+## Try it in 2 minutes
+
+No key, no Docker, no model call: `receipts demo` replays the recorded run on pandas #64677 from its records in `demo/pandas-64677/evidence/` and writes its receipts as HTML. Nothing is attacked or rerun. It needs git, [uv](https://docs.astral.sh/uv/) and Python 3.12 or later (uv installs it if you have none); only `uv sync` uses the network. We tested it on Linux x86_64. It does not run on Windows itself, since the ledger locks files with `fcntl`; use WSL there.
+
+```sh
+git clone https://github.com/falden-ai/receipts
+cd receipts
+uv sync --frozen
+uv run receipts demo
+```
+
+Open the two pages it writes in a browser:
+
+- `runs/demo/pandas-64677.html`, the Oct 31 run on the PR: 9 blockers, each with the claim it quotes, its repro test and command, and its 5 runs on the PR that fail and 5 on the code before it that pass, with each run's output; who checked what, at what cost, per stage; and the other 13 findings, refuted, with no repro, or unchecked over the plan's caps.
+- `runs/demo/pandas-64677-fix-5.html`, the fresh attack on fix attempt 5: its one blocker, correctness-9.1, the performance regression in the fix itself, which fails 5 of 5 on the fix and passes 5 of 5 on base.
+
+Intake and planning costs are on the run's target summary, which is not in this repository, so the pages leave them out. What each record backs is in `demo/pandas-64677/evidence/README.md`.
+
+## Run it on your PR
+
+There is no hosted version. Send a link to a pull request to alexander@falden.ai: we run Receipts on it ourselves, from our own credits, and send you back its HTML receipt within 2 business days.
+
+What we need:
+
+- **A public repository.** While on Meta's free credits, content sent to the API may be used for product improvement, so we run it only on public code.
+- **Python.** Receipts attacks Python only.
+- **Tests that run in a container.** We build an image of the PR's repository beforehand; the run phase has no network, so the PR's tests must run from that image without fetching anything.
+
+What the receipt can and cannot tell you:
+
+- A blocker is a test that fails 5 of 5 on the PR and passes 5 of 5 on the code before it. It is a counterexample a valid fix should pass, not a proof the PR is wrong.
+- Alarms on live PRs need a human check before anyone acts on them. On the measured eval's test split, blockers flagged 36.7% of good patches (33 of 90), and a live PR is outside those measured numbers.
+- The models may have seen public fixes in training. Attacks past the plan's caps are listed as unchecked, not run. See [Limits](#limits) for the rest.
+
 ## The problem
 
 Coding agents open pull requests that say "fixed" and "all tests pass". The tests they cite can be ones the agent wrote or picked, so passing them says little about the claim. A wrong fix that passes its own tests merges, and the bug report arrives weeks later.

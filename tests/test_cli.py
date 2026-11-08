@@ -110,7 +110,7 @@ EVAL_SUBCOMMANDS = (
 )
 COMMANDS = frozenset(
     {"version", "prices", "spend", "spend arm", "claims", "run", "replay", "ledger", "ledger rollup", "eval"}
-    | {"ticket", "check", "check post", "receipt", "receipt html", "fix"}
+    | {"ticket", "check", "check post", "receipt", "receipt html", "demo", "fix"}
     | {f"eval {name}" for name in EVAL_SUBCOMMANDS}
     | {"eval demo", "eval demo target", "eval demo fixcheck"}
 )
